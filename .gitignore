@@ -1,0 +1,56 @@
+# IntelliJ IDEA 설정
+.idea/
+*.iml
+
+# 시스템 파일
+.DS_Store
+Thumbs.db
+
+# 로그 파일
+*.log
+
+# 빌드 파일
+/build/
+/out/
+
+# Gradle 캐시
+.gradle/
+/!gradle-wrapper.jar
+
+# 환경 설정
+*.env
+*.local.properties
+
+# 테스트 리포트
+/test-results/
+/reports/
+
+# VSCode (혹시 쓸 수도 있으니)
+.vscode/
+
+# Mac OS 메타파일
+__MACOSX/
+
+
+
+
+
+
+
+
+
+#*.iml
+.gradle
+/local.properties
+/.idea/caches
+/.idea/libraries
+/.idea/modules.xml
+/.idea/workspace.xml
+/.idea/navEditor.xml
+/.idea/assetWizardSettings.xml
+#.DS_Store
+/build
+/captures
+.externalNativeBuild
+.cxx
+local.properties
