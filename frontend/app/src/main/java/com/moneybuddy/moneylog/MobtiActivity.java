@@ -99,6 +99,7 @@ public class MobtiActivity extends AppCompatActivity {
             page++;
             newPage(page);
         } else if (page == 4) {
+            mobti_result += (int)Math.pow(10, page-1);
             startActivity(mobti_result_page);
         }
     }
