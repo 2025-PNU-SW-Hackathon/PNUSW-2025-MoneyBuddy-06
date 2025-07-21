@@ -1,19 +1,24 @@
 package com.moneybuddy.moneylog;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 
-public class MobtiFirst extends AppCompatActivity {
+public class MobtiActivity extends AppCompatActivity {
     int page = 1;
+    static int mobti_result = 0;
     TextView finish, number, question;
     Button answera, answerb;
     ImageView image;
+    ProgressBar progressBar;
+    Intent mobti_main_page, mobti_result_page;
 
     public void newPage(int npage) {
         String[] questionvalues = {
@@ -43,13 +48,14 @@ public class MobtiFirst extends AppCompatActivity {
         answera.setText(answersa[npage-1]);
         answerb.setText(answersb[npage-1]);
         image.setImageResource(images[npage-1]);
+        progressBar.setProgress(npage);
     }
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.first_mobti);
+        setContentView(R.layout.activity_mobti);
 
         finish = findViewById(R.id.textView3);
         number = findViewById(R.id.textView4);
@@ -60,27 +66,40 @@ public class MobtiFirst extends AppCompatActivity {
 
         image = findViewById(R.id.imageView);
 
+        progressBar = findViewById(R.id.progressBar);
+
+        mobti_main_page  = new Intent(this, MainActivity.class);
+        mobti_result_page = new Intent(this, MobtiResultActivity.class);
+
         newPage(page);
     }
 
     public void onButton3Clicked(View v) {
-        page--;
-        if (page >= 1 && page <= 4) {
+        if (page >= 2 && page <= 4) {
+            mobti_result %= (int)Math.pow(10, page-1);
+            page--;
             newPage(page);
+        } else if (page == 1) {
+            startActivity(mobti_main_page);
         }
     }
 
     public void onButton4Clicked(View v) {
-        page++;
-        if (page >= 1 && page <= 4) {
+        if (page >= 1 && page <= 3) {
+            page++;
             newPage(page);
+        } else if (page == 4) {
+            startActivity(mobti_result_page);
         }
     }
 
     public void onButton5Clicked(View v) {
-        page++;
-        if (page >= 1 && page <= 4) {
+        if (page >= 1 && page <= 3) {
+            mobti_result += (int)Math.pow(10, page-1);
+            page++;
             newPage(page);
+        } else if (page == 4) {
+            startActivity(mobti_result_page);
         }
     }
 }
