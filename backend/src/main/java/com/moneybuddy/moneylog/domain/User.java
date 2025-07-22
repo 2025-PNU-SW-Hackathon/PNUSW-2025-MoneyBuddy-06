@@ -2,11 +2,12 @@ package com.moneybuddy.moneylog.domain;
 
 import jakarta.persistence.*;
 import lombok.Getter;
-import lombok.Setter;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
-@Setter
+@NoArgsConstructor
+@Table(name = "users")
 public class User {
 
     @Id
@@ -19,4 +20,8 @@ public class User {
     @Column(nullable = false)
     private String password;
 
+    public User(String email, String password) {
+        this.email = email;
+        this.password = password;
+    }
 }
