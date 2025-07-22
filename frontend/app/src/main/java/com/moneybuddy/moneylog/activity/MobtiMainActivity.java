@@ -1,4 +1,4 @@
-package com.moneybuddy.moneylog;
+package com.moneybuddy.moneylog.activity;
 
 import android.content.Intent;
 import android.graphics.Color;
@@ -19,13 +19,15 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
-public class MainActivity extends AppCompatActivity {
+import com.moneybuddy.moneylog.R;
+
+public class MobtiMainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_mobti_main);
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
@@ -55,7 +57,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void onButtonClick(View v) {
-        Intent mobti_test_page = new Intent(this, MobtiActivity.class);
-        startActivity(mobti_test_page);
+        // MobtiActivity로 이동
+        Intent intent = new Intent(this, MobtiActivity.class);
+        startActivity(intent);
     }
 }

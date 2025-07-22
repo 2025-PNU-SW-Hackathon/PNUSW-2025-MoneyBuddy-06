@@ -1,4 +1,4 @@
-package com.moneybuddy.moneylog;
+package com.moneybuddy.moneylog.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -10,6 +10,8 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.moneybuddy.moneylog.R;
+
 
 public class MobtiActivity extends AppCompatActivity {
     int page = 1;
@@ -18,7 +20,6 @@ public class MobtiActivity extends AppCompatActivity {
     Button answera, answerb;
     ImageView image;
     ProgressBar progressBar;
-    Intent mobti_main_page, mobti_result_page;
 
     public void newPage(int npage) {
         String[] questionvalues = {
@@ -68,9 +69,6 @@ public class MobtiActivity extends AppCompatActivity {
 
         progressBar = findViewById(R.id.progressBar);
 
-        mobti_main_page  = new Intent(this, MainActivity.class);
-        mobti_result_page = new Intent(this, MobtiResultActivity.class);
-
         newPage(page);
     }
 
@@ -80,7 +78,9 @@ public class MobtiActivity extends AppCompatActivity {
             page--;
             newPage(page);
         } else if (page == 1) {
-            startActivity(mobti_main_page);
+            //MobtiMainActivity로 이동
+            Intent intent = new Intent(this, MobtiMainActivity.class);
+            startActivity(intent);
         }
     }
 
@@ -89,7 +89,9 @@ public class MobtiActivity extends AppCompatActivity {
             page++;
             newPage(page);
         } else if (page == 4) {
-            startActivity(mobti_result_page);
+            //MobtiResultActivity로 이동
+            Intent intent = new Intent(this, MobtiResultActivity.class);
+            startActivity(intent);
         }
     }
 
@@ -100,7 +102,9 @@ public class MobtiActivity extends AppCompatActivity {
             newPage(page);
         } else if (page == 4) {
             mobti_result += (int)Math.pow(10, page-1);
-            startActivity(mobti_result_page);
+            //MobtiResultActivity로 이동
+            Intent intent = new Intent(this, MobtiResultActivity.class);
+            startActivity(intent);
         }
     }
 }
