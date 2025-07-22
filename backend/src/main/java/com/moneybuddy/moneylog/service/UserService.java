@@ -5,6 +5,7 @@ import com.moneybuddy.moneylog.repository.UserRepository;
 import com.moneybuddy.moneylog.domain.User;
 
 import org.springframework.stereotype.Service;
+
 @Service
 public class UserService {
 
@@ -19,10 +20,7 @@ public class UserService {
             throw new IllegalArgumentException("이미 존재하는 이메일입니다.");
         }
 
-        User user = new User();
-        user.setEmail(request.getEmail());
-        user.setPassword(request.getPassword());
-
+        User user = new User(request.getEmail(), request.getPassword());
         userRepository.save(user);
     }
 }
