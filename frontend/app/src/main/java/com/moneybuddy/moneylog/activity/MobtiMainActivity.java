@@ -44,7 +44,7 @@ public class MobtiMainActivity extends AppCompatActivity {
 
         // substring이 실제로 존재할 때만 하이라이트
         if (start >= 0) {
-            spannable.setSpan(new ForegroundColorSpan(Color.parseColor("#C9D895")), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+            spannable.setSpan(new ForegroundColorSpan(Color.parseColor("#86935A")), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
             spannable.setSpan(new RelativeSizeSpan(1.5f), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
             spannable.setSpan(new StyleSpan(Typeface.BOLD), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
         }
