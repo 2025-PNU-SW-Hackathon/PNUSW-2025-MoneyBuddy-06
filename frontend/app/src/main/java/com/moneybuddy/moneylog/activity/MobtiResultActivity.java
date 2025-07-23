@@ -38,7 +38,7 @@ public class MobtiResultActivity extends AppCompatActivity {
         // Retrofit 객체 생성
         Retrofit retrofit = new Retrofit.Builder().baseUrl("https://172.21.170.228:8080/").addConverterFactory(GsonConverterFactory.create()).build();
         ApiService api = retrofit.create(ApiService.class);
-         String token = "Bearer " + "수정 필요";
+        String token = "Bearer " + "수정 필요";
 
         // 숫자로 된 mobti_result MobtiInfo 객체로 만들기
         MobtiInfo info = MobtiInfo.DATA.get(MobtiActivity.mobti_result);
