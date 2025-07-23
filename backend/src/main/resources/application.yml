@@ -1,0 +1,19 @@
+spring:
+  application:
+    name: moneylog
+
+  datasource:
+    url: jdbc:mysql://localhost:3306/moneylog?serverTimezone=UTC&characterEncoding=UTF-8
+    username: root
+    password: jinney0830!
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+
+jwt:
+  secret: +G4ykTpOGaGrCELv6rZufgKgeIYA4OM4Aw1zXnMQg+k=
