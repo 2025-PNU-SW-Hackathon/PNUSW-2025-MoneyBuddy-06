@@ -31,7 +31,6 @@
         android:layout_height="67.3dp"
         android:background="@drawable/rounded_button"
         android:elevation="0dp"
-        android:stateListAnimator="@null"
         android:text="검사하러 가기"
         android:textColor="@color/black"
         android:textSize="24sp"
@@ -41,18 +40,5 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.837" />
-
-    <Button
-        android:id="@+id/button2"
-        android:layout_width="24dp"
-        android:layout_height="24dp"
-        android:layout_marginTop="16dp"
-        android:background="#00FFFFFF"
-        android:drawableTint="#070707"
-        android:foreground="?attr/actionModeCloseDrawable"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.042"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
