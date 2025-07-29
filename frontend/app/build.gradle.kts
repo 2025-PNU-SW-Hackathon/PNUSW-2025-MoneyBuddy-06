@@ -40,4 +40,7 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
+
+    //progress bar
+    implementation("com.github.jakob-grabner:Circle-Progress-View:1.4")
 }
