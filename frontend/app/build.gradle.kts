@@ -41,6 +41,11 @@ dependencies {
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
 
-    //progress bar
-    implementation("com.github.jakob-grabner:Circle-Progress-View:1.4")
+    // Retrofit
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
+
+    // Navigation Bar
+    implementation("com.google.android.material:material:1.9.0")
+
 }

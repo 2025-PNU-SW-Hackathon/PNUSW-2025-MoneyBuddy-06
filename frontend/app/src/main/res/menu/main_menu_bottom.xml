@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/menu_home"
+        android:icon="@drawable/home_home"
+        android:title="홈"/>
+    <item
+        android:id="@+id/menu_challenge"
+        android:icon="@drawable/home_challenge"
+        android:title="챌린지" />
+    <item
+        android:id="@+id/menu_ledger"
+        android:icon="@drawable/home_ledger"
+        android:title="가계부" />
+    <item
+        android:id="@+id/menu_mypage"
+        android:icon="@drawable/home_mypage"
+        android:title="마이 페이지" />
+</menu>
