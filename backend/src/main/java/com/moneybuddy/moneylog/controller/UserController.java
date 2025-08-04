@@ -7,6 +7,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import jakarta.validation.Valid;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/users")
@@ -16,13 +18,13 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping("/login")
-    public ResponseEntity<UserLoginResponse> login(@RequestBody UserLoginRequest request) {
+    public ResponseEntity<UserLoginResponse> login(@Valid @RequestBody UserLoginRequest request) {
         try {
-            userService.login(request);
-            return ResponseEntity.ok(new UserLoginResponse("success", "로그인 성공!"));
+            UserLoginResponse response = userService.login(request);
+            return ResponseEntity.ok(response);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest()
-                    .body(new UserLoginResponse("fail", e.getMessage()));
+                    .body(new UserLoginResponse("로그인 실패: " + e.getMessage()));
         }
     }
 }
