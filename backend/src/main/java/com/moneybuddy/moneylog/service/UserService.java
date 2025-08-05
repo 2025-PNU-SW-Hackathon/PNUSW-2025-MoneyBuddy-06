@@ -38,8 +38,7 @@ public class UserService {
             throw new IllegalArgumentException("토큰이 존재하지 않습니다.");
         }
 
-        jwtUtil.validateToken(token); // 토큰 유효성 검사
-
+        jwtUtil.validateToken(token);
         String email = jwtUtil.getEmailFromToken(token);
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
