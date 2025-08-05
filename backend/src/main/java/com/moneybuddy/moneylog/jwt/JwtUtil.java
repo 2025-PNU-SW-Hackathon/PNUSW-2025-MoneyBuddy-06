@@ -9,6 +9,8 @@ import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.util.Date;
 
+import jakarta.servlet.http.HttpServletRequest;
+
 @Component
 public class JwtUtil {
 
@@ -49,5 +51,18 @@ public class JwtUtil {
                 .setExpiration(new Date(System.currentTimeMillis() + expiration)) // ← 여기!
                 .signWith(secretKey, SignatureAlgorithm.HS256)
                 .compact();
+    }
+
+    public String resolveToken(HttpServletRequest request) {
+        String bearer = request.getHeader("Authorization");
+        if (bearer != null && bearer.startsWith("Bearer ")) {
+            return bearer.substring(7);
+        }
+        return null;
+    }
+
+    public String getEmailFromToken(String token) {
+        Claims claims = parseToken(token);
+        return claims.get("email", String.class);
     }
 }
