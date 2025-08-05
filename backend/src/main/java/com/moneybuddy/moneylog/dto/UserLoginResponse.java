@@ -20,5 +20,8 @@ public class UserLoginResponse {
         this.token = token;
         this.userId = userId;
         this.email = email;
+        this.message = "로그인 성공";
     }
+
+
 }

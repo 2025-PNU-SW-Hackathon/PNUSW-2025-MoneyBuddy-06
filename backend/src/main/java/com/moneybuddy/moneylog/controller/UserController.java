@@ -22,7 +22,7 @@ public class UserController {
         try {
             UserLoginResponse response = userService.login(request);
             return ResponseEntity.ok(response);
-        } catch (IllegalArgumentException e) {
+        } catch (RuntimeException e) {
             return ResponseEntity.badRequest()
                     .body(new UserLoginResponse("로그인 실패: " + e.getMessage()));
         }
