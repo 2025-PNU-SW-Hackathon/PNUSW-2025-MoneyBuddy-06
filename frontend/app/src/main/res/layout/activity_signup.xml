@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FFFEF7"
+    android:padding="24dp"
+    tools:context=".activity.SignupActivity">
+
+    <!-- 뒤로가기 버튼 -->
+    <ImageView
+        android:id="@+id/ic_arrow_back"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:src="@drawable/ic_arrow_back"
+        android:contentDescription="@string/back_button"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <!-- 화면 상단 글자 -->
+    <TextView
+        android:id="@+id/tv_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="40dp"
+        android:text="@string/hello"
+        android:textColor="#000000"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <!-- 회원가입 폼 박스 -->
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/cv_signup"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="60dp"
+        app:cardBackgroundColor="#FFFFFF"
+        app:layout_constraintWidth_percent="0.9"
+        app:cardCornerRadius="10dp"
+        app:cardElevation="2dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv_title"
+        app:strokeColor="#E0E0E0"
+        app:strokeWidth="1dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="20dp">
+
+            <!-- 이메일 -->
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/til_email"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="12dp"
+                android:hint="@string/email_hint"
+                app:placeholderText="moneylog@love.ac.kr"
+                app:boxStrokeColor="@color/text_input_box_stroke"
+                app:boxBackgroundColor="#FFFFFF">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/et_email"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="textEmailAddress"
+                    android:textColor="#000000"
+                    tools:ignore="TooWide"/>
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <!-- 비밀번호 -->
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/til_password"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:hint="@string/password_hint"
+                app:boxBackgroundColor="#FFFFFF"
+                app:boxStrokeColor="@color/text_input_box_stroke"
+                app:helperText="8자 이상"
+                app:passwordToggleEnabled="true"
+                app:hintTextColor="@color/text_input_box_stroke"
+                app:helperTextTextColor="@color/text_input_box_stroke">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/et_password"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="textPassword"
+                    android:textColor="#000000"
+                    tools:ignore="TooWide"/>
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <!-- 비밀번호 확인 -->
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/til_password_confirm"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:hint="@string/password_confirm_hint"
+                app:boxBackgroundColor="#FFFFFF"
+                app:boxStrokeColor="@color/text_input_box_stroke"
+                app:passwordToggleEnabled="true">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/et_password_confirm"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="textPassword"
+                    android:textColor="#000000"
+                    tools:ignore="TooWide"/>
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <!-- 회원가입 버튼 -->
+            <Button
+                android:id="@+id/btn_signup"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:layout_marginTop="24dp"
+                android:backgroundTint="#6A7840"
+                android:text="@string/signup"
+                android:textColor="#FFFFFF"
+                android:textSize="16sp"
+                app:cornerRadius="10dp"
+                tools:ignore="TooWide"/>
+
+        </LinearLayout>
+
+    </com.google.android.material.card.MaterialCardView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
