@@ -1,6 +1,7 @@
 package com.moneybuddy.moneylog.security;
 
-import com.moneybuddy.moneylog.security.CustomUserDetails;
+import com.moneybuddy.moneylog.domain.User;
+import com.moneybuddy.moneylog.repository.UserRepository;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -21,6 +22,7 @@ import java.util.Collections;
 public class JwtFilter extends OncePerRequestFilter {
 
     private final JwtUtil jwtUtil;
+    private final UserRepository userRepository;  // ✅ 추가 필요
 
     @Override
     protected void doFilterInternal(HttpServletRequest request,
@@ -39,6 +41,11 @@ public class JwtFilter extends OncePerRequestFilter {
                 Long userId = jwtUtil.getUserId(token);
                 String email = jwtUtil.getEmail(token);
 
+                // ✅ 유저 정보 조회해서 request에 넣기
+                User user = userRepository.findById(userId)
+                        .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
+                request.setAttribute("user", user);
+
                 UsernamePasswordAuthenticationToken authentication =
                         new UsernamePasswordAuthenticationToken(
                                 new CustomUserDetails(userId, email),
@@ -47,7 +54,6 @@ public class JwtFilter extends OncePerRequestFilter {
                         );
 
                 authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-
                 SecurityContextHolder.getContext().setAuthentication(authentication);
 
             } catch (Exception e) {
@@ -61,7 +67,6 @@ public class JwtFilter extends OncePerRequestFilter {
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
         String path = request.getRequestURI();
-        System.out.println("👉 [JWT Filter] 요청 경로: " + path);
         return path.startsWith("/api/v1/users/login") || path.startsWith("/api/v1/users/signup");
     }
 }
