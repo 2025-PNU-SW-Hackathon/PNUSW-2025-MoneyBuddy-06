@@ -3,6 +3,7 @@ package com.moneybuddy.moneylog.controller;
 import com.moneybuddy.moneylog.dto.request.LedgerRequest;
 import com.moneybuddy.moneylog.dto.request.NotificationRequest;
 import com.moneybuddy.moneylog.dto.response.LedgerEntryDto;
+import com.moneybuddy.moneylog.security.CustomUserDetails;
 import com.moneybuddy.moneylog.service.LedgerService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -65,21 +66,18 @@ public class LedgerController {
         return ResponseEntity.noContent().build();
     }
 
-    private Long resolveUserId(Long fallback) {
+    private Long resolveUserId(Long fallbackIfNoAuth) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
-        if (auth != null && auth.isAuthenticated() && !"anonymousUser".equals(auth.getPrincipal())) {
+        if (auth != null && auth.isAuthenticated()) {
             Object principal = auth.getPrincipal();
-
-            // 1) 가능한 경우 SecurityContext(JWT 등)에서 userId를 추출
-            // (예) 커스텀 필터가 principal에 {userId: 123} 형태의 Map을 넣은 경우
-            if (principal instanceof java.util.Map<?,?> map && map.get("userId") != null) {
-                return toLong(map.get("userId"));
+            if (principal instanceof CustomUserDetails) {
+                CustomUserDetails cud = (CustomUserDetails) principal;
+                return cud.getUserId();
             }
         }
 
-        // 2) 실패하면 요청 바디 사용
-        if (fallback != null) return fallback;
+        if (fallbackIfNoAuth != null) return fallbackIfNoAuth;
         throw new AccessDeniedException("로그인이 필요합니다.");
     }
 

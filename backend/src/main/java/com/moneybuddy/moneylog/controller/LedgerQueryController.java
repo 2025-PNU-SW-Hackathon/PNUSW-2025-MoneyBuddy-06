@@ -2,6 +2,7 @@ package com.moneybuddy.moneylog.controller;
 
 import com.moneybuddy.moneylog.dto.response.DaySummaryDto;
 import com.moneybuddy.moneylog.dto.response.MonthSummaryDto;
+import com.moneybuddy.moneylog.security.CustomUserDetails;
 import com.moneybuddy.moneylog.service.LedgerQueryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -39,13 +40,11 @@ public class LedgerQueryController {
 
     private Long resolveUserId() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if (auth != null && auth.isAuthenticated() && !"anonymousUser".equals(auth.getPrincipal())) {
-            Object p = auth.getPrincipal();
-            if (p instanceof java.util.Map<?,?> m && m.get("userId") != null) {
-                Object v = m.get("userId");
-                if (v instanceof Long l) return l;
-                if (v instanceof Integer i) return i.longValue();
-                return Long.parseLong(v.toString());
+
+        if (auth != null && auth.isAuthenticated()) {
+            Object principal = auth.getPrincipal();
+            if (principal instanceof CustomUserDetails) {
+                return ((CustomUserDetails) principal).getUserId();
             }
         }
         throw new AccessDeniedException("로그인이 필요합니다.");

@@ -1,94 +1,142 @@
 package com.moneybuddy.moneylog.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.moneybuddy.moneylog.client.ClovaOcrClient;
-import com.moneybuddy.moneylog.dto.response.LedgerEntryDto;
+import com.moneybuddy.moneylog.client.ClovaReceiptOcrClient;
+import com.moneybuddy.moneylog.domain.EntryType;
 import com.moneybuddy.moneylog.domain.Ledger;
+import com.moneybuddy.moneylog.dto.response.LedgerEntryDto;
 import com.moneybuddy.moneylog.repository.LedgerRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.time.*;
+import java.util.Locale;
 
 @Service
 @RequiredArgsConstructor
 public class ReceiptService {
 
-    private final ClovaOcrClient clovaOcrClient;
+    private final ClovaReceiptOcrClient clova;
     private final LedgerRepository ledgerRepository;
-    private final ObjectMapper objectMapper = new ObjectMapper();
 
     public LedgerEntryDto processReceipt(MultipartFile file, Long userId) {
-        // OCR 호출
-        String ocrResponse = clovaOcrClient.callOcrApi(file);
+        JsonNode root = clova.requestReceiptOcr(file);
 
-        // JSON 파싱
-        StringBuilder sb = new StringBuilder();
-        try {
-            JsonNode root = objectMapper.readTree(ocrResponse);
-            JsonNode fields = root.path("images").get(0).path("fields");
-
-            for (JsonNode field : fields) {
-                String inferText = field.path("inferText").asText();
-                sb.append(inferText).append(" ");
-            }
-        } catch (Exception e) {
-            throw new RuntimeException("OCR 응답 파싱 실패", e);
+        JsonNode image = root.path("images").path(0);
+        if (!"SUCCESS".equalsIgnoreCase(image.path("inferResult").asText())) {
+            String msg = image.path("message").asText("");
+            throw new IllegalStateException("영수증 인식 실패: " + msg);
         }
 
-        String extractedText = sb.toString();
+        JsonNode result = image.path("receipt").path("result");
 
-        BigDecimal amount = extractAmount(extractedText); // 금액(양수) 추출
-        String store = extractStore(extractedText);       // 상호명 추출(임시)
-        String category = guessCategory(store);
+        // 매장명
+        String store = getValue(result.path("storeInfo").path("name"));
 
-        BigDecimal signedAmount = amount.abs().negate();
+        // 결제일시
+        LocalDate date = parseDate(result.path("paymentInfo").path("date"));
+        LocalTime time = parseTime(result.path("paymentInfo").path("time"));
+        LocalDateTime paidAt = (date != null && time != null)
+                ? LocalDateTime.of(date, time)
+                : (date != null ? date.atStartOfDay() : LocalDateTime.now(ZoneId.of("Asia/Seoul")));
 
+        // 자산(카드사)
+        String asset = getValue(result.path("paymentInfo").path("cardInfo").path("company"));
+        if (asset == null || asset.isBlank()) asset = "미지정";
+
+        // 총 결제 금액 (카드번호/승인번호 등과 혼동 방지: totalPrice.price 만 사용)
+        BigDecimal total = parseMoney(result.path("totalPrice").path("price"));
+        if (total == null) {
+            // 총액 누락 시 품목 합으로 보정
+            total = sumItems(result);
+        }
+        if (total == null) {
+            throw new IllegalStateException("총 결제 금액을 인식하지 못했습니다.");
+        }
+
+        // Ledger 저장: 지출은 음수
+        BigDecimal signed = total.abs().negate();
         Ledger ledger = Ledger.builder()
                 .userId(userId)
-                .amount(signedAmount)          // ← 음수로 저장
+                .dateTime(paidAt)
+                .amount(signed)
+                .entryType(EntryType.EXPENSE)
+                .asset(asset)
                 .store(store)
-                .category(category)
-                .dateTime(LocalDateTime.now()) // OCR에 날짜가 있으면 교체 가능
+                .category(guessCategory(store))
                 .createdAt(LocalDateTime.now())
                 .build();
-
         ledgerRepository.save(ledger);
 
         return new LedgerEntryDto(ledger);
     }
 
-    private BigDecimal extractAmount(String text) {
-        Pattern pattern = Pattern.compile("(총 ?결제 ?금액|합계|결제금액)[^\\d]*([\\d,]+)");
-        Matcher matcher = pattern.matcher(text);
-
-        if (matcher.find()) {
-            String amountStr = matcher.group(2).replace(",", "");
-            return new BigDecimal(amountStr);  // ★ BigDecimal 반환
-        }
-
-        matcher = Pattern.compile("([\\d,]+)[원₩]?").matcher(text);
-        if (matcher.find()) {
-            String amountStr = matcher.group(1).replace(",", "");
-            return new BigDecimal(amountStr);  // ★ BigDecimal 반환
-        }
-
-        throw new IllegalArgumentException("금액을 추출할 수 없습니다.");
+    private String getValue(JsonNode node) {
+        // formatted.value 우선, 없으면 text
+        String f = node.path("formatted").path("value").asText(null);
+        if (f != null && !f.isBlank()) return f;
+        String t = node.path("text").asText(null);
+        return (t != null && !t.isBlank()) ? t : null;
     }
 
-    private String extractStore(String text) {
-        return text.split(" ")[0]; // 임시로 첫 단어 사용
+    private BigDecimal parseMoney(JsonNode priceNode) {
+        String s = getValue(priceNode);
+        if (s == null) return null;
+        // "￦12,300", "12,300원" 등에서 숫자만 추출
+        String cleaned = s.replaceAll("[^\\d\\.-]", "").replace(",", "");
+        if (cleaned.isBlank() || cleaned.equals("-")) return null;
+        try {
+            return new BigDecimal(cleaned);
+        } catch (NumberFormatException e) {
+            return null;
+        }
+    }
+
+    private LocalDate parseDate(JsonNode dateNode) {
+        if (dateNode.isMissingNode()) return null;
+        JsonNode f = dateNode.path("formatted");
+        String y = f.path("year").asText(null);
+        String m = f.path("month").asText(null);
+        String d = f.path("day").asText(null);
+        if (y == null || m == null || d == null) return null;
+        return LocalDate.of(Integer.parseInt(y), Integer.parseInt(m), Integer.parseInt(d));
+    }
+
+    private LocalTime parseTime(JsonNode timeNode) {
+        if (timeNode.isMissingNode()) return null;
+        JsonNode f = timeNode.path("formatted");
+        String hh = f.path("hour").asText(null);
+        String mm = f.path("minute").asText(null);
+        String ss = f.path("second").asText(null);
+        if (hh == null || mm == null) return null;
+        int h = Integer.parseInt(hh), m = Integer.parseInt(mm), s = (ss != null ? Integer.parseInt(ss) : 0);
+        return LocalTime.of(h, m, s);
+    }
+
+    private BigDecimal sumItems(JsonNode result) {
+        BigDecimal sum = BigDecimal.ZERO;
+        boolean found = false;
+        JsonNode subResults = result.path("subResults");
+        if (subResults.isArray()) {
+            for (JsonNode group : subResults) {
+                JsonNode items = group.path("items");
+                if (items.isArray()) {
+                    for (JsonNode it : items) {
+                        BigDecimal price = parseMoney(it.path("price").path("price"));
+                        if (price != null) { sum = sum.add(price); found = true; }
+                    }
+                }
+            }
+        }
+        return found ? sum : null;
     }
 
     private String guessCategory(String store) {
-        if (store.contains("CU") || store.contains("GS25") || store.contains("마트") ||
-                store.contains("스타벅스") || store.contains("커피") || store.contains("카페")) {
-            return "식사";
+        if (store.contains("CU") || store.contains("GS25") || store.contains("마트")) {
+            return "식비";
+        } else if (store.contains("스타벅스") || store.contains("커피") || store.contains("카페")) {
+            return "카페/베이커리";
         } else if (store.contains("버스") || store.contains("지하철") || store.contains("택시")) {
             return "교통";
         }
@@ -99,7 +147,7 @@ public class ReceiptService {
             return "의료건강";
         }
         else if (store.contains("옷") || store.contains("올리브영")) {
-            return "의류";
+            return "의류/미용";
         }
         return "기타";
     }

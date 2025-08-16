@@ -37,6 +37,7 @@ public class LedgerService {
                 .userId(request.getUserId())
                 .dateTime(parsed.getDateTime())
                 .amount(signed)
+                .entryType(type)
                 .asset(resolvedAsset)
                 .store(parsed.getStore())
                 .category(parsed.getCategory())

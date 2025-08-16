@@ -13,7 +13,8 @@ import java.time.LocalDateTime;
 @Table(
         name = "ledger",
         indexes = {
-                @Index(name = "idx_ledger_user_datetime", columnList = "userId, dateTime")
+                @Index(name = "idx_ledger_user_datetime", columnList = "userId, dateTime"),
+                @Index(name = "idx_ledger_user_category_datetime", columnList = "userId, category, dateTime")
         }
 )
 public class Ledger {

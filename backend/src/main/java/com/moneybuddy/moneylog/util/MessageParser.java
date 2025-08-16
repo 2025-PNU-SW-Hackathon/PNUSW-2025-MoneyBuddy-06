@@ -102,20 +102,21 @@ public class MessageParser {
     }
 
     private String guessCategory(String store) {
-        if (store.contains("CU") || store.contains("GS25") || store.contains("마트") ||
-                store.contains("스타벅스") || store.contains("커피") || store.contains("카페")) {
-            return "식사";
+        if (store.contains("CU") || store.contains("GS25") || store.contains("마트")) {
+            return "식비";
+        } else if (store.contains("스타벅스") || store.contains("커피") || store.contains("카페")) {
+            return "카페/베이커리";
         } else if (store.contains("버스") || store.contains("지하철") || store.contains("택시")) {
             return "교통";
         }
         else if (store.contains("롯데시네마") || store.contains("메가박스") || store.contains("CGV")) {
-            return "문화여가";
+            return "문화/여가";
         }
         else if (store.contains("병원") || store.contains("의원") || store.contains("치과") || store.contains("이비인후과")) {
-            return "의료건강";
+            return "의료/건강";
         }
         else if (store.contains("옷") || store.contains("올리브영")) {
-            return "의류";
+            return "의류/미용";
         }
         return "기타";
     }
