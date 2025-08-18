@@ -152,8 +152,6 @@ public class ChallengeDataLoader implements CommandLineRunner {
                 .createdBy(null)
                 .build());
 
-        // ... 이전 챌린지 생략
-
         // T형
         challengeRepository.save(Challenge.builder()
                 .title("유행 아이템을 구매하기 전 ‘한 달 뒤에도 쓸까?’ 라는 질문해보기")

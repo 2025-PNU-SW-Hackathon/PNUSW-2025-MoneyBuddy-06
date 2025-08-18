@@ -5,7 +5,7 @@ import lombok.Getter;
 
 @Getter
 @Builder
-public class ChallengeResponse {
+public class RecommendedChallengeResponse {
     private Long id;
     private String title;
     private String description;

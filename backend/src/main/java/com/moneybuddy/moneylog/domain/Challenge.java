@@ -17,13 +17,21 @@ public class Challenge {
 
     private String title;
     private String description;
+
+    // mobti 추천용
     private String period;
-
     private String mobtiType;
-    private String category;
 
+    // 공통
+    private String category;
     private Boolean isSystemGenerated;
     private Boolean isShared;
 
-    private Long createdBy;
+    // 사용자 챌린지용
+    private String type;
+    private String goalPeriod;
+    private String goalType;
+    private Integer goalValue;
+
+    private Long createdBy;      // 사용자 ID
 }

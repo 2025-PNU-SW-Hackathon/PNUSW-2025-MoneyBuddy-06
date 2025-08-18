@@ -1,9 +1,11 @@
 package com.moneybuddy.moneylog.controller;
 
-import com.moneybuddy.moneylog.dto.ChallengeResponse;
+import com.moneybuddy.moneylog.dto.RecommendedChallengeResponse;
+import com.moneybuddy.moneylog.dto.UserChallengeRequest;
 import com.moneybuddy.moneylog.security.CustomUserDetails;
 import com.moneybuddy.moneylog.service.ChallengeService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,7 +19,16 @@ public class ChallengeController {
     private final ChallengeService challengeService;
 
     @GetMapping("/recommended")
-    public List<ChallengeResponse> getRecommendedChallenges(@AuthenticationPrincipal CustomUserDetails userDetails) {
+    public List<RecommendedChallengeResponse> getRecommendedChallenges(@AuthenticationPrincipal CustomUserDetails userDetails) {
         return challengeService.getRecommendedChallenges(userDetails.getUserId());
+    }
+
+    @PostMapping("/create")
+    public ResponseEntity<String> createUserChallenge(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @RequestBody UserChallengeRequest request
+    ) {
+        challengeService.createUserChallenge(userDetails.getUserId(), request);
+        return ResponseEntity.ok("챌린지 생성 완료!");
     }
 }
