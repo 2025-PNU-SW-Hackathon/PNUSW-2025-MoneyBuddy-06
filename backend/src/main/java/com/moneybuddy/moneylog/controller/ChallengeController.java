@@ -28,6 +28,8 @@ public class ChallengeController {
             @AuthenticationPrincipal CustomUserDetails userDetails,
             @RequestBody UserChallengeRequest request
     ) {
+        System.out.println("userDetails = " + userDetails);
+        System.out.println("userId = " + userDetails.getUserId());
         challengeService.createUserChallenge(userDetails.getUserId(), request);
         return ResponseEntity.ok("챌린지 생성 완료!");
     }
