@@ -1,7 +1,6 @@
 package com.moneybuddy.moneylog.controller;
 
 import com.moneybuddy.moneylog.dto.ChallengeResponse;
-
 import com.moneybuddy.moneylog.security.CustomUserDetails;
 import com.moneybuddy.moneylog.service.ChallengeService;
 import lombok.RequiredArgsConstructor;
@@ -18,7 +17,7 @@ public class ChallengeController {
     private final ChallengeService challengeService;
 
     @GetMapping("/recommended")
-    public List<ChallengeResponse> getRecommendedChallenges(@RequestParam String mobti) {
-        return challengeService.getRecommendedChallenges(mobti);
+    public List<ChallengeResponse> getRecommendedChallenges(@AuthenticationPrincipal CustomUserDetails userDetails) {
+        return challengeService.getRecommendedChallenges(userDetails.getUserId());
     }
 }

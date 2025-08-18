@@ -11,5 +11,5 @@ public class ChallengeResponse {
     private String description;
     private String period;
     private String mobtiType;
-    private String category;;
+    private String category;
 }
