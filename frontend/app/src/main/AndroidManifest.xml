@@ -15,6 +15,7 @@
         android:theme="@style/Base.Theme.Moneylog"
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
+
         <activity
             android:name=".activity.MainMenuActivity"
             android:exported="true">
@@ -24,5 +25,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
     </application>
 </manifest>
