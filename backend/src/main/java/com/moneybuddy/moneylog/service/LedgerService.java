@@ -54,12 +54,25 @@ public class LedgerService {
         BigDecimal base = Objects.requireNonNull(req.getAmount(), "amount는 필수입니다.").abs();
         BigDecimal signed = (type == EntryType.EXPENSE) ? base.negate() : base;
 
+        // asset: EXPENSE = 필수, INCOME = 기본값
+        String asset = req.getAsset();
+        if (type == EntryType.EXPENSE) {
+            if (asset == null || asset.isBlank()) {
+                throw new IllegalArgumentException("지출에서는 asset이 필수입니다.");
+            }
+            else {
+                if (asset == null || asset.isBlank()) {
+                    asset = "미지정";
+                }
+            }
+        }
+
         Ledger ledger = Ledger.builder()
                 .userId(userId)
                 .dateTime(req.getDateTime())
                 .amount(signed)
                 .entryType(type)
-                .asset(req.getAsset())
+                .asset(asset)
                 .store(req.getStore())  // null로 저장
                 .category(req.getCategory())
                 .description(req.getDescription())
@@ -81,10 +94,23 @@ public class LedgerService {
         BigDecimal base = Objects.requireNonNull(req.getAmount(), "amount는 필수입니다.").abs();
         BigDecimal signed = (type == EntryType.EXPENSE) ? base.negate() : base;
 
+        // asset: EXPENSE = 필수, INCOME = 기본값
+        String asset = req.getAsset();
+        if (type == EntryType.EXPENSE) {
+            if (asset == null || asset.isBlank()) {
+                throw new IllegalArgumentException("지출에서는 asset이 필수입니다.");
+            }
+            else {
+                if (asset == null || asset.isBlank()) {
+                    asset = "미지정";
+                }
+            }
+        }
+
         ledger.setDateTime(req.getDateTime());
         ledger.setAmount(signed);
         ledger.setEntryType(type);
-        ledger.setAsset(req.getAsset());
+        ledger.setAsset(asset);
         ledger.setStore(req.getStore());
         ledger.setCategory(req.getCategory());
         ledger.setDescription(req.getDescription());
