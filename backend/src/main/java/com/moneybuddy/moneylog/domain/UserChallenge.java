@@ -23,7 +23,4 @@ public class UserChallenge {
 
     private LocalDateTime joinedAt;
 
-    private Boolean completed = false;
-    private Boolean verified = false;
-    private Boolean rewarded = false;
 }

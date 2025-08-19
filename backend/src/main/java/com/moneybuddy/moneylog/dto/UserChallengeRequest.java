@@ -6,6 +6,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class UserChallengeRequest {
+    private Long challengeId;
     private String type;
     private String category;
     private String title;
