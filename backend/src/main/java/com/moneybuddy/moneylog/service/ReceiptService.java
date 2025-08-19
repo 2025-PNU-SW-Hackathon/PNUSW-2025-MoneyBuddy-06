@@ -5,6 +5,12 @@ import com.moneybuddy.moneylog.client.ClovaReceiptOcrClient;
 import com.moneybuddy.moneylog.domain.EntryType;
 import com.moneybuddy.moneylog.domain.Ledger;
 import com.moneybuddy.moneylog.dto.response.LedgerEntryDto;
+
+import com.moneybuddy.moneylog.model.NotificationAction;
+import com.moneybuddy.moneylog.model.NotificationType;
+import com.moneybuddy.moneylog.model.TargetType;
+import com.moneybuddy.moneylog.port.Notifier;
+
 import com.moneybuddy.moneylog.repository.LedgerRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -21,6 +27,8 @@ public class ReceiptService {
 
     private final ClovaReceiptOcrClient clova;
     private final LedgerRepository ledgerRepository;
+    private final Notifier notifier; // 알림 전송용
+
     private static final LinkedHashMap<String, List<Pattern>> CATEGORY_RULES = new LinkedHashMap<>();
 
     static {
@@ -114,6 +122,20 @@ public class ReceiptService {
                 .createdAt(LocalDateTime.now())
                 .build();
         ledgerRepository.save(ledger);
+
+        Long ocrId = ledger.getId();
+
+        notifier.send(
+                userId,
+                NotificationType.LEDGER_REMINDER,
+                TargetType.LEDGER,
+                ocrId,
+                "영수증 인식 완료!",
+                "인식된 내역으로 작성된 가계부를 확인해 보세요.",
+                NotificationAction.OPEN_LEDGER_NEW,
+                Map.of("from", "ocr", "ocrId", ocrId),
+                "/ledger/new?from=ocr&ocrId=" + ocrId
+        );
 
         return new LedgerEntryDto(ledger);
     }

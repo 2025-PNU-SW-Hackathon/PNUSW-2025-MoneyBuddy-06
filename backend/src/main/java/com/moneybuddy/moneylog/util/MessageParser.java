@@ -1,6 +1,6 @@
 package com.moneybuddy.moneylog.util;
 
-import com.moneybuddy.moneylog.util.model.ParsedNotification;
+import com.moneybuddy.moneylog.model.ParsedNotification;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;

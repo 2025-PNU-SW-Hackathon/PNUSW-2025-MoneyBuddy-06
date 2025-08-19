@@ -1,4 +1,4 @@
-package com.moneybuddy.moneylog.util.model;
+package com.moneybuddy.moneylog.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

@@ -5,6 +5,12 @@ import com.moneybuddy.moneylog.dto.request.LedgerRequest;
 import com.moneybuddy.moneylog.dto.request.NotificationRequest;
 import com.moneybuddy.moneylog.dto.response.LedgerEntryDto;
 import com.moneybuddy.moneylog.domain.Ledger;
+
+import com.moneybuddy.moneylog.model.NotificationAction;
+import com.moneybuddy.moneylog.model.NotificationType;
+import com.moneybuddy.moneylog.model.TargetType;
+import com.moneybuddy.moneylog.port.Notifier;
+
 import com.moneybuddy.moneylog.repository.LedgerRepository;
 import com.moneybuddy.moneylog.util.MessageParser;
 import jakarta.persistence.EntityNotFoundException;
@@ -14,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.math.BigDecimal;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -24,6 +31,8 @@ public class LedgerService {
 
     private final LedgerRepository ledgerRepository;
     private final MessageParser messageParser;
+
+    private final Notifier notifier; // 알림 전송용
 
     // 자동 작성(인앱 알림/영수증 파싱)
     public LedgerEntryDto parseAndSave(NotificationRequest request) {
@@ -45,6 +54,20 @@ public class LedgerService {
                 .build();
 
         ledgerRepository.save(ledger);
+
+        Long ocrId = ledger.getId();
+        notifier.send(
+                request.getUserId(),
+                NotificationType.LEDGER_REMINDER,
+                TargetType.LEDGER,
+                ocrId,
+                "알림 인식 완료!",
+                "인식된 내역으로 작성된 가계부를 확인해 보세요.",
+                NotificationAction.OPEN_LEDGER_NEW,
+                Map.of("from", "ocr", "ocrId", ocrId),
+                "/ledger/new?from=ocr&ocrId=" + ocrId
+        );
+
         return new LedgerEntryDto(ledger);
     }
 
