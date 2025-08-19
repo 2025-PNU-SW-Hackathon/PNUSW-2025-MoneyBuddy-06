@@ -11,7 +11,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import java.math.BigDecimal;
 import java.time.*;
-import java.util.Locale;
+import java.text.Normalizer;
+import java.util.*;
+import java.util.regex.Pattern;
 
 @Service
 @RequiredArgsConstructor
@@ -19,6 +21,50 @@ public class ReceiptService {
 
     private final ClovaReceiptOcrClient clova;
     private final LedgerRepository ledgerRepository;
+    private static final LinkedHashMap<String, List<Pattern>> CATEGORY_RULES = new LinkedHashMap<>();
+
+    static {
+        CATEGORY_RULES.put("식비", pats(
+                "CU", "GS25", "세븐일레븐|7\\s*-?\\s*Eleven", "이마트24", "편의점",
+                "마트|수퍼|슈퍼|시장|식자재", "홈플러스", "이마트(?!24)", "롯데마트", "코스트코", "하나로|농협",
+                "배달의민족|요기요|쿠팡이츠",
+                "식당|분식|한식|중식|일식|족발|보쌈|치킨|피자|버거|" +
+                        "맥도날드|버거킹|롯데리아|서브웨이|KFC|포차|호프|술집|바"
+        ));
+
+        CATEGORY_RULES.put("카페베이커리", pats(
+                "스타벅스", "투썸", "이디야", "파스쿠찌", "빽다방", "할리스", "컴포즈",
+                "커피", "카페",
+                "파리바게뜨", "뚜레쥬르", "베이커리|빵집"
+        ));
+
+        CATEGORY_RULES.put("교통", pats(
+                "버스", "지하철", "택시", "카카오\\s*T",
+                "KTX", "SRT", "코레일",
+                "티머니|Tmoney", "고속버스|시외버스|대중교통"
+        ));
+
+        CATEGORY_RULES.put("문화여가", pats(
+                "롯데시네마", "메가박스", "CGV", "영화관|영화",
+                "공연|전시|뮤지컬|콘서트",
+                "넷플릭스|Netflix", "디즈니\\+|Disney",
+                "유튜브\\s*프리미엄|YouTube\\s*Premium",
+                "멜론|지니뮤직|티빙|웨이브|쿠팡플레이"
+        ));
+
+        CATEGORY_RULES.put("의료건강", pats(
+                "병원", "의원", "치과", "이비인후과", "피부과",
+                "내과|외과|정형외과|산부인과|비뇨의학과",
+                "약국", "한의원|한약"
+        ));
+
+        CATEGORY_RULES.put("의류미용", pats(
+                "옷", "의류|패션", "무신사|지그재그|에이블리",
+                "올리브영|에뛰드|이니스프리", "화장품",
+                "미용실|헤어|커트|펌|파마|염색",
+                "네일|왁싱|메이크업"
+        ));
+    }
 
     public LedgerEntryDto processReceipt(MultipartFile file, Long userId) {
         JsonNode root = clova.requestReceiptOcr(file);
@@ -132,22 +178,28 @@ public class ReceiptService {
         return found ? sum : null;
     }
 
+    private static List<Pattern> pats(String... regexes) {
+        return Arrays.stream(regexes)
+                .map(r -> Pattern.compile(r, Pattern.CASE_INSENSITIVE))
+                .toList();
+    }
+
+    private static String normalize(String src) {
+        if (src == null) return "";
+        String s = Normalizer.normalize(src, Normalizer.Form.NFKC); // 전각/반각 등 통일
+        s = s.replaceAll("\\s+", " ").trim();   // 공백 정리
+        return s;
+    }
+
     private String guessCategory(String store) {
-        if (store.contains("CU") || store.contains("GS25") || store.contains("마트")) {
-            return "식비";
-        } else if (store.contains("스타벅스") || store.contains("커피") || store.contains("카페")) {
-            return "카페/베이커리";
-        } else if (store.contains("버스") || store.contains("지하철") || store.contains("택시")) {
-            return "교통";
-        }
-        else if (store.contains("롯데시네마") || store.contains("메가박스") || store.contains("CGV")) {
-            return "문화여가";
-        }
-        else if (store.contains("병원") || store.contains("의원") || store.contains("치과") || store.contains("이비인후과")) {
-            return "의료건강";
-        }
-        else if (store.contains("옷") || store.contains("올리브영")) {
-            return "의류/미용";
+        String s = normalize(store);
+
+        for (Map.Entry<String, List<Pattern>> e : CATEGORY_RULES.entrySet()) {
+            for (Pattern p : e.getValue()) {
+                if (p.matcher(s).find()) {
+                    return e.getKey();
+                }
+            }
         }
         return "기타";
     }
