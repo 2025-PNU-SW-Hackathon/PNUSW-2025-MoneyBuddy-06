@@ -12,8 +12,9 @@ public class UserChallengeResponse {
     private String type;
     private String category;
     private String goalPeriod;
-    private Integer goalCount;
     private String goalType;
     private Integer goalValue;
+    private Boolean isAccountLinked;
     private Boolean isShared;
+    private Long createdBy;
 }

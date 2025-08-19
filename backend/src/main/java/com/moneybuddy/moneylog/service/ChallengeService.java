@@ -32,9 +32,13 @@ public class ChallengeService {
                         .id(challenge.getId())
                         .title(challenge.getTitle())
                         .description(challenge.getDescription())
-                        .period(challenge.getPeriod())
+                        .type(challenge.getType())
                         .mobtiType(challenge.getMobtiType())
-                        .category(challenge.getCategory())
+                        .goalPeriod(challenge.getGoalPeriod())
+                        .goalType(challenge.getGoalType())
+                        .goalValue(challenge.getGoalValue())
+                        .isSystemGenerated(true)
+                        .isAccountLinked((challenge.getIsAccountLinked()))
                         .build())
                 .toList();
     }
@@ -51,6 +55,7 @@ public class ChallengeService {
                 .isSystemGenerated(false)       // 사용자 생성 챌린지
                 .isShared(request.getIsShared())// 개인용 or 공유용 여부
                 .createdBy(userId)
+                .isAccountLinked((request.getIsAccountLinked()))
                 .build();
 
         challengeRepository.save(challenge);
