@@ -1,21 +1,27 @@
 package com.moneybuddy.moneylog.service;
 
+import com.moneybuddy.moneylog.domain.MobtiInfo;
 import com.moneybuddy.moneylog.domain.User;
+import com.moneybuddy.moneylog.dto.MobtiBriefDto;
+import com.moneybuddy.moneylog.dto.MobtiFullDto;
 import com.moneybuddy.moneylog.dto.MobtiResultDto;
 import com.moneybuddy.moneylog.dto.MobtiSubmitRequest;
 import com.moneybuddy.moneylog.dto.UserProfileDto;
+import com.moneybuddy.moneylog.repository.MobtiInfoRepository;
 import com.moneybuddy.moneylog.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class MobtiService {
 
     private final UserRepository userRepository;
+    private final MobtiInfoRepository mobtiInfoRepository;
 
     // 유형 4쌍
     private enum Dim { IE, MS, TC, PR }
@@ -150,5 +156,48 @@ public class MobtiService {
         User u = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found: " + userId));
         return new UserProfileDto(u.getId(), u.getEmail(), u.getMobti(), u.getMobtiUpdatedAt());
+    }
+
+    // mobti 요약(3개 필드) 반환
+    @Transactional(readOnly = true)
+    public MobtiBriefDto getMyMobtiBrief(Long userId) {
+        User u = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found: " + userId));
+        if (u.getMobti() == null || u.getMobti().isBlank()) {
+            throw new IllegalStateException("사용자의 MOBTI 코드가 아직 없습니다.");
+        }
+        MobtiInfo info = mobtiInfoRepository.findById(u.getMobti())
+                .orElseThrow(() -> new IllegalStateException("mobti 사전에 코드가 없습니다: " + u.getMobti()));
+        return new MobtiBriefDto(info.getCode(), info.getNickname(), info.getSummaryShort());
+    }
+
+    // mobti 상세(4개 필드) 반환
+    @Transactional(readOnly = true)
+    public MobtiFullDto getMyMobtiFull(Long userId) {
+        User u = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found: " + userId));
+        if (u.getMobti() == null || u.getMobti().isBlank()) {
+            throw new IllegalStateException("사용자의 MOBTI 코드가 아직 없습니다.");
+        }
+        MobtiInfo info = mobtiInfoRepository.findById(u.getMobti())
+                .orElseThrow(() -> new IllegalStateException("mobti 사전에 코드가 없습니다: " + u.getMobti()));
+
+        return new MobtiFullDto(
+                info.getCode(),
+                info.getNickname(),
+                info.getSummaryShort(),
+                toLines(info.getDetailTraits()),
+                toLines(info.getSpendingTendency()),
+                toLines(info.getSocialStyle())
+        );
+    }
+
+    private static List<String> toLines(String text) {
+        if (text == null) return List.of();
+        return Arrays.stream(text.split("\\r?\\n"))
+                .map(s -> s.replaceFirst("^\\s*[-•]\\s*", "")) // 맨 앞 불릿 제거
+                .map(String::trim)
+                .filter(s -> !s.isEmpty())
+                .collect(Collectors.toList());
     }
 }
