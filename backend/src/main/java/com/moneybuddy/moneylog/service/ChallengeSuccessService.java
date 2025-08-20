@@ -4,6 +4,7 @@ import com.moneybuddy.moneylog.domain.Challenge;
 import com.moneybuddy.moneylog.domain.User;
 import com.moneybuddy.moneylog.domain.UserChallenge;
 import com.moneybuddy.moneylog.domain.UserChallengeSuccess;
+import com.moneybuddy.moneylog.dto.ChallengeRewardResponse;
 import com.moneybuddy.moneylog.repository.ChallengeRepository;
 import com.moneybuddy.moneylog.repository.UserChallengeRepository;
 import com.moneybuddy.moneylog.repository.UserChallengeSuccessRepository;
@@ -25,7 +26,7 @@ public class ChallengeSuccessService {
     private final int EXP_PER_SUCCESS = 25;
     private final int EXP_PER_LEVEL = 100;
 
-    public void recordSuccess(Long userId, Long challengeId) {
+    public ChallengeRewardResponse recordSuccess(Long userId, Long challengeId) {
 
         Challenge challenge = challengeRepository.findById(challengeId)
                 .orElseThrow(() -> new IllegalArgumentException("챌린지를 찾을 수 없습니다."));
@@ -63,11 +64,18 @@ public class ChallengeSuccessService {
             userChallengeRepository.save(userChallenge);
         }
 
-        // ✅ 사용자 경험치 부여
+        // 사용자 경험치 부여
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
         addExperience(user);
-        userRepository.save(user); // 저장!
+        userRepository.save(user);
+
+        return ChallengeRewardResponse.builder()
+                .challengeId(challengeId)
+                .title(challenge.getTitle())
+                .rewarded(true)
+                .rewardMessage("축하합니다! 경험치 " + EXP_PER_SUCCESS + "점 획득!")
+                .build();
     }
 
     private void addExperience(User user) {
