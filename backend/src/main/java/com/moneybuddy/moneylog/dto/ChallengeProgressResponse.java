@@ -7,20 +7,19 @@ import java.time.LocalDateTime;
 
 @Getter
 @Builder
-public class UserChallengeResponse {
+public class ChallengeProgressResponse {
 
     private Long challengeId;
     private String title;
     private String description;
     private String type;
-    private String category;
     private String goalPeriod;
     private String goalType;
     private Integer goalValue;
     private Boolean isAccountLinked;
     private Boolean isShared;
 
-    private LocalDateTime joinedAt;
-    private Boolean completed;
+    private Boolean completed;       // 진행 완료 여부
+    private LocalDateTime joinedAt;  // 참여 시작일
     private Boolean rewarded;
 }
