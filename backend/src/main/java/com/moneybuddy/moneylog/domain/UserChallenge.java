@@ -23,8 +23,11 @@ public class UserChallenge {
 
     private LocalDateTime joinedAt;
 
+    @Column(nullable = false)
     private Boolean completed = false;
-    private Boolean rewarded;
+
+    @Column(nullable = false)
+    private Boolean rewarded = false;
 
 
 }

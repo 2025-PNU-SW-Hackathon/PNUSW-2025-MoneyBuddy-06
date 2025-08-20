@@ -80,7 +80,7 @@ public class UserChallengeService {
                 .description(c.getDescription())
                 .type(c.getType())
                 .goalPeriod(c.getGoalPeriod())
-                .goalType(c.getGoalType())ㅍ
+                .goalType(c.getGoalType())
                 .goalValue(c.getGoalValue())
                 .isAccountLinked(c.getIsAccountLinked())
                 .completed(userChallenge.getCompleted())
