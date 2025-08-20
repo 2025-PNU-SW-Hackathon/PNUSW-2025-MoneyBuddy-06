@@ -48,7 +48,6 @@ public class MainMenuHomeFragment extends Fragment {
     }
 
     private void navigateToMyPage() {
-        // Intent를 사용하여 MypageActivity를 시작합니다.
         Intent intent = new Intent(requireActivity(), MypageActivity.class);
         startActivity(intent);
     }

@@ -104,9 +104,8 @@ public class MypageActivity extends AppCompatActivity {
 
         // 비밀번호 변경
         btnChangePassword.setOnClickListener(v -> {
-            // Intent intent = new Intent(this, ChangePasswordActivity.class);
-            // startActivity(intent);
-            Toast.makeText(this, "비밀번호 변경 화면으로 이동합니다.", Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(MypageActivity.this, ChangePasswordActivity.class);
+            startActivity(intent);
         });
 
         // 알림 설정 토글 스위치
@@ -178,7 +177,7 @@ public class MypageActivity extends AppCompatActivity {
             params.width = (int) (parentWidth * progressPercentage);
             viewLevelProgress.setLayoutParams(params);
         });
-
+        // isNotificationEnabled가 true면 스위치 켬, false면 끔
         switchNotification.setChecked(userData.isNotificationEnabled);
     }
 
