@@ -1,6 +1,6 @@
 package com.moneybuddy.moneylog.controller;
 
-import com.moneybuddy.moneylog.dto.DeviceTokenRequest;
+import com.moneybuddy.moneylog.dto.request.DeviceTokenRequest;
 import com.moneybuddy.moneylog.domain.UserDeviceToken;
 import com.moneybuddy.moneylog.repository.UserDeviceTokenRepository;
 import com.moneybuddy.moneylog.security.SecurityUtils;

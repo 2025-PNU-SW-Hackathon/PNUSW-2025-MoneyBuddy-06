@@ -1,4 +1,4 @@
-package com.moneybuddy.moneylog.dto;
+package com.moneybuddy.moneylog.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
