@@ -5,12 +5,10 @@ import com.moneybuddy.moneylog.client.ClovaReceiptOcrClient;
 import com.moneybuddy.moneylog.domain.EntryType;
 import com.moneybuddy.moneylog.domain.Ledger;
 import com.moneybuddy.moneylog.dto.response.LedgerEntryDto;
-
 import com.moneybuddy.moneylog.model.NotificationAction;
 import com.moneybuddy.moneylog.model.NotificationType;
 import com.moneybuddy.moneylog.model.TargetType;
 import com.moneybuddy.moneylog.port.Notifier;
-
 import com.moneybuddy.moneylog.repository.LedgerRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -28,6 +26,8 @@ public class ReceiptService {
     private final ClovaReceiptOcrClient clova;
     private final LedgerRepository ledgerRepository;
     private final Notifier notifier; // 알림 전송용
+
+    private final BudgetWarningService budgetWarningService;   // 목표 금액 초과 여부 검사용 서비스
 
     private static final LinkedHashMap<String, List<Pattern>> CATEGORY_RULES = new LinkedHashMap<>();
 
@@ -110,7 +110,8 @@ public class ReceiptService {
         }
 
         // Ledger 저장: 지출은 음수
-        BigDecimal signed = total.abs().negate();
+        BigDecimal addedAbs = total.abs();
+        BigDecimal signed = addedAbs.negate();
         Ledger ledger = Ledger.builder()
                 .userId(userId)
                 .dateTime(paidAt)
@@ -136,6 +137,9 @@ public class ReceiptService {
                 Map.of("from", "ocr", "ocrId", ocrId),
                 "/ledger/new?from=ocr&ocrId=" + ocrId
         );
+
+        // 저장 직후 -> 월 목표 금액 초과 여부 검사
+        budgetWarningService.checkAndNotifyOnExpense(userId, paidAt, addedAbs);
 
         return new LedgerEntryDto(ledger);
     }

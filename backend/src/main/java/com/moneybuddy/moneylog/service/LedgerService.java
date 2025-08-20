@@ -5,12 +5,10 @@ import com.moneybuddy.moneylog.dto.request.LedgerRequest;
 import com.moneybuddy.moneylog.dto.request.NotificationRequest;
 import com.moneybuddy.moneylog.dto.response.LedgerEntryDto;
 import com.moneybuddy.moneylog.domain.Ledger;
-
 import com.moneybuddy.moneylog.model.NotificationAction;
 import com.moneybuddy.moneylog.model.NotificationType;
 import com.moneybuddy.moneylog.model.TargetType;
 import com.moneybuddy.moneylog.port.Notifier;
-
 import com.moneybuddy.moneylog.repository.LedgerRepository;
 import com.moneybuddy.moneylog.util.MessageParser;
 import jakarta.persistence.EntityNotFoundException;
@@ -18,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import java.time.YearMonth;
 import java.time.LocalDateTime;
 import java.math.BigDecimal;
 import java.util.Map;
@@ -34,13 +33,16 @@ public class LedgerService {
 
     private final Notifier notifier; // 알림 전송용
 
+    private final BudgetWarningService budgetWarningService;   // 목표 금액 초과 여부 검사용 서비스
+
     // 자동 작성(인앱 알림/영수증 파싱)
     public LedgerEntryDto parseAndSave(NotificationRequest request) {
         var parsed = messageParser.parseNotification(request.getMessage(), request.getReceivedAt());
         String resolvedAsset = Optional.ofNullable(parsed.getAsset()).orElse("미지정");
 
         var type = EntryType.EXPENSE;
-        BigDecimal signed = parsed.getAmount().abs().negate();
+        BigDecimal addedAbs = parsed.getAmount().abs(); // 이번 추가 지출(양수)
+        BigDecimal signed = addedAbs.negate();          // 저장은 음수
 
         Ledger ledger = Ledger.builder()
                 .userId(request.getUserId())
@@ -68,6 +70,9 @@ public class LedgerService {
                 "/ledger/new?from=ocr&ocrId=" + ocrId
         );
 
+        // 저장 직후 -> 월 목표 금액 초과 여부 검사
+        budgetWarningService.checkAndNotifyOnExpense(ledger.getUserId(), ledger.getDateTime(), addedAbs);
+
         return new LedgerEntryDto(ledger);
     }
 
@@ -83,12 +88,13 @@ public class LedgerService {
             if (asset == null || asset.isBlank()) {
                 throw new IllegalArgumentException("지출에서는 asset이 필수입니다.");
             }
-            else {
-                if (asset == null || asset.isBlank()) {
-                    asset = "미지정";
-                }
+        } else {
+            // INCOME은 생략 가능 → DB 컬럼 제약에 따라 기본값 지정
+            if (asset == null || asset.isBlank()) {
+                asset = "미지정"; // 또는 null 허용이면 생략
             }
         }
+
 
         Ledger ledger = Ledger.builder()
                 .userId(userId)
@@ -103,6 +109,12 @@ public class LedgerService {
                 .build();
 
         Ledger saved = ledgerRepository.save(ledger);
+
+        // 지출일 때만 목표 금액 초과 여부 검사
+        if (type == EntryType.EXPENSE) {
+            budgetWarningService.checkAndNotifyOnExpense(userId, saved.getDateTime(), base /* 양수 */);
+        }
+
         return new LedgerEntryDto(saved);
     }
 
@@ -113,13 +125,21 @@ public class LedgerService {
             throw new AccessDeniedException("권한이 없습니다.");
         }
 
-        var type = Objects.requireNonNull(req.getEntryType(), "entryType은 필수입니다.");
+        // 기존 값 보관
+        EntryType oldType = ledger.getEntryType();
+        BigDecimal oldAmount = ledger.getAmount() == null ? BigDecimal.ZERO : ledger.getAmount();
+        LocalDateTime oldTime = ledger.getDateTime();
+        YearMonth oldYM = oldTime != null ? YearMonth.from(oldTime) : null;
+        BigDecimal oldExpenseAbs = (oldType == EntryType.EXPENSE ? oldAmount.abs() : BigDecimal.ZERO);
+
+        // 새 값 반영 준비
+        var newType = Objects.requireNonNull(req.getEntryType(), "entryType은 필수입니다.");
         BigDecimal base = Objects.requireNonNull(req.getAmount(), "amount는 필수입니다.").abs();
-        BigDecimal signed = (type == EntryType.EXPENSE) ? base.negate() : base;
+        BigDecimal newSigned = (newType == EntryType.EXPENSE) ? base.negate() : base;
 
         // asset: EXPENSE = 필수, INCOME = 기본값
         String asset = req.getAsset();
-        if (type == EntryType.EXPENSE) {
+        if (newType == EntryType.EXPENSE) {
             if (asset == null || asset.isBlank()) {
                 throw new IllegalArgumentException("지출에서는 asset이 필수입니다.");
             }
@@ -130,13 +150,48 @@ public class LedgerService {
             }
         }
 
-        ledger.setDateTime(req.getDateTime());
-        ledger.setAmount(signed);
-        ledger.setEntryType(type);
+        LocalDateTime newTime = req.getDateTime();
+
+        ledger.setDateTime(newTime);
+        ledger.setAmount(newSigned);
+        ledger.setEntryType(newType);
         ledger.setAsset(asset);
         ledger.setStore(req.getStore());
         ledger.setCategory(req.getCategory());
         ledger.setDescription(req.getDescription());
+
+        // 목표 금액 초과 여부 검사
+        // 새 값이 "지출"이 아닌 경우는 추가 지출이 아님 -> 알림 없음
+        if (newType == EntryType.EXPENSE) {
+            BigDecimal newExpenseAbs = base; // 양수
+            YearMonth newYM = (newTime != null ? YearMonth.from(newTime) : YearMonth.now());
+
+            if (oldYM != null && oldYM.equals(newYM)) {
+                // 같은 달 내에서 금액 수정: 증가 금액만 추가 지출로 판단
+
+                // 예시 1: 목표 금액 100만 원, 현재까지 지출 합계: 70만 원
+                // OCR이 잘못 인식해서 2만 원으로 저장된 항목 -> 20만 원으로 수정
+                // 지출 +18만 원 증가 -> 새 합계: 88만 원
+                // 목표 금액(100만 원) 미달 -> 알림 X
+
+                // 예시 2: 목표 금액 100만 원, 현재까지 지출 합계: 95만 원
+                // OCR이 잘못 인식해서 2만 원으로 저장된 항목 -> 20만 원으로 수정
+                // 지출 +18만 원 증가 -> 새 합계: 113만 원
+                // 목표 금액(100만 원) 초과 -> 알림 O
+                BigDecimal delta = newExpenseAbs.subtract(oldExpenseAbs);
+                if (delta.signum() > 0) {
+                    budgetWarningService.checkAndNotifyOnExpense(userId, newTime, delta);
+                }
+            } else {
+                // 다른 달로 이동한 경우: 새 달에는 전액이 "추가 반영"된 것으로 판단
+
+                // 예시: 목표 금액 100만 원, 8월 지출: 90만 원, 9월 지출: 80만 원
+                // 원래 8월 31일로 저장된 30만 원 지출을 사용자가 9월 1일로 수정
+                // 이 경우 8월 합계는 60만 원으로 줄고, 9월 합계는 110만 원으로 늘어남
+                // 9월의 목표 금액 100만 원을 초과 → 알림 O
+                budgetWarningService.checkAndNotifyOnExpense(userId, newTime, newExpenseAbs);
+            }
+        }
 
         return new LedgerEntryDto(ledger);
     }

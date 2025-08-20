@@ -31,13 +31,14 @@ public interface LedgerRepository extends JpaRepository<Ledger, Long> {
     SumResult sumExpenseIncomeInRange(Long userId, LocalDateTime start, LocalDateTime end);
 
     @Query("""
-        select coalesce(sum(case when l.amount < 0 then -l.amount else 0 end), 0)
-        from Ledger l
-        where l.userId = :userId
-          and l.dateTime >= :start
-          and l.dateTime < :end
+            SELECT COALESCE(SUM(-l.amount), 0)
+            FROM Ledger l
+            WHERE l.userId = :userId
+                AND l.entryType = com.moneybuddy.moneylog.domain.EntryType.EXPENSE
+                AND l.dateTime >= :start AND l.dateTime < :end
     """)
     BigDecimal sumExpenseOnlyInRange(Long userId, LocalDateTime start, LocalDateTime end);
+
 
     // 카테고리별 지출 합(양수)
     @Query("""
