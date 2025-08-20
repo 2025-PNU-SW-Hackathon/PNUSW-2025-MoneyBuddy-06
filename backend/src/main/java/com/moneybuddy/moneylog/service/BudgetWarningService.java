@@ -93,7 +93,7 @@ public class BudgetWarningService {
                 body,
                 NotificationAction.OPEN_SPENDING_STATS,
                 params,
-                "/stats/spending"   // 프론트 라우팅을 위해 딥링크를 명시
+                null
         );
     }
 }

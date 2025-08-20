@@ -135,7 +135,7 @@ public class ReceiptService {
                 "인식된 내역으로 작성된 가계부를 확인해 보세요.",
                 NotificationAction.OPEN_LEDGER_NEW,
                 Map.of("from", "ocr", "ocrId", ocrId),
-                "/ledger/new?from=ocr&ocrId=" + ocrId
+                null
         );
 
         // 저장 직후 -> 월 목표 금액 초과 여부 검사
