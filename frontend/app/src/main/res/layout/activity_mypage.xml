@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView
+    android:id="@+id/mypage_root_layout"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -10,7 +11,7 @@
     android:clipChildren="false"
     android:paddingHorizontal="16dp"
     android:paddingTop="30dp"
-    tools:context=".fragment.MainMenuMypageFragment" >
+    tools:context=".activity.MypageActivity" >
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -18,15 +19,27 @@
         android:padding="0dp"
         android:layout_marginHorizontal="16dp" >
 
+        <ImageButton
+            android:id="@+id/btn_back"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:src="@drawable/ic_back_arrow"
+            android:scaleType="fitStart"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="뒤로가기 버튼"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/card_profile"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
             app:cardBackgroundColor="#FFFEF7"
             app:cardCornerRadius="10dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            app:layout_constraintTop_toBottomOf="@id/btn_back" >
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
@@ -44,7 +57,7 @@
                     app:shapeAppearanceOverlay="@style/CircleImageView" />
 
                 <TextView
-                    android:id="@+id/tv_profile_mpti_label"
+                    android:id="@+id/tv_profile_mobti_label"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
@@ -64,12 +77,12 @@
                     tools:text="가계부 마스터"
                     android:textColor="@android:color/black"
                     android:textSize="16sp"
-                    app:layout_constraintBottom_toTopOf="@+id/tv_profile_mpti_desc"
-                    app:layout_constraintStart_toStartOf="@+id/tv_profile_mpti_label"
-                    app:layout_constraintTop_toBottomOf="@+id/tv_profile_mpti_label" />
+                    app:layout_constraintBottom_toTopOf="@+id/tv_profile_mobti_desc"
+                    app:layout_constraintStart_toStartOf="@+id/tv_profile_mobti_label"
+                    app:layout_constraintTop_toBottomOf="@+id/tv_profile_mobti_label" />
 
                 <TextView
-                    android:id="@+id/tv_profile_mpti_desc"
+                    android:id="@+id/tv_profile_mobti_desc"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     tools:text="한 푼도 허투루 쓰지 않는 완벽주의 절약왕"
@@ -104,9 +117,10 @@
                 android:text="나의 레벨"
                 android:textColor="@android:color/black"
                 android:textSize="16sp"
-                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintBottom_toTopOf="@+id/view_level_progress"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_chainStyle="packed" />
 
             <TextView
                 android:id="@+id/tv_level_value"
@@ -116,17 +130,18 @@
                 android:textColor="#4CAF50"
                 android:textSize="16sp"
                 android:textStyle="bold"
-                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintBottom_toBottomOf="@+id/tv_my_level_label"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="@+id/tv_my_level_label" />
 
             <View
                 android:id="@+id/view_level_progress"
                 android:layout_width="150dp"
                 android:layout_height="8dp"
-                android:layout_marginTop="4dp"
+                android:layout_marginTop="8dp"
                 android:background="#9ca871"
-                app:layout_constraintStart_toStartOf="@+id/tv_my_level_label"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/tv_my_level_label"  />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
@@ -169,6 +184,7 @@
                     android:textSize="16sp" />
 
                 <TextView
+                    android:id="@+id/tv_email"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentEnd="true"
@@ -185,6 +201,7 @@
                 android:background="#d1d1d1" />
 
             <TextView
+                android:id="@+id/btn_change_password"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="?attr/selectableItemBackground"
@@ -264,6 +281,7 @@
             app:layout_constraintEnd_toEndOf="parent">
 
             <TextView
+                android:id="@+id/btn_logout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="?attr/selectableItemBackground"
@@ -281,6 +299,7 @@
                 android:background="#d1d1d1" />
 
             <TextView
+                android:id="@+id/btn_withdrawal"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="?attr/selectableItemBackground"

@@ -13,7 +13,6 @@ import com.moneybuddy.moneylog.R;
 import com.moneybuddy.moneylog.fragment.MainMenuChallengeFragment;
 import com.moneybuddy.moneylog.fragment.MainMenuHomeFragment;
 import com.moneybuddy.moneylog.fragment.MainMenuLedgerFragment;
-import com.moneybuddy.moneylog.fragment.MainMenuMypageFragment;
 
 public class MainMenuActivity extends AppCompatActivity {
 
@@ -21,7 +20,6 @@ public class MainMenuActivity extends AppCompatActivity {
     private MainMenuHomeFragment fragmentHome = new MainMenuHomeFragment();
     private MainMenuChallengeFragment fragmentChallenge = new MainMenuChallengeFragment();
     private MainMenuLedgerFragment fragmentLedger = new MainMenuLedgerFragment();
-    private MainMenuMypageFragment fragmentMypage = new MainMenuMypageFragment();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,8 +45,6 @@ public class MainMenuActivity extends AppCompatActivity {
                 transaction.replace(R.id.menu_frame_layout, fragmentChallenge).commitAllowingStateLoss();
             } else if (id == R.id.menu_ledger) {
                 transaction.replace(R.id.menu_frame_layout, fragmentLedger).commitAllowingStateLoss();
-            } else if (id == R.id.menu_mypage) {
-                transaction.replace(R.id.menu_frame_layout, fragmentMypage).commitAllowingStateLoss();
             }
             return true;
         }
