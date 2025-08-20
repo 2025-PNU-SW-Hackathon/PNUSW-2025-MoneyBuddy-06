@@ -65,7 +65,11 @@ backend/tmp/
 backend/logs/
 backend/.env
 
-
+# Firebase / GCP service account keys
+backend/src/main/resources/*firebase*.json
+*.serviceAccountKey.json
+*.credentials.json
+*.secret.json
 
 
 
