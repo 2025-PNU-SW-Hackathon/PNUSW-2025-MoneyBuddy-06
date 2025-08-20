@@ -35,3 +35,6 @@ out/
 
 ### VS Code ###
 .vscode/
+
+# Firebase Service Account Key
+backend/src/main/resources/*.json
