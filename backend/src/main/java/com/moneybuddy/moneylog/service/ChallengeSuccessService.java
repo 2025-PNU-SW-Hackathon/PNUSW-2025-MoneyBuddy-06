@@ -1,11 +1,13 @@
 package com.moneybuddy.moneylog.service;
 
 import com.moneybuddy.moneylog.domain.Challenge;
+import com.moneybuddy.moneylog.domain.User;
 import com.moneybuddy.moneylog.domain.UserChallenge;
 import com.moneybuddy.moneylog.domain.UserChallengeSuccess;
 import com.moneybuddy.moneylog.repository.ChallengeRepository;
 import com.moneybuddy.moneylog.repository.UserChallengeRepository;
 import com.moneybuddy.moneylog.repository.UserChallengeSuccessRepository;
+import com.moneybuddy.moneylog.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -18,8 +20,13 @@ public class ChallengeSuccessService {
     private final UserChallengeRepository userChallengeRepository;
     private final ChallengeRepository challengeRepository;
     private final UserChallengeSuccessRepository successRepository;
+    private final UserRepository userRepository; // ✅ 추가
+
+    private final int EXP_PER_SUCCESS = 25;
+    private final int EXP_PER_LEVEL = 100;
 
     public void recordSuccess(Long userId, Long challengeId) {
+
         Challenge challenge = challengeRepository.findById(challengeId)
                 .orElseThrow(() -> new IllegalArgumentException("챌린지를 찾을 수 없습니다."));
 
@@ -48,13 +55,28 @@ public class ChallengeSuccessService {
 
         // 해당 기간 안의 성공 횟수만 집계
         long successCount = successRepository.countByUserIdAndChallengeIdAndSuccessDateBetween(
-                userId, challengeId, start, end.minusDays(1)  // end는 exclusive로 처리
+                userId, challengeId, start, end.minusDays(1)
         );
 
-        if (!userChallenge.getCompleted()
-                && successCount >= challenge.getGoalValue()) {
+        if (!userChallenge.getCompleted() && successCount >= challenge.getGoalValue()) {
             userChallenge.setCompleted(true);
             userChallengeRepository.save(userChallenge);
+        }
+
+        // ✅ 사용자 경험치 부여
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+        addExperience(user);
+        userRepository.save(user); // 저장!
+    }
+
+    private void addExperience(User user) {
+        int newExp = user.getExperience() + EXP_PER_SUCCESS;
+        if (newExp >= EXP_PER_LEVEL) {
+            user.setLevel(user.getLevel() + 1);
+            user.setExperience(newExp - EXP_PER_LEVEL); // 남은 경험치 유지
+        } else {
+            user.setExperience(newExp);
         }
     }
 
