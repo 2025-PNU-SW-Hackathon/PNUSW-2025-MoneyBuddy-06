@@ -1,4 +1,4 @@
-package com.moneybuddy.moneylog.dto;
+package com.moneybuddy.moneylog.dto.response;
 
 import lombok.Builder;
 import lombok.Getter;

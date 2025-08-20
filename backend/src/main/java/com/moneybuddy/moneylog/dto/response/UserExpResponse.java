@@ -1,14 +1,11 @@
-package com.moneybuddy.moneylog.dto;
+package com.moneybuddy.moneylog.dto.response;
 
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 
 @Getter
-@Builder
 @AllArgsConstructor
-public class UserStatusResponse {
-    private Long userId;
+public class UserExpResponse {
     private int level;
     private int experience;
 }

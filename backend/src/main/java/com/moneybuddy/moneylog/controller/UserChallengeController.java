@@ -1,9 +1,8 @@
 package com.moneybuddy.moneylog.controller;
 
-import com.moneybuddy.moneylog.domain.UserChallenge;
-import com.moneybuddy.moneylog.dto.ChallengeProgressResponse;
-import com.moneybuddy.moneylog.dto.UserChallengeRequest;
-import com.moneybuddy.moneylog.dto.UserChallengeResponse;
+import com.moneybuddy.moneylog.dto.response.ChallengeProgressResponse;
+import com.moneybuddy.moneylog.dto.request.UserChallengeRequest;
+import com.moneybuddy.moneylog.dto.response.UserChallengeResponse;
 import com.moneybuddy.moneylog.security.CustomUserDetails;
 import com.moneybuddy.moneylog.service.UserChallengeService;
 import lombok.RequiredArgsConstructor;

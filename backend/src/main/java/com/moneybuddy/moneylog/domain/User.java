@@ -25,10 +25,6 @@ public class User {
     @Column(nullable = false)
     private String mobti;
 
-    private int experience = 0;
-
-    private int level = 1;
-
     public User(String email, String password, String mobti) {
         this.email = email;
         this.password = password;

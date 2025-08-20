@@ -1,7 +1,7 @@
 package com.moneybuddy.moneylog.controller;
 
-import com.moneybuddy.moneylog.dto.ChallengeRewardResponse;
-import com.moneybuddy.moneylog.dto.ChallengeSuccessRequest;
+import com.moneybuddy.moneylog.dto.response.ChallengeRewardResponse;
+import com.moneybuddy.moneylog.dto.request.ChallengeSuccessRequest;
 import com.moneybuddy.moneylog.security.CustomUserDetails;
 import com.moneybuddy.moneylog.service.ChallengeSuccessService;
 import lombok.RequiredArgsConstructor;
