@@ -16,6 +16,7 @@ public class ChallengeResultController {
 
     private final ChallengeSuccessService challengeSuccessService;
 
+    // 챌린지 성공/실패 결과 조회 API
     @GetMapping("/results")
     public ChallengeResultListResponse getChallengeResults(
             @AuthenticationPrincipal CustomUserDetails userDetails

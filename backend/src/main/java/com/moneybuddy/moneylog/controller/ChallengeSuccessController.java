@@ -25,11 +25,4 @@ public class ChallengeSuccessController {
         return ResponseEntity.ok("하루 성공 기록 완료!");
     }
 
-    @PostMapping("/{challengeId}/success")
-    public ChallengeRewardResponse recordChallengeSuccess(
-            @PathVariable Long challengeId,
-            @RequestParam Long userId // JWT 연동 전까지 임시로
-    ) {
-        return challengeSuccessService.recordSuccess(userId, challengeId);
-    }
 }
