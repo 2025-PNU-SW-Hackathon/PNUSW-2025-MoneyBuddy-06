@@ -1,4 +1,4 @@
-package com.moneybuddy.moneylog.entity;
+package com.moneybuddy.moneylog.domain;
 
 import com.moneybuddy.moneylog.model.NotificationAction;
 import com.moneybuddy.moneylog.model.NotificationType;

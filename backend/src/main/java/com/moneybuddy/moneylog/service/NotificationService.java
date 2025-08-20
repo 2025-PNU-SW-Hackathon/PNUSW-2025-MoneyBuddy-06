@@ -1,16 +1,23 @@
 package com.moneybuddy.moneylog.service;
 
-
+import com.moneybuddy.moneylog.service.DeeplinkFactory;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.moneybuddy.moneylog.entity.Notification;
+import com.google.firebase.messaging.BatchResponse;
+import com.google.firebase.messaging.FirebaseMessaging;
+import com.google.firebase.messaging.MulticastMessage;
+import com.google.firebase.messaging.Notification;
+import com.moneybuddy.moneylog.domain.UserDeviceToken;
 import com.moneybuddy.moneylog.model.*;
 import com.moneybuddy.moneylog.port.Notifier;
 import com.moneybuddy.moneylog.repository.NotificationRepository;
+import com.moneybuddy.moneylog.repository.UserDeviceTokenRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -19,9 +26,14 @@ import java.util.*;
 public class NotificationService implements Notifier {
 
     private final NotificationRepository repository;
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    private final UserDeviceTokenRepository tokenRepository;
 
-    // Notifier 구현
+    // FirebaseMessaging 주입, 설정 없으면 null
+    private final ObjectProvider<FirebaseMessaging> firebaseMessagingProvider;
+
+    private final DeeplinkFactory deeplinkFactory;
+    private final ObjectMapper objectMapper;
+
     @Override
     @Transactional
     public void send(Long userId,
@@ -34,7 +46,13 @@ public class NotificationService implements Notifier {
                      Map<String, Object> params,
                      String deeplink) {
 
-        Notification n = new Notification();
+        // deeplink 자동 생성
+        Map<String, Object> safeParams = (params != null ? params : Map.of());
+        String effectiveDeeplink = (deeplink == null || deeplink.isBlank())
+                ? deeplinkFactory.build(action, safeParams)
+                : deeplink;
+
+        com.moneybuddy.moneylog.domain.Notification n = new com.moneybuddy.moneylog.domain.Notification();
         n.setUserId(userId);
         n.setType(type);
         n.setTargetType(targetType);
@@ -42,19 +60,60 @@ public class NotificationService implements Notifier {
         n.setTitle(title);
         n.setBody(body);
         n.setAction(action);
-        if (params != null && !params.isEmpty()) {
-            try {
-                n.setParamsJson(objectMapper.writeValueAsString(params));
-            }
-            catch (Exception e) {
-                n.setParamsJson("{}");
-            }
-        }
-        else {
+        try {
+            n.setParamsJson(objectMapper.writeValueAsString(params != null ? params : Map.of()));
+        } catch (Exception e) {
             n.setParamsJson("{}");
         }
-        n.setDeeplink(deeplink);
+        n.setDeeplink(effectiveDeeplink);
         repository.save(n);
+
+        // FCM 푸시 발송
+        FirebaseMessaging fm = firebaseMessagingProvider.getIfAvailable();
+        if (fm == null) {
+            // FCM 미설정이면 푸시 생략 (앱은 정상 동작)
+            return;
+        }
+
+        List<UserDeviceToken> tokens = tokenRepository.findAllByUserId(userId);
+        if (tokens.isEmpty()) return;
+
+        List<String> tokenStrings = tokens.stream()
+                .map(UserDeviceToken::getDeviceToken)
+                .filter(Objects::nonNull)
+                .filter(s -> !s.isBlank())
+                .toList();
+
+        if (tokenStrings.isEmpty()) return;
+
+        // data payload에 라우팅 정보 같이 전달 (클릭 시 deeplink 사용)
+        Map<String, String> data = new HashMap<>();
+        data.put("type", type.name());
+        data.put("action", action.name());
+        data.put("deeplink", effectiveDeeplink != null ? effectiveDeeplink : "");
+        if (params != null && !params.isEmpty()) {
+            try {
+                data.put("params", objectMapper.writeValueAsString(params));
+            } catch (Exception ignored) {}
+        }
+        if (targetType != null) data.put("targetType", targetType.name());
+        if (targetId != null) data.put("targetId", String.valueOf(targetId));
+        data.put("notificationId", String.valueOf(n.getId())); // DB에 저장된 알림 id
+
+        MulticastMessage message = MulticastMessage.builder()
+                .addAllTokens(tokenStrings)
+                .setNotification(Notification.builder()
+                        .setTitle(title)
+                        .setBody(body)
+                        .build())
+                .putAllData(data)
+                .build();
+
+        try {
+            BatchResponse resp = fm.sendEachForMulticast(message);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     // 조회, 집계, 읽음
@@ -75,7 +134,7 @@ public class NotificationService implements Notifier {
 
     @Transactional
     public void markRead(Long userId, Long id) {
-        Notification n = repository.findById(id).orElseThrow();
+        com.moneybuddy.moneylog.domain.Notification n = repository.findById(id).orElseThrow();
         if (!Objects.equals(n.getUserId(), userId)) {
             throw new RuntimeException("Forbidden");
         }
@@ -87,7 +146,6 @@ public class NotificationService implements Notifier {
 
     @Transactional
     public void markAllRead(Long userId) {
-        // 최근 30일 목록을 충분히 큰 size로 한 번에 가져와 일괄 처리
         var list = list(userId, null, 500).items();
         list.forEach(i -> markRead(userId, i.id()));
     }
@@ -97,15 +155,14 @@ public class NotificationService implements Notifier {
         return repository.deleteExpired(LocalDateTime.now());
     }
 
-    private NotificationItem toItem(Notification n) {
+    private NotificationItem toItem(com.moneybuddy.moneylog.domain.Notification n) {
         Map<String, Object> params;
         try {
             params = objectMapper.readValue(
                     Optional.ofNullable(n.getParamsJson()).orElse("{}"),
                     new TypeReference<Map<String, Object>>() {}
             );
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             params = Map.of();
         }
         return new NotificationItem(
@@ -121,7 +178,6 @@ public class NotificationService implements Notifier {
         );
     }
 
-    // DTOs
     public record NotificationItem(
             Long id,
             NotificationType type,

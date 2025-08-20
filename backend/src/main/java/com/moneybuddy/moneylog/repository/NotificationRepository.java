@@ -1,6 +1,6 @@
 package com.moneybuddy.moneylog.repository;
 
-import com.moneybuddy.moneylog.entity.Notification;
+import com.moneybuddy.moneylog.domain.Notification;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.*;
 import org.springframework.data.repository.query.Param;
