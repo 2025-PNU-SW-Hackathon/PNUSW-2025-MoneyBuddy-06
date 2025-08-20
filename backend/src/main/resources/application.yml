@@ -32,7 +32,7 @@ spring:
         size: 2
 
 fcm:
-  credentials: classpath:moneylog-36771-firebase-adminsdk-fbsvc-44b0e913eb.json
+  credentials: classpath:moneylog-36771-firebase-adminsdk-fbsvc-c2455008eb.json
 
 server:
   address: 0.0.0.0
