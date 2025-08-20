@@ -10,11 +10,12 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/")
+@RequestMapping("/api/v1/challenges")
 public class UserExpController {
 
     private final UserExpService userExpService;
 
+    //
     @GetMapping("/exp")
     public UserExpResponse getMyExp(@AuthenticationPrincipal CustomUserDetails userDetails) {
         return userExpService.getUserExp(userDetails.getUserId());

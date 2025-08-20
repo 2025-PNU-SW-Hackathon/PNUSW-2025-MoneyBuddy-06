@@ -1,5 +1,6 @@
 package com.moneybuddy.moneylog.controller;
 
+import com.moneybuddy.moneylog.dto.response.ChallengeBoardResponse;
 import com.moneybuddy.moneylog.dto.response.RecommendedChallengeResponse;
 import com.moneybuddy.moneylog.dto.request.UserChallengeRequest;
 import com.moneybuddy.moneylog.security.CustomUserDetails;
@@ -32,5 +33,12 @@ public class ChallengeController {
         System.out.println("userId = " + userDetails.getUserId());
         challengeService.createUserChallenge(userDetails.getUserId(), request);
         return ResponseEntity.ok("챌린지 생성 완료!");
+    }
+
+    @GetMapping("/board")
+    public List<ChallengeBoardResponse> getChallengeBoard(
+            @AuthenticationPrincipal CustomUserDetails userDetails
+    ) {
+        return challengeService.getChallengeBoard(userDetails.getUserId());
     }
 }
