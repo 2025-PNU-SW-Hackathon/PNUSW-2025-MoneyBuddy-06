@@ -1,7 +1,7 @@
 package com.moneybuddy.moneylog.service;
 
 import com.moneybuddy.moneylog.domain.FinancialKnowledge;
-import com.moneybuddy.moneylog.dto.KnowledgeResponse;
+import com.moneybuddy.moneylog.dto.response.KnowledgeResponse;
 import com.moneybuddy.moneylog.repository.FinancialKnowledgeRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

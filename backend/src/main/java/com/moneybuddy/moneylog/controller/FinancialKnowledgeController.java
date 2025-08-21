@@ -1,6 +1,6 @@
 package com.moneybuddy.moneylog.controller;
 
-import com.moneybuddy.moneylog.dto.KnowledgeResponse;
+import com.moneybuddy.moneylog.dto.response.KnowledgeResponse;
 import com.moneybuddy.moneylog.service.FinancialKnowledgeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
