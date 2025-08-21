@@ -1,5 +1,7 @@
 package com.moneybuddy.moneylog.controller;
 
+import com.moneybuddy.moneylog.domain.Challenge;
+import com.moneybuddy.moneylog.dto.request.ChallengeFilterRequest;
 import com.moneybuddy.moneylog.dto.response.ChallengeDetailResponse;
 import com.moneybuddy.moneylog.dto.response.RecommendedChallengeResponse;
 import com.moneybuddy.moneylog.dto.request.UserChallengeRequest;
@@ -38,7 +40,7 @@ public class ChallengeController {
         return ResponseEntity.ok("챌린지 생성 완료!");
     }
 
-
+    // 공유 챌린지 리스트 조회
     @GetMapping("/shared")
     public List<SharedChallengeResponse> getChallengeBoard(
             @AuthenticationPrincipal CustomUserDetails userDetails
@@ -46,11 +48,18 @@ public class ChallengeController {
         return challengeService.getSharedChallenges(userDetails.getUserId());
     }
 
+    // 챌린지 상세 정보 조회
     @GetMapping("/{challengeId}")
     public ResponseEntity<ChallengeDetailResponse> getChallengeDetail(
             @PathVariable Long challengeId,
             @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
         return ResponseEntity.ok(challengeService.getChallengeDetail(challengeId, userDetails.getUserId()));
+    }
+
+    // 공유 챌린지 필터링 APi
+    @PostMapping("/shared/filter")
+    public List<SharedChallengeResponse> filterSharedChallenges(@RequestBody ChallengeFilterRequest request) {
+        return challengeService.filterSharedChallenges(request);
     }
 }

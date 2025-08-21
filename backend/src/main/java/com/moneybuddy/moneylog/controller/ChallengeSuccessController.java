@@ -16,6 +16,7 @@ public class ChallengeSuccessController {
 
     private final ChallengeSuccessService challengeSuccessService;
 
+    // 하루 챌린지 성공 기록 API
     @PostMapping("/success")
     public ResponseEntity<String> recordChallengeSuccess(
             @AuthenticationPrincipal CustomUserDetails userDetails,

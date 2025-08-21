@@ -8,7 +8,6 @@ import java.util.Optional;
 
 public interface UserChallengeSuccessRepository extends JpaRepository<UserChallengeSuccess, Long> {
     boolean existsByUserIdAndChallengeIdAndSuccessDate(Long userId, Long challengeId, LocalDate date);
-    long countByUserIdAndChallengeId(Long userId, Long challengeId);
 
     long countByUserIdAndChallengeIdAndSuccessDateBetween(
             Long userId,

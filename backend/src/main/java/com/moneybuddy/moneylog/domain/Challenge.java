@@ -18,9 +18,9 @@ public class Challenge {
     private String title;               // 챌린지 제목
     private String description;         // 챌린지 설명
     private String type;                // 챌린지 유형: 지출 / 저축 / 기타
-    private String goalPeriod;          // 목표 기간 (예: "1주", "2주", "1달")
-    private String goalType;            // 목표 기준: "금액" or "횟수"
-    private Integer goalValue;          // 목표 값 (예: 10000원, 3회 등)
+    private String goalPeriod;          // 목표 기간
+    private String goalType;            // 목표 기준
+    private Integer goalValue;          // 목표 값
     private Boolean isSystemGenerated;  // 시스템 생성 여부
     private Boolean isShared;           // 공유 여부
     private Boolean isAccountLinked;    // 가계부 연동 여부

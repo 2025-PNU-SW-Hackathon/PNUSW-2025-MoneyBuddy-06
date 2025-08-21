@@ -15,7 +15,7 @@ public class UserExpController {
 
     private final UserExpService userExpService;
 
-    //
+    // 경험치 및 레벨 조회 API
     @GetMapping("/exp")
     public UserExpResponse getMyExp(@AuthenticationPrincipal CustomUserDetails userDetails) {
         return userExpService.getUserExp(userDetails.getUserId());

@@ -18,6 +18,7 @@ public class ChallengeRewardController {
 
     private final ChallengeRewardService challengeRewardService;
 
+    // 보상 지급 처리 API
     @PostMapping("/reward")
     public ResponseEntity<String> rewardChallenge(
             @AuthenticationPrincipal CustomUserDetails userDetails,

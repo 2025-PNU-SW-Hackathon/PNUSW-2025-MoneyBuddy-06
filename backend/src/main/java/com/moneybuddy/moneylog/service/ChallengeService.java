@@ -1,6 +1,7 @@
 package com.moneybuddy.moneylog.service;
 
 import com.moneybuddy.moneylog.domain.Challenge;
+import com.moneybuddy.moneylog.dto.request.ChallengeFilterRequest;
 import com.moneybuddy.moneylog.dto.response.ChallengeDetailResponse;
 import com.moneybuddy.moneylog.dto.response.RecommendedChallengeResponse;
 import com.moneybuddy.moneylog.dto.request.UserChallengeRequest;
@@ -12,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
@@ -95,6 +97,53 @@ public class ChallengeService {
                 .goalValue(challenge.getGoalValue())
                 .currentParticipants(participantCount)
                 .isJoined(isJoined)
+                .build();
+    }
+
+    public List<SharedChallengeResponse> filterSharedChallenges(ChallengeFilterRequest request) {
+        List<Challenge> challenges;
+
+        String type = request.getType();
+        String category = request.getCategory();
+        Boolean isAccountLinked = request.getIsAccountLinked();
+
+        // type은 필수니까 null 체크는 안 함
+
+        if ("저축".equals(type)) {
+            // 저축일 경우: category는 "저축" 고정, isAccountLinked는 무시
+            challenges = challengeRepository.findByTypeAndCategoryAndIsSharedTrue(type, "저축");
+
+        } else if ("지출".equals(type)) {
+            if (category != null && isAccountLinked != null) {
+                challenges = challengeRepository.findByTypeAndCategoryAndIsAccountLinkedAndIsSharedTrue(type, category, isAccountLinked);
+            } else if (category != null) {
+                challenges = challengeRepository.findByTypeAndCategoryAndIsSharedTrue(type, category);
+            } else {
+                challenges = challengeRepository.findByTypeAndIsSharedTrue(type);
+            }
+
+        } else {
+            // 기타 유형 등
+            challenges = challengeRepository.findByTypeAndIsSharedTrue(type);
+        }
+
+        // Challenge → SharedChallengeResponse로 변환
+        return challenges.stream()
+                .map(this::toSharedChallengeResponse)
+                .collect(Collectors.toList());
+    }
+
+    private SharedChallengeResponse toSharedChallengeResponse(Challenge challenge) {
+        return SharedChallengeResponse.builder()
+                .challengeId(challenge.getId())
+                .title(challenge.getTitle())
+                .category(challenge.getCategory())
+                .type(challenge.getType())
+                .goalType(challenge.getGoalType())
+                .goalPeriod(challenge.getGoalPeriod())
+                .goalValue(challenge.getGoalValue())
+                .isAccountLinked(challenge.getIsAccountLinked())
+                .isMine(false) // 기본값 false (필요하면 사용자 id 받아서 비교 가능)
                 .build();
     }
 }

@@ -19,6 +19,7 @@ public class UserChallengeController {
 
     private final UserChallengeService userChallengeService;
 
+    // 챌린지 참여 API
     @PostMapping("/join")
     public ResponseEntity<UserChallengeResponse> joinChallenge(
             @AuthenticationPrincipal CustomUserDetails userDetails,
