@@ -16,6 +16,9 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
         <activity
+            android:name=".activity.FinanceInfoActivity"
+            android:exported="false" />
+        <activity
             android:name=".activity.MainMenuActivity"
             android:exported="true">
             <intent-filter>
@@ -25,4 +28,5 @@
             </intent-filter>
         </activity>
     </application>
+
 </manifest>
