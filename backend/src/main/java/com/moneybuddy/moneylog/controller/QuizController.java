@@ -1,9 +1,9 @@
 package com.moneybuddy.moneylog.controller;
 
 import com.moneybuddy.moneylog.domain.User;
-import com.moneybuddy.moneylog.dto.QuizAnswerRequest;
-import com.moneybuddy.moneylog.dto.QuizResponse;
-import com.moneybuddy.moneylog.dto.QuizResultResponse;
+import com.moneybuddy.moneylog.dto.request.QuizAnswerRequest;
+import com.moneybuddy.moneylog.dto.response.QuizResponse;
+import com.moneybuddy.moneylog.dto.response.QuizResultResponse;
 import com.moneybuddy.moneylog.repository.UserRepository;
 import com.moneybuddy.moneylog.service.QuizService;
 import lombok.RequiredArgsConstructor;

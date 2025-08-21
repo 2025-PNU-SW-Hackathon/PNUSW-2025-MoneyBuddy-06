@@ -1,4 +1,4 @@
-package com.moneybuddy.moneylog.security;
+package com.moneybuddy.moneylog.jwt;
 
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;

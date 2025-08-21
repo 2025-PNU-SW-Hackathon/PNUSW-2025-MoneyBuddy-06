@@ -1,4 +1,4 @@
-package com.moneybuddy.moneylog.security;
+package com.moneybuddy.moneylog.jwt;
 
 import com.moneybuddy.moneylog.security.CustomUserDetails;
 import jakarta.servlet.FilterChain;
