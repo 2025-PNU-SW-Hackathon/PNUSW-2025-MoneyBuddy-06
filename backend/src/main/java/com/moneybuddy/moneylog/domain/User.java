@@ -22,7 +22,7 @@ public class User {
     @Column(nullable = false)
     private String password;
 
-    @Column(nullable = false)
+    @Column(name = "password_changed_at")
     private LocalDateTime passwordChangedAt;
 
     public User(String email, String password) {

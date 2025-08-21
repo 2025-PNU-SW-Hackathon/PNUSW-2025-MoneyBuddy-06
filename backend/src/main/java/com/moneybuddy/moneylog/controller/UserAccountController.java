@@ -1,7 +1,7 @@
 package com.moneybuddy.moneylog.controller;
 
 import com.moneybuddy.moneylog.dto.ChangePasswordRequest;
-import com.moneybuddy.moneylog.dto.UserDeleteRequest;
+import com.moneybuddy.moneylog.security.CustomUserDetails;
 import com.moneybuddy.moneylog.service.UserAccountService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -19,10 +19,10 @@ public class UserAccountController {
 
     @PutMapping("/password")
     public ResponseEntity<Void> changePassword(
-            @AuthenticationPrincipal Jwt jwt,
+            @AuthenticationPrincipal CustomUserDetails user,
             @RequestBody @Valid ChangePasswordRequest request
     ) {
-        Long userId = extractUserId(jwt);
+        Long userId = user.getUserId();
         userAccountService.changePassword(userId, request.currentPassword(), request.newPassword());
         return ResponseEntity.noContent().build();
     }
