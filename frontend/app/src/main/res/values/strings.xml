@@ -1,3 +1,58 @@
 <resources>
     <string name="app_name">Moneylog</string>
+    <string name="back">뒤로가기</string>
+    <string name="add">신규작성</string>
+    <string name="analyze_receipt">영수증 분석</string>
+
+    <string name="income">수입</string>
+    <string name="expense">지출</string>
+    <string name="time">시간</string>
+    <string name="date">날짜</string>
+    <string name="asset">자산</string>
+    <string name="category">카테고리</string>
+    <string name="amount">금액</string>
+    <string name="hint_amount">예: 10000</string>
+    <string name="other">기타</string>
+    <string name="content">내용</string>
+    <string name="hint_memo">내용을 입력하세요</string>
+    <string name="save">저장하기</string>
+    <string name="delete">삭제하기</string>
+
+    <string-array name="asset_list">
+        <item>선택</item>
+        <item>현금</item>
+        <item>NH농협은행</item>
+        <item>신한은행</item>
+        <item>우리은행</item>
+        <item>IBK기업은행</item>
+        <item>KB국민은행</item>
+        <item>카카오뱅크</item>
+        <item>네이버페이</item>
+        <item>토스뱅크</item>
+        <item>기타</item>
+    </string-array>
+
+    <string-array name="category_list">
+        <item>선택</item>
+        <item>식비</item>
+        <item>카페/베이커리</item>
+        <item>교통</item>
+        <item>문화/여가</item>
+        <item>의료/건강</item>
+        <item>의류/미용</item>
+        <item>기타</item>
+    </string-array>
+
+    <string name="sample_date">2025-08-14</string>
+    <string name="sample_time">00:00</string>
+
+
+    <string name="analysis_title">소비 분석</string>
+    <string name="period_monthly">월간</string>
+    <string name="analysis_headline_1">가계부 마스터 님은</string>
+    <string name="analysis_headline_2_mock">500,000원 중 300,000원을 소비하셨어요!</string>
+    <string name="legend_food">먹거리 · 배달</string>
+    <string name="legend_shopping">쇼핑</string>
+    <string name="legend_culture">문화</string>
+
 </resources>

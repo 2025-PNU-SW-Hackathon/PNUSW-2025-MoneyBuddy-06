@@ -2,4 +2,11 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="food">#FCA5A5</color>            <!-- Red  → Pastel Red -->
+    <color name="cafe_bakery">#FDBA74</color>     <!-- Orange → Pastel Orange -->
+    <color name="transport">#FDE047</color>       <!-- Yellow → Pastel Yellow -->
+    <color name="culture_leisure">#86EFAC</color> <!-- Green  → Pastel Green -->
+    <color name="healthcare">#93C5FD</color>      <!-- Blue   → Pastel Blue -->
+    <color name="clothing_beauty">#A5B4FC</color> <!-- Indigo → Pastel Indigo -->
+    <color name="other">#D8B4FE</color>
 </resources>
