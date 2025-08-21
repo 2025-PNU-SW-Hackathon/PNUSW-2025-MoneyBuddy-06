@@ -73,7 +73,7 @@ public class ChallengeService {
                         .title(challenge.getTitle())
                         .goalPeriod(challenge.getGoalPeriod())
                         .goalValue(challenge.getGoalValue())
-                        .isMine(challenge.getCreator().getId().equals(userId))
+                        .isMine(challenge.getCreatedBy().equals(userId))
                         .build())
                 .toList();
     }
