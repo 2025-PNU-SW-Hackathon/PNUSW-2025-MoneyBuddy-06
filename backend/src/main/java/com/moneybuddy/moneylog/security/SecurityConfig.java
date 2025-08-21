@@ -25,11 +25,8 @@ import lombok.RequiredArgsConstructor;
 public class SecurityConfig {
 
     private final JwtUtil jwtUtil;
+    private final JwtFilter jwtFilter;
 
-    @Bean
-    public JwtFilter jwtFilter() {
-        return new JwtFilter(jwtUtil);
-    }
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -40,7 +37,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/v1/users/signup", "/api/v1/users/login").permitAll()
                         .anyRequest().authenticated()
                 )
-                .addFilterBefore(jwtFilter(), UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }

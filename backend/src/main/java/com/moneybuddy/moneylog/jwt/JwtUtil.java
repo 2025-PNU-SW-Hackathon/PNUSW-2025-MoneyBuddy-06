@@ -50,4 +50,10 @@ public class JwtUtil {
                 .signWith(secretKey, SignatureAlgorithm.HS256)
                 .compact();
     }
+
+    // 토큰 발급 시간: 비밀번호 변경 시 토큰 비교
+    public Date getIssuedAt(String token) {
+        Claims claims = parseToken(token);
+        return claims.getIssuedAt();
+    }
 }

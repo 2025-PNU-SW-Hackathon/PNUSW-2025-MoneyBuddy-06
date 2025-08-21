@@ -31,7 +31,7 @@ public class UserAccountService {
         user.setPassword(passwordEncoder.encode(newPassword));
         // 비밀번호 변경 시각 기록
         try {
-            user.getClass().getDeclaredField("passwordChangedAt"); // 필드가 있으면
+            user.getClass().getDeclaredField("passwordChangedAt");
             user.setPasswordChangedAt(LocalDateTime.now());
         } catch (NoSuchFieldException ignored) {}
 

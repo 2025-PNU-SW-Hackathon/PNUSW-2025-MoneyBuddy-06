@@ -1,5 +1,6 @@
 package com.moneybuddy.moneylog.jwt;
 
+import com.moneybuddy.moneylog.repository.UserRepository;
 import com.moneybuddy.moneylog.security.CustomUserDetails;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -15,12 +16,14 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.util.Collections;
+import java.util.Date;
 
 @Component
 @RequiredArgsConstructor
 public class JwtFilter extends OncePerRequestFilter {
 
     private final JwtUtil jwtUtil;
+    private final UserRepository userRepository;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request,
@@ -38,6 +41,26 @@ public class JwtFilter extends OncePerRequestFilter {
 
                 Long userId = jwtUtil.getUserId(token);
                 String email = jwtUtil.getEmail(token);
+                Date iat = jwtUtil.getIssuedAt(token);
+
+                // DB에서 password_changed_at 조회
+                var userOpt = userRepository.findById(userId);
+                if (userOpt.isEmpty()) {
+                    unauthorized(response, "사용자를 찾을 수 없습니다.");
+                    return;
+                }
+                var user = userOpt.get();
+
+                // 비번 변경 시각 이후에 발급된 토큰만 허용
+                if (user.getPasswordChangedAt() != null) {
+                    var changedAt = user.getPasswordChangedAt();
+                    var changedAtInstant = changedAt.atZone(java.time.ZoneId.systemDefault()).toInstant();
+
+                    if (iat == null || iat.toInstant().isBefore(changedAtInstant)) {
+                        unauthorized(response, "로그인이 만료되었습니다. 다시 로그인해 주세요.");
+                        return;
+                    }
+                }
 
                 UsernamePasswordAuthenticationToken authentication =
                         new UsernamePasswordAuthenticationToken(
@@ -50,12 +73,21 @@ public class JwtFilter extends OncePerRequestFilter {
 
                 SecurityContextHolder.getContext().setAuthentication(authentication);
 
+            } catch (io.jsonwebtoken.JwtException e) {
+                unauthorized(response, "토큰이 유효하지 않습니다.");
+                return;
             } catch (Exception e) {
                 System.out.println("JWT 필터 오류: " + e.getMessage());
             }
         }
 
         filterChain.doFilter(request, response);
+    }
+
+    private void unauthorized(HttpServletResponse response, String message) throws IOException {
+        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        response.setContentType("text/plain;charset=UTF-8");
+        response.getWriter().write(message);
     }
 
     @Override
