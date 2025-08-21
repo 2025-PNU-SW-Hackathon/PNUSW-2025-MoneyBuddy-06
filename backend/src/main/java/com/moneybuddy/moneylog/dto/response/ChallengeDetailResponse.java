@@ -10,10 +10,10 @@ import lombok.Getter;
 public class ChallengeDetailResponse {
     private Long challengeId;
     private String title;
-    private String description;     // 챌린지 설명
-    private String goalPeriod;      // ex. 4주간
-    private String goalType;        // ex. "금액", "횟수"
-    private int goalValue;          // ex. 100000, 3
+    private String description;
+    private String goalPeriod;
+    private String goalType;
+    private int goalValue;
     private int currentParticipants;
-    private boolean isJoined;       // 이미 참여한 유저인지
+    private boolean isJoined;
 }

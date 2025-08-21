@@ -1,10 +1,12 @@
 package com.moneybuddy.moneylog.service;
 
 import com.moneybuddy.moneylog.domain.Challenge;
+import com.moneybuddy.moneylog.dto.response.ChallengeDetailResponse;
 import com.moneybuddy.moneylog.dto.response.RecommendedChallengeResponse;
 import com.moneybuddy.moneylog.dto.request.UserChallengeRequest;
 import com.moneybuddy.moneylog.dto.response.SharedChallengeResponse;
 import com.moneybuddy.moneylog.repository.ChallengeRepository;
+import com.moneybuddy.moneylog.repository.UserChallengeRepository;
 import com.moneybuddy.moneylog.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -17,6 +19,7 @@ public class ChallengeService {
 
     private final ChallengeRepository challengeRepository;
     private final UserRepository userRepository;
+    private final UserChallengeRepository userChallengeRepository;
 
     public List<RecommendedChallengeResponse> getRecommendedChallenges(Long userId) {
         String mobti = userRepository.findById(userId)
@@ -74,5 +77,24 @@ public class ChallengeService {
                         .isMine(challenge.getCreatedBy().equals(userId))
                         .build())
                 .toList();
+    }
+
+    public ChallengeDetailResponse getChallengeDetail(Long challengeId, Long userId) {
+        Challenge challenge = challengeRepository.findById(challengeId)
+                .orElseThrow(() -> new IllegalArgumentException("챌린지를 찾을 수 없습니다."));
+
+        boolean isJoined = userChallengeRepository.existsByUserIdAndChallengeId(userId, challengeId);
+        int participantCount = userChallengeRepository.countByChallengeId(challengeId);
+
+        return ChallengeDetailResponse.builder()
+                .challengeId(challenge.getId())
+                .title(challenge.getTitle())
+                .description(challenge.getDescription())
+                .goalPeriod(challenge.getGoalPeriod())
+                .goalType(challenge.getGoalType())
+                .goalValue(challenge.getGoalValue())
+                .currentParticipants(participantCount)
+                .isJoined(isJoined)
+                .build();
     }
 }

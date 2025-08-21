@@ -1,5 +1,6 @@
 package com.moneybuddy.moneylog.controller;
 
+import com.moneybuddy.moneylog.dto.response.ChallengeDetailResponse;
 import com.moneybuddy.moneylog.dto.response.RecommendedChallengeResponse;
 import com.moneybuddy.moneylog.dto.request.UserChallengeRequest;
 import com.moneybuddy.moneylog.dto.response.SharedChallengeResponse;
@@ -43,5 +44,13 @@ public class ChallengeController {
             @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
         return challengeService.getSharedChallenges(userDetails.getUserId());
+    }
+
+    @GetMapping("/{challengeId}")
+    public ResponseEntity<ChallengeDetailResponse> getChallengeDetail(
+            @PathVariable Long challengeId,
+            @AuthenticationPrincipal CustomUserDetails userDetails
+    ) {
+        return ResponseEntity.ok(challengeService.getChallengeDetail(challengeId, userDetails.getUserId()));
     }
 }
