@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- 맨 위 아이템 위쪽 여백 (필요에 맞게 조절하세요: 12~24dp 권장) -->
+    <dimen name="notif_list_first_item_top">42dp</dimen>
+    <!-- 홈 종 아이콘 표시 크기 -->
+    <dimen name="home_bell_icon_size">20dp</dimen>
+</resources>

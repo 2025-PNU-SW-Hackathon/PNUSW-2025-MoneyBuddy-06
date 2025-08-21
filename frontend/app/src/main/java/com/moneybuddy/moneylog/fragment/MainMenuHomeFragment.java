@@ -11,8 +11,16 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.google.android.material.badge.BadgeDrawable;
+import com.google.android.material.badge.BadgeUtils;
+import com.google.android.material.badge.ExperimentalBadgeUtils;
 import com.moneybuddy.moneylog.R;
-import com.moneybuddy.moneylog.activity.notifications.NotificationActivity; // 경로 확인!
+import com.moneybuddy.moneylog.activity.NotificationActivity;
+import com.moneybuddy.moneylog.network.NotificationRepository;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class MainMenuHomeFragment extends Fragment {
 
@@ -24,16 +32,63 @@ public class MainMenuHomeFragment extends Fragment {
         return inflater.inflate(R.layout.fragment_main_menu_home, container, false);
     }
 
+    private Button bellBtn;
+    private BadgeDrawable badge;
+    private NotificationRepository repo;
+
+    @ExperimentalBadgeUtils
     @Override
     public void onViewCreated(@NonNull View view,
                               @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        // 왼쪽 위 종 모양 버튼
-        Button bellBtn = view.findViewById(R.id.button2);
-        bellBtn.setOnClickListener(v -> {
-            Intent intent = new Intent(requireContext(), NotificationActivity.class);
-            startActivity(intent);
+        bellBtn = view.findViewById(R.id.button2);
+        bellBtn.setOnClickListener(v ->
+                startActivity(new Intent(requireContext(), NotificationActivity.class)));
+
+        // 버튼 기본 최소크기/패딩 제거 → 배지 붙는 위치 정확히
+        bellBtn.setMinWidth(0);
+        bellBtn.setMinHeight(0);
+        bellBtn.setPadding(0, 0, 0, 0);
+
+        // ✅ 실서버 레포
+        repo = new NotificationRepository(requireContext());
+
+        // 숫자 없는 점 배지 + 위치 미세조정
+        badge = BadgeDrawable.create(requireContext());
+        badge.setVisible(false);
+        badge.setBadgeGravity(BadgeDrawable.TOP_END);
+        badge.clearNumber();
+        badge.setHorizontalOffset(dp(5));
+        badge.setVerticalOffset(dp(5));
+        BadgeUtils.attachBadgeDrawable(badge, bellBtn);
+    }
+
+    @ExperimentalBadgeUtils
+    @Override
+    public void onResume() {
+        super.onResume();
+        refreshUnreadBadge();
+    }
+
+    @ExperimentalBadgeUtils
+    private void refreshUnreadBadge() {
+        repo.unreadCount(new Callback<Integer>() {
+            @Override public void onResponse(Call<Integer> call, Response<Integer> res) {
+                int count = (res.isSuccessful() && res.body() != null) ? res.body() : 0;
+                badge.clearNumber();
+                badge.setVisible(count > 0);
+                BadgeUtils.attachBadgeDrawable(badge, bellBtn);
+            }
+            @Override public void onFailure(Call<Integer> call, Throwable t) {
+                badge.setVisible(false);
+                BadgeUtils.attachBadgeDrawable(badge, bellBtn);
+            }
         });
+    }
+
+    private int dp(int dp) {
+        float d = requireContext().getResources().getDisplayMetrics().density;
+        return Math.round(dp * d);
     }
 }

@@ -1,0 +1,5 @@
+[
+  {"id": 1, "type": "LEDGER_REMINDER", "title": "가계부 작성 알림", "body": "어제 영수증으로 작성해볼까요?", "createdAt": "2025-08-21T09:00:00+09:00", "isRead": false},
+  {"id": 2, "type": "QUIZ_TODAY", "title": "오늘의 퀴즈 도착!", "body": "3문제만 풀면 포인트 지급", "createdAt": "2025-08-21T08:00:00+09:00", "isRead": false},
+  {"id": 3, "type": "BUDGET_WARNING", "title": "지출 경고", "body": "이번 달 지출이 80%를 넘었습니다.", "createdAt": "2025-08-20T20:11:00+09:00", "isRead": true}
+]

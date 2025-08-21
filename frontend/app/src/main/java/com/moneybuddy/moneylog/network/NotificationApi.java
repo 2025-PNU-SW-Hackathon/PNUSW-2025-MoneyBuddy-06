@@ -1,0 +1,30 @@
+package com.moneybuddy.moneylog.network;
+
+import com.moneybuddy.moneylog.model.Notice;
+
+import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.http.GET;
+import retrofit2.http.PATCH;
+import retrofit2.http.POST;
+import retrofit2.http.Path;
+import retrofit2.http.Query;
+
+public interface NotificationApi {
+
+    @GET("/api/notifications")
+    Call<List<Notice>> getNotifications(
+            @Query("cursor") Long cursor,
+            @Query("size") Integer size
+    );
+
+    @GET("/api/notifications/unread-count")
+    Call<Integer> getUnreadCount();
+
+    @PATCH("/api/notifications/{id}/read")
+    Call<Void> markRead(@Path("id") long id);
+
+    @POST("/api/notifications/mark-all-read")
+    Call<Void> markAllRead();
+}
