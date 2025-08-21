@@ -51,10 +51,17 @@ public class JwtFilter extends OncePerRequestFilter {
                 }
                 var user = userOpt.get();
 
-                // 비번 변경 시각 이후에 발급된 토큰만 허용
-                if (user.getPasswordChangedAt() != null) {
-                    var changedAt = user.getPasswordChangedAt();
-                    var changedAtInstant = changedAt.atZone(java.time.ZoneId.systemDefault()).toInstant();
+                // 비밀번호 변경 요청인지
+                String path = request.getRequestURI();
+                boolean isPasswordChange =
+                        "PUT".equalsIgnoreCase(request.getMethod())
+                                && "/api/v1/users/password".equals(path);
+
+                // 비밀번호 변경 요청이 아닐 때만 "이전 토큰 차단" 적용
+                if (!isPasswordChange && user.getPasswordChangedAt() != null) {
+                    var changedAtInstant = user.getPasswordChangedAt()
+                            .atZone(java.time.ZoneId.systemDefault())
+                            .toInstant();
 
                     if (iat == null || iat.toInstant().isBefore(changedAtInstant)) {
                         unauthorized(response, "로그인이 만료되었습니다. 다시 로그인해 주세요.");
