@@ -7,4 +7,5 @@ import java.util.List;
 
 public interface ChallengeRepository extends JpaRepository<Challenge, Long> {
     List<Challenge> findByIsSystemGeneratedTrueAndMobtiTypeIn(List<String> mobtiTypes);
+    List<Challenge> findByIsSharedTrue();
 }

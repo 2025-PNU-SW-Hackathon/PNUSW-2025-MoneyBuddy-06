@@ -1,8 +1,8 @@
 package com.moneybuddy.moneylog.controller;
 
-import com.moneybuddy.moneylog.dto.response.ChallengeBoardResponse;
 import com.moneybuddy.moneylog.dto.response.RecommendedChallengeResponse;
 import com.moneybuddy.moneylog.dto.request.UserChallengeRequest;
+import com.moneybuddy.moneylog.dto.response.SharedChallengeResponse;
 import com.moneybuddy.moneylog.security.CustomUserDetails;
 import com.moneybuddy.moneylog.service.ChallengeService;
 import lombok.RequiredArgsConstructor;
@@ -19,11 +19,13 @@ public class ChallengeController {
 
     private final ChallengeService challengeService;
 
+    // MoBTI 유형 기반 챌린지 추천 API
     @GetMapping("/recommended")
     public List<RecommendedChallengeResponse> getRecommendedChallenges(@AuthenticationPrincipal CustomUserDetails userDetails) {
         return challengeService.getRecommendedChallenges(userDetails.getUserId());
     }
 
+    // 사용자 챌린지 생성 API
     @PostMapping("/create")
     public ResponseEntity<String> createUserChallenge(
             @AuthenticationPrincipal CustomUserDetails userDetails,
@@ -35,10 +37,11 @@ public class ChallengeController {
         return ResponseEntity.ok("챌린지 생성 완료!");
     }
 
-    @GetMapping("/board")
-    public List<ChallengeBoardResponse> getChallengeBoard(
+
+    @GetMapping("/shared")
+    public List<SharedChallengeResponse> getChallengeBoard(
             @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
-        return challengeService.getChallengeBoard(userDetails.getUserId());
+        return challengeService.getSharedChallenges(userDetails.getUserId());
     }
 }

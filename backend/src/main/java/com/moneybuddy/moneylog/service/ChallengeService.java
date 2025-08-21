@@ -1,14 +1,12 @@
 package com.moneybuddy.moneylog.service;
 
 import com.moneybuddy.moneylog.domain.Challenge;
-import com.moneybuddy.moneylog.dto.response.ChallengeBoardResponse;
 import com.moneybuddy.moneylog.dto.response.RecommendedChallengeResponse;
 import com.moneybuddy.moneylog.dto.request.UserChallengeRequest;
+import com.moneybuddy.moneylog.dto.response.SharedChallengeResponse;
 import com.moneybuddy.moneylog.repository.ChallengeRepository;
 import com.moneybuddy.moneylog.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -64,11 +62,11 @@ public class ChallengeService {
         challengeRepository.save(challenge);
     }
 
-    public List<ChallengeBoardResponse> getChallengeBoard(Long userId) {
-        List<Challenge> challenges = challengeRepository.findAll();
+    public List<SharedChallengeResponse> getSharedChallenges(Long userId) {
+        List<Challenge> challenges = challengeRepository.findByIsSharedTrue();
 
         return challenges.stream()
-                .map(challenge -> ChallengeBoardResponse.builder()
+                .map(challenge -> SharedChallengeResponse.builder()
                         .challengeId(challenge.getId())
                         .title(challenge.getTitle())
                         .goalPeriod(challenge.getGoalPeriod())

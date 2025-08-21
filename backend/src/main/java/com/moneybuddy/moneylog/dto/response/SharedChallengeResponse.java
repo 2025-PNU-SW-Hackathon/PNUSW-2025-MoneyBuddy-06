@@ -5,9 +5,9 @@ import lombok.Builder;
 import lombok.Getter;
 
 @Getter
-@Builder
 @AllArgsConstructor
-public class ChallengeBoardResponse {
+@Builder
+public class SharedChallengeResponse {
     private Long challengeId;
     private String title;
     private String goalPeriod;
