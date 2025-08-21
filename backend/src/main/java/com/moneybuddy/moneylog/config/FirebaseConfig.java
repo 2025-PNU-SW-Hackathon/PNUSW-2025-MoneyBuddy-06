@@ -4,30 +4,27 @@ import com.google.auth.oauth2.GoogleCredentials;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
 import com.google.firebase.messaging.FirebaseMessaging;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.io.Resource;
 import java.io.IOException;
-import java.io.InputStream;
 
 @Configuration
 public class FirebaseConfig {
 
-    @Value("${fcm.credentials:}")
-    private Resource serviceAccount;
-
     @Bean
+    @ConditionalOnProperty(prefix = "firebase", name = "enabled", havingValue = "true")
     public FirebaseMessaging firebaseMessaging() throws IOException {
-        try (InputStream in = serviceAccount.getInputStream()) {
-            FirebaseOptions options = FirebaseOptions.builder()
-                    .setCredentials(GoogleCredentials.fromStream(in))
-                    .build();
+        // GOOGLE_APPLICATION_CREDENTIALS 환경변수에서 자동 로드
+        GoogleCredentials credentials = GoogleCredentials.getApplicationDefault();
 
-            if (FirebaseApp.getApps().isEmpty()) {
-                FirebaseApp.initializeApp(options);
-            }
-            return FirebaseMessaging.getInstance();
+        FirebaseOptions options = FirebaseOptions.builder()
+                .setCredentials(credentials)
+                .build();
+
+        if (FirebaseApp.getApps().isEmpty()) {
+            FirebaseApp.initializeApp(options);
         }
+        return FirebaseMessaging.getInstance();
     }
 }
