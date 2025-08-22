@@ -2,9 +2,7 @@ package com.moneybuddy.moneylog.network;
 
 import android.content.Context;
 
-import com.moneybuddy.moneylog.model.Notice;
-
-import java.util.List;
+import com.moneybuddy.moneylog.model.ListResponse;
 
 import retrofit2.Callback;
 
@@ -18,7 +16,8 @@ public class NotificationRepository {
 
     protected NotificationRepository() {}
 
-    public void fetchList(Long cursor, int size, Callback<List<Notice>> cb) {
+    // ✅ 래핑 DTO 기준으로 콜백 타입 변경
+    public void fetchList(Long cursor, int size, Callback<ListResponse> cb) {
         api.getNotifications(cursor, size).enqueue(cb);
     }
 

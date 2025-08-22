@@ -1,5 +1,6 @@
 package com.moneybuddy.moneylog.network;
 
+import com.moneybuddy.moneylog.model.ListResponse;
 import com.moneybuddy.moneylog.model.Notice;
 
 import java.util.List;
@@ -13,8 +14,9 @@ import retrofit2.http.Query;
 
 public interface NotificationApi {
 
+    // ✅ items + nextCursor 래핑
     @GET("/api/notifications")
-    Call<List<Notice>> getNotifications(
+    Call<ListResponse> getNotifications(
             @Query("cursor") Long cursor,
             @Query("size") Integer size
     );

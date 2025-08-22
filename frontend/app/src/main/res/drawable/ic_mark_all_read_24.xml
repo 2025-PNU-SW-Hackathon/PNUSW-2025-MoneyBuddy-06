@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp" android:height="24dp"
+    android:viewportWidth="24" android:viewportHeight="24">
+    <!-- done_all 아이콘 유사 -->
+    <path
+        android:fillColor="#000000"
+        android:pathData="M18,7l-1.41,-1.41 -6.34,6.34 1.41,1.41L18,7zM22.24,5.59L12.66,15.17 9.53,12.05 8.12,13.46l4.54,4.54L23.66,6.99 22.24,5.59zM1.41,13.46L6,18.05l1.41,-1.41 -4.59,-4.59L1.41,13.46z"/>
+</vector>
