@@ -1,26 +1,41 @@
 package com.moneybuddy.moneylog.service;
 
-import com.moneybuddy.moneylog.dto.UserDeleteRequest;
+import com.moneybuddy.moneylog.dto.UserSignupRequest;
 import com.moneybuddy.moneylog.dto.UserLoginRequest;
 import com.moneybuddy.moneylog.dto.UserLoginResponse;
-import com.moneybuddy.moneylog.jwt.JwtUtil;
+import com.moneybuddy.moneylog.dto.UserDeleteRequest;
 import com.moneybuddy.moneylog.repository.UserRepository;
 import com.moneybuddy.moneylog.domain.User;
-import jakarta.servlet.http.HttpServletRequest;
-import lombok.RequiredArgsConstructor;
+import com.moneybuddy.moneylog.jwt.JwtUtil;
+
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import jakarta.servlet.http.HttpServletRequest;
+import lombok.RequiredArgsConstructor;
+
 @Service
 @RequiredArgsConstructor
-
 public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
 
-    public UserLoginResponse login(UserLoginRequest request){
-        User user = userRepository.findByEmail(request.getEmail()).orElseThrow(()->new RuntimeException("존재하지 않는 이메일입니다."));
+    // 회원가입
+    public void signup(UserSignupRequest request) {
+        if (userRepository.findByEmail(request.getEmail()).isPresent()) {
+            throw new IllegalArgumentException("이미 존재하는 이메일입니다.");
+        }
+
+        String encodedPassword = passwordEncoder.encode(request.getPassword()); // 암호화
+        User user = new User(request.getEmail(), encodedPassword); // 암호화된 비밀번호 저장
+        userRepository.save(user);
+    }
+
+    // 로그인
+    public UserLoginResponse login(UserLoginRequest request) {
+        User user = userRepository.findByEmail(request.getEmail())
+                .orElseThrow(() -> new RuntimeException("존재하지 않는 이메일입니다."));
 
         if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
             throw new RuntimeException("비밀번호가 일치하지 않습니다.");
@@ -29,9 +44,9 @@ public class UserService {
         String token = jwtUtil.createToken(user.getId(), user.getEmail());
 
         return new UserLoginResponse(token, user.getId(), user.getEmail());
-
     }
-
+  
+    // 회원탈퇴
     public void deleteUser(UserDeleteRequest request, HttpServletRequest httpServletRequest) {
         String token = jwtUtil.resolveToken(httpServletRequest);
         if (token == null) {
