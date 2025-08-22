@@ -1,5 +1,6 @@
 package com.moneybuddy.moneylog.jwt;
 
+import com.moneybuddy.moneylog.domain.User;
 import com.moneybuddy.moneylog.repository.RevokedAccessTokenRepository;
 import com.moneybuddy.moneylog.repository.UserRepository;
 import com.moneybuddy.moneylog.security.CustomUserDetails;
@@ -10,12 +11,12 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import lombok.RequiredArgsConstructor;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
+import lombok.RequiredArgsConstructor;
 import java.io.IOException;
 import java.time.ZoneId;
 import java.util.Collections;
