@@ -5,7 +5,7 @@ import com.moneybuddy.moneylog.dto.request.ChallengeFilterRequest;
 import com.moneybuddy.moneylog.dto.response.ChallengeDetailResponse;
 import com.moneybuddy.moneylog.dto.response.RecommendedChallengeResponse;
 import com.moneybuddy.moneylog.dto.request.UserChallengeRequest;
-import com.moneybuddy.moneylog.dto.response.SharedChallengeResponse;
+import com.moneybuddy.moneylog.dto.response.ChallengeCardResponse;
 import com.moneybuddy.moneylog.repository.ChallengeRepository;
 import com.moneybuddy.moneylog.repository.UserChallengeRepository;
 import com.moneybuddy.moneylog.repository.UserRepository;
@@ -67,11 +67,11 @@ public class ChallengeService {
         challengeRepository.save(challenge);
     }
 
-    public List<SharedChallengeResponse> getSharedChallenges(Long userId) {
+    public List<ChallengeCardResponse> getSharedChallenges(Long userId) {
         List<Challenge> challenges = challengeRepository.findByIsSharedTrue();
 
         return challenges.stream()
-                .map(challenge -> SharedChallengeResponse.builder()
+                .map(challenge -> ChallengeCardResponse.builder()
                         .challengeId(challenge.getId())
                         .title(challenge.getTitle())
                         .goalPeriod(challenge.getGoalPeriod())
@@ -100,7 +100,55 @@ public class ChallengeService {
                 .build();
     }
 
-    public List<SharedChallengeResponse> filterSharedChallenges(ChallengeFilterRequest request) {
+    public ChallengeCardResponse toChallengeCardResponse(Challenge c) {
+        return ChallengeCardResponse.builder()
+                .challengeId(c.getId())
+                .title(c.getTitle())
+                .category(c.getCategory())
+                .type(c.getType())
+                .goalType(c.getGoalType())
+                .goalPeriod(c.getGoalPeriod())
+                .goalValue(c.getGoalValue())
+                .isAccountLinked(c.getIsAccountLinked())
+                .isMine(false)
+                .completed(false)  // 필터링에서는 기본값 false
+                .success(false)    // 필터링에서는 기본값 false
+                .build();
+    }
+
+    public List<ChallengeCardResponse> filterMobtiRecommendedChallenges(Long userId, ChallengeFilterRequest request) {
+        String mobti = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("유저 없음"))
+                .getMobti();
+
+        List<String> mobtiList = Arrays.asList(mobti.split(""));
+
+        // 먼저 mobti 기준으로 챌린지 가져오기
+        List<Challenge> challenges = challengeRepository
+                .findByIsSystemGeneratedTrueAndMobtiTypeIn(mobtiList);
+
+        // 추가 조건: type / category / isAccountLinked 필터링
+        String type = request.getType();
+        String category = request.getCategory();
+        Boolean isAccountLinked = request.getIsAccountLinked();
+
+        return challenges.stream()
+                .filter(c -> type == null || c.getType().equals(type))
+                .filter(c -> {
+                    if ("저축".equals(type)) {
+                        return "저축".equals(c.getCategory()); // 카테고리 고정
+                    } else if ("지출".equals(type)) {
+                        boolean categoryMatch = category == null || c.getCategory().equals(category);
+                        boolean linkedMatch = isAccountLinked == null || isAccountLinked.equals(c.getIsAccountLinked());
+                        return categoryMatch && linkedMatch;
+                    }
+                    return true;
+                })
+                .map(this::toChallengeCardResponse)
+                .collect(Collectors.toList());
+    }
+
+    public List<ChallengeCardResponse> filterSharedChallenges(ChallengeFilterRequest request) {
         List<Challenge> challenges;
 
         String type = request.getType();
@@ -123,7 +171,6 @@ public class ChallengeService {
             }
 
         } else {
-            // 기타 유형 등
             challenges = challengeRepository.findByTypeAndIsSharedTrue(type);
         }
 
@@ -133,8 +180,8 @@ public class ChallengeService {
                 .collect(Collectors.toList());
     }
 
-    private SharedChallengeResponse toSharedChallengeResponse(Challenge challenge) {
-        return SharedChallengeResponse.builder()
+    private ChallengeCardResponse toSharedChallengeResponse(Challenge challenge) {
+        return ChallengeCardResponse.builder()
                 .challengeId(challenge.getId())
                 .title(challenge.getTitle())
                 .category(challenge.getCategory())
@@ -146,4 +193,6 @@ public class ChallengeService {
                 .isMine(false) // 기본값 false (필요하면 사용자 id 받아서 비교 가능)
                 .build();
     }
+
+
 }

@@ -7,7 +7,7 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 @Builder
-public class SharedChallengeResponse {
+public class ChallengeCardResponse {
     private Long challengeId;
     private String title;
     private String category;
@@ -15,6 +15,8 @@ public class SharedChallengeResponse {
     private String goalType;
     private String goalPeriod;
     private int goalValue;
-    private boolean isAccountLinked;
-    private boolean isMine;
+    private Boolean isAccountLinked;
+    private Boolean isMine;
+    private Boolean completed;
+    private Boolean success;
 }
