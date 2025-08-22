@@ -82,8 +82,9 @@ public class FinanceInfoActivity extends AppCompatActivity {
         loadCardNewsData();
 
         // 퀴즈 API 서비스 초기화 및 데이터 로딩
-        quizApiService = RetrofitClient.getClient().create(QuizApiService.class);
+        quizApiService = RetrofitClient.getClient(this).create(QuizApiService.class);
         loadTodayQuiz();
+        loadYouthPolicies();
 
         // 청년 정책 데이터 로딩
         loadYouthPolicies();
@@ -109,7 +110,7 @@ public class FinanceInfoActivity extends AppCompatActivity {
     }
 
     private void loadYouthPolicies() {
-        FinanceApiService apiService = RetrofitClient.getClient().create(FinanceApiService.class);
+        FinanceApiService apiService = RetrofitClient.getClient(this).create(FinanceApiService.class);
         Call<List<YouthPolicyResponse>> call = apiService.getAllYouthPolicies();
 
         call.enqueue(new Callback<List<YouthPolicyResponse>>() {
@@ -256,7 +257,7 @@ public class FinanceInfoActivity extends AppCompatActivity {
     }
 
     private void loadCardNewsData() {
-        FinanceApiService apiService = RetrofitClient.getClient().create(FinanceApiService.class);
+        FinanceApiService apiService = RetrofitClient.getClient(this).create(FinanceApiService.class);
         Call<List<KnowledgeResponse>> call = apiService.getTodayCardNews();
 
         call.enqueue(new Callback<List<KnowledgeResponse>>() {
@@ -278,10 +279,7 @@ public class FinanceInfoActivity extends AppCompatActivity {
     }
 
     private void loadTodayQuiz() {
-        // TODO: 로그인 시 저장된 실제 유저 토큰으로 교체해야 합니다.
-        String authToken = "Bearer YOUR_JWT_TOKEN"; // 임시 토큰
-
-        quizApiService.getTodayQuiz(authToken).enqueue(new Callback<QuizResponse>() {
+        quizApiService.getTodayQuiz().enqueue(new Callback<QuizResponse>() {
             @Override
             public void onResponse(Call<QuizResponse> call, Response<QuizResponse> response) {
                 if (response.isSuccessful() && response.body() != null) {
@@ -303,11 +301,9 @@ public class FinanceInfoActivity extends AppCompatActivity {
     }
 
     private void submitQuizAnswer(boolean userAnswer) {
-        String authToken = "Bearer USER_JWT_TOKEN"; // 실제 토큰 넣기
-
         QuizAnswerRequest request = new QuizAnswerRequest(currentQuizId, userAnswer);
 
-        quizApiService.submitAnswer(authToken, request).enqueue(new Callback<QuizResultResponse>() {
+        quizApiService.submitAnswer(request).enqueue(new Callback<QuizResultResponse>() {
             @Override
             public void onResponse(Call<QuizResultResponse> call, Response<QuizResultResponse> response) {
                 if (response.isSuccessful() && response.body() != null) {
