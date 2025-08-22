@@ -1,15 +1,21 @@
 package com.moneybuddy.moneylog.controller;
 
+import com.moneybuddy.moneylog.dto.UserProfileDto;
 import com.moneybuddy.moneylog.dto.UserLoginRequest;
 import com.moneybuddy.moneylog.dto.UserLoginResponse;
 import com.moneybuddy.moneylog.dto.UserSignupRequest;
 import com.moneybuddy.moneylog.dto.UserSignupResponse;
 import com.moneybuddy.moneylog.dto.UserDeleteRequest;
 import com.moneybuddy.moneylog.service.UserService;
+import com.moneybuddy.moneylog.security.CustomUserDetails;
+import com.moneybuddy.moneylog.service.MobtiService;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.*;
 
+import lombok.RequiredArgsConstructor;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import jakarta.validation.Valid;
@@ -22,6 +28,15 @@ import jakarta.servlet.http.HttpServletRequest;
 public class UserController {
 
     private final UserService userService;
+    private final MobtiService mobtiService;
+
+    @GetMapping("/profile")
+    public UserProfileDto profile(@AuthenticationPrincipal CustomUserDetails principal) {
+        if (principal == null) {
+            throw new IllegalStateException("인증 정보가 없습니다. 로그인 후 시도하세요.");
+        }
+        return mobtiService.loadProfile(principal.getUserId());
+    }
 
     @PostMapping("/signup")
     public ResponseEntity<UserSignupResponse> signup(@RequestBody UserSignupRequest request) {
