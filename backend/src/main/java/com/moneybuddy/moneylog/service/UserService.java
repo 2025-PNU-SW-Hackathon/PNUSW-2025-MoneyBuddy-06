@@ -1,32 +1,46 @@
 package com.moneybuddy.moneylog.service;
 
 import com.moneybuddy.moneylog.dto.UserSignupRequest;
+import com.moneybuddy.moneylog.dto.UserLoginRequest;
+import com.moneybuddy.moneylog.dto.UserLoginResponse;
 import com.moneybuddy.moneylog.repository.UserRepository;
 import com.moneybuddy.moneylog.domain.User;
+import com.moneybuddy.moneylog.jwt.JwtUtil;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-
-
 @Service
+@RequiredArgsConstructor
 public class UserService {
 
     private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder; // 💥 추가
+    private final PasswordEncoder passwordEncoder;
+    private final JwtUtil jwtUtil;
 
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
-        this.userRepository = userRepository;
-        this.passwordEncoder = passwordEncoder; // 💥 주입
-    }
-
+    // 회원가입
     public void signup(UserSignupRequest request) {
         if (userRepository.findByEmail(request.getEmail()).isPresent()) {
             throw new IllegalArgumentException("이미 존재하는 이메일입니다.");
         }
 
-        String encodedPassword = passwordEncoder.encode(request.getPassword()); // 💥 암호화
-        User user = new User(request.getEmail(), encodedPassword); // 💥 암호화된 비밀번호 저장
+        String encodedPassword = passwordEncoder.encode(request.getPassword()); // 암호화
+        User user = new User(request.getEmail(), encodedPassword); // 암호화된 비밀번호 저장
         userRepository.save(user);
+    }
+
+    // 로그인
+    public UserLoginResponse login(UserLoginRequest request) {
+        User user = userRepository.findByEmail(request.getEmail())
+                .orElseThrow(() -> new RuntimeException("존재하지 않는 이메일입니다."));
+
+        if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
+            throw new RuntimeException("비밀번호가 일치하지 않습니다.");
+        }
+
+        String token = jwtUtil.createToken(user.getId(), user.getEmail());
+
+        return new UserLoginResponse(token, user.getId(), user.getEmail());
     }
 }

@@ -1,12 +1,12 @@
 package com.moneybuddy.moneylog.domain;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import java.time.LocalDateTime;
 
 @Entity
-@Getter
-@NoArgsConstructor
+@Getter @Setter
+@NoArgsConstructor @AllArgsConstructor @Builder
 @Table(name = "users")
 public class User {
 
@@ -19,6 +19,13 @@ public class User {
 
     @Column(nullable = false)
     private String password;
+
+    @Column(nullable = false)
+    @Builder.Default
+    private boolean isNotificationEnabled = true;
+
+    @Column(name = "password_changed_at")
+    private LocalDateTime passwordChangedAt;
 
     public User(String email, String password) {
         this.email = email;
