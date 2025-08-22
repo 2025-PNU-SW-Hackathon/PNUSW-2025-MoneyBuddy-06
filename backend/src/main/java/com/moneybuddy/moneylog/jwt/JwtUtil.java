@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.util.Date;
+import java.util.UUID;
 
 @Component
 public class JwtUtil {
@@ -46,6 +47,7 @@ public class JwtUtil {
         return Jwts.builder()
                 .claim("email", email)
                 .claim("userId", userId)
+                .setId(UUID.randomUUID().toString())   // jti 추가
                 .setIssuedAt(new Date(now))
                 .setExpiration(new Date(now + expiration))
                 .signWith(secretKey, SignatureAlgorithm.HS256)
@@ -56,5 +58,15 @@ public class JwtUtil {
     public Date getIssuedAt(String token) {
         Claims claims = parseToken(token);
         return claims.getIssuedAt();
+    }
+
+    // jti 반환
+    public String getJti(String token) {
+        return parseToken(token).getId();
+    }
+
+    // 만료시각
+    public Date getExpiration(String token) {
+        return parseToken(token).getExpiration();
     }
 }

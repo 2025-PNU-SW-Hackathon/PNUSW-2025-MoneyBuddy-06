@@ -1,6 +1,7 @@
 package com.moneybuddy.moneylog.jwt;
 
 import com.moneybuddy.moneylog.domain.User;
+import com.moneybuddy.moneylog.repository.RevokedAccessTokenRepository;
 import com.moneybuddy.moneylog.repository.UserRepository;
 import com.moneybuddy.moneylog.security.CustomUserDetails;
 import jakarta.servlet.FilterChain;
@@ -26,6 +27,7 @@ public class JwtFilter extends OncePerRequestFilter {
 
     private final JwtUtil jwtUtil;
     private final UserRepository userRepository;
+    private final RevokedAccessTokenRepository revokedRepo;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request,
@@ -40,6 +42,13 @@ public class JwtFilter extends OncePerRequestFilter {
 
             try {
                 jwtUtil.validateToken(token);
+
+                // 로그아웃된 토큰인지 체크
+                String jti = jwtUtil.getJti(token);
+                if (jti != null && revokedRepo.existsByJti(jti)) {
+                    unauthorized(response, "로그아웃된 토큰입니다.");
+                    return;
+                }
 
                 Long userId = jwtUtil.getUserId(token);
                 String email = jwtUtil.getEmail(token);
@@ -59,13 +68,13 @@ public class JwtFilter extends OncePerRequestFilter {
                         "PUT".equalsIgnoreCase(request.getMethod())
                                 && "/api/v1/users/password".equals(path);
 
-                // 토큰 발급 시각(iat) vs 비번 변경 시각 비교
+                // 토큰 발급 시각(iat)과 비번 변경 시각 비교
                 long tokenIssuedAt = Optional.ofNullable(jwtUtil.getIssuedAt(token))
                         .map(d -> d.toInstant().toEpochMilli())
                         .orElse(0L);
 
                 long passwordChangedAt = Optional.ofNullable(user.getPasswordChangedAt())
-                        .map(dt -> dt.atZone(ZoneId.of("Asia/Seoul")).toInstant().toEpochMilli())
+                        .map(dt -> dt.atZone(java.time.ZoneOffset.UTC).toInstant().toEpochMilli())
                         .orElse(0L);
 
                 // 비번 변경 이후에 발급된 토큰만 통과
