@@ -16,12 +16,8 @@ public class IntroActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        // 안드로이드 12 이상을 위한 스플래시 스크린 API -> 8로 수정하기
-        SplashScreen splashScreen = SplashScreen.installSplashScreen(this);
+        SplashScreen.installSplashScreen(this);
         super.onCreate(savedInstanceState);
-
-        // 데이터 로딩 등 비동기 작업 시 스플래시 스크린이 계속 보임
-        splashScreen.setKeepOnScreenCondition(() -> true);
 
         // TokenManager 초기화
         tokenManager = new TokenManager(this);
