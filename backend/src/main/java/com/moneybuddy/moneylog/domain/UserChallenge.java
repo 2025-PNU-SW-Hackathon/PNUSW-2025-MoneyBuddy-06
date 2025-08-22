@@ -17,8 +17,8 @@ public class UserChallenge {
 
     private Long userId;
 
-    @ManyToOne
-    @JoinColumn(name = "challenge_id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "challenge_id", nullable = false)
     private Challenge challenge;
 
     private LocalDateTime joinedAt;
@@ -27,7 +27,8 @@ public class UserChallenge {
     private Boolean completed = false;
 
     @Column(nullable = false)
+    private Boolean success = false;
+
+    @Column(nullable = false)
     private Boolean rewarded = false;
-
-
 }

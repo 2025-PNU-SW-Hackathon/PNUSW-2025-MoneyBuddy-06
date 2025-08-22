@@ -1,7 +1,8 @@
-package com.moneybuddy.moneylog.security;
+package com.moneybuddy.moneylog.jwt;
 
 import com.moneybuddy.moneylog.domain.User;
 import com.moneybuddy.moneylog.repository.UserRepository;
+import com.moneybuddy.moneylog.security.CustomUserDetails;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

@@ -259,9 +259,9 @@ public class UserChallengeService {
         if (goalPeriod.contains("주")) {
             return Long.parseLong(goalPeriod.replace("주", "").trim()) * 7;
         } else if (goalPeriod.contains("달")) {
-            return 30; // 기본 1달 = 30일로 처리
+            return 30;
         }
-        return 7; // 기본값
+        return 7;
     }
 
 }

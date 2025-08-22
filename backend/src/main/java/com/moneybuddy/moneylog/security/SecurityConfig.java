@@ -1,6 +1,6 @@
-package com.moneybuddy.moneylog.config;
+package com.moneybuddy.moneylog.security;
 
-import com.moneybuddy.moneylog.security.JwtFilter;
+import com.moneybuddy.moneylog.jwt.JwtFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

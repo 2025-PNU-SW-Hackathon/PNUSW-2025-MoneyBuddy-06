@@ -10,13 +10,12 @@ public class RecommendedChallengeResponse {
     private String title;
     private String description;
     private String type;
-
+    private String category;
     private String goalPeriod;
     private String goalType;
     private Integer goalValue;
-
+    private String isShared;
     private Boolean isSystemGenerated;
     private Boolean isAccountLinked;
-
     private String mobtiType;
 }

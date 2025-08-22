@@ -21,6 +21,18 @@ public class ChallengeController {
 
     private final ChallengeService challengeService;
 
+    // 사용자 챌린지 생성 API
+    @PostMapping("/create")
+    public ResponseEntity<String> createUserChallenge(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @RequestBody UserChallengeRequest request
+    ) {
+        System.out.println("userDetails = " + userDetails);
+        System.out.println("userId = " + userDetails.getUserId());
+        challengeService.createUserChallenge(userDetails.getUserId(), request);
+        return ResponseEntity.ok("챌린지 생성 완료!");
+    }
+
     // MoBTI 유형 기반 챌린지 추천 API
     @GetMapping("/recommended/mobti")
     public List<RecommendedChallengeResponse> getRecommendedChallenges(@AuthenticationPrincipal CustomUserDetails userDetails) {
@@ -34,18 +46,6 @@ public class ChallengeController {
         return challengeService.filterMobtiRecommendedChallenges(userId, filterRequest);
     }
 
-    // 사용자 챌린지 생성 API
-    @PostMapping("/create")
-    public ResponseEntity<String> createUserChallenge(
-            @AuthenticationPrincipal CustomUserDetails userDetails,
-            @RequestBody UserChallengeRequest request
-    ) {
-        System.out.println("userDetails = " + userDetails);
-        System.out.println("userId = " + userDetails.getUserId());
-        challengeService.createUserChallenge(userDetails.getUserId(), request);
-        return ResponseEntity.ok("챌린지 생성 완료!");
-    }
-
     // 공유 챌린지 리스트 조회 API
     @GetMapping("/shared")
     public List<ChallengeCardResponse> getChallengeBoard(
@@ -54,7 +54,6 @@ public class ChallengeController {
         return challengeService.getSharedChallenges(userDetails.getUserId());
     }
 
-    // 공유 챌린지 필터링 API
     @PostMapping("/shared/filter")
     public List<ChallengeCardResponse> filterSharedChallenges(@RequestBody ChallengeFilterRequest request) {
         return challengeService.filterSharedChallenges(request);
@@ -68,7 +67,6 @@ public class ChallengeController {
     ) {
         return ResponseEntity.ok(challengeService.getChallengeDetail(challengeId, userDetails.getUserId()));
     }
-
 
 
 }
