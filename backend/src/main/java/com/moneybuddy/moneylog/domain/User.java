@@ -1,8 +1,7 @@
 package com.moneybuddy.moneylog.domain;
 
-import lombok.*;
-import lombok.NoArgsConstructor;
 import jakarta.persistence.*;
+import lombok.*;
 import java.time.LocalDateTime;
 
 @Entity
@@ -26,6 +25,9 @@ public class User {
 
     @Column(name = "mobti_updated_at")
     private LocalDateTime mobtiUpdatedAt;
+      
+    @Column(nullable = false)
+    private Integer score = 0;
   
     @Column(nullable = false)
     @Builder.Default
@@ -37,5 +39,10 @@ public class User {
     public User(String email, String password) {
         this.email = email;
         this.password = password;
+        this.score = 0;
+    }
+  
+    public void increaseScore(int point) {
+        this.score += point;
     }
 }
