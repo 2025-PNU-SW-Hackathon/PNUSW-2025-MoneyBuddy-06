@@ -1,6 +1,5 @@
 package com.moneybuddy.moneylog.service;
 
-import com.moneybuddy.moneylog.service.DeeplinkFactory;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.firebase.messaging.BatchResponse;
@@ -12,6 +11,7 @@ import com.moneybuddy.moneylog.model.*;
 import com.moneybuddy.moneylog.port.Notifier;
 import com.moneybuddy.moneylog.repository.NotificationRepository;
 import com.moneybuddy.moneylog.repository.UserDeviceTokenRepository;
+import com.moneybuddy.moneylog.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.data.domain.PageRequest;
@@ -27,6 +27,7 @@ public class NotificationService implements Notifier {
 
     private final NotificationRepository repository;
     private final UserDeviceTokenRepository tokenRepository;
+    private final UserRepository userRepository;
 
     // FirebaseMessaging 주입, 설정 없으면 null
     private final ObjectProvider<FirebaseMessaging> firebaseMessagingProvider;
@@ -68,6 +69,10 @@ public class NotificationService implements Notifier {
         n.setDeeplink(effectiveDeeplink);
         repository.save(n);
 
+        // 사용자 푸시 설정 확인 (off면 발송 생략)
+        var user = userRepository.findById(userId).orElse(null);
+        if (user == null || !user.isNotificationEnabled()) return;
+
         // FCM 푸시 발송
         FirebaseMessaging fm = firebaseMessagingProvider.getIfAvailable();
         if (fm == null) {
@@ -75,15 +80,13 @@ public class NotificationService implements Notifier {
             return;
         }
 
-        List<UserDeviceToken> tokens = tokenRepository.findAllByUserId(userId);
+        List<UserDeviceToken> tokens = tokenRepository.findByUserIdAndEnabledTrueAndReauthRequiredFalse(userId);
         if (tokens.isEmpty()) return;
 
         List<String> tokenStrings = tokens.stream()
                 .map(UserDeviceToken::getDeviceToken)
-                .filter(Objects::nonNull)
-                .filter(s -> !s.isBlank())
+                .filter(s -> s != null && !s.isBlank())
                 .toList();
-
         if (tokenStrings.isEmpty()) return;
 
         // data payload에 라우팅 정보 같이 전달 (클릭 시 deeplink 사용)

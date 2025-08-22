@@ -15,15 +15,22 @@ public class DeviceTokenController {
 
     private final UserDeviceTokenRepository repository;
 
-    // 로그인 직후, 앱 실행 시 갱신 등
+
     @PostMapping
     public void register(@Valid @RequestBody DeviceTokenRequest req) {
         Long userId = SecurityUtils.currentUserId();
         repository.findByUserIdAndDeviceToken(userId, req.getDeviceToken())
+                .map(t -> {
+                    t.setEnabled(true);
+                    t.setReauthRequired(false); // 일반 푸시 허용
+                    return repository.save(t);
+                })
                 .orElseGet(() -> {
                     UserDeviceToken t = new UserDeviceToken();
                     t.setUserId(userId);
                     t.setDeviceToken(req.getDeviceToken());
+                    t.setEnabled(true);
+                    t.setReauthRequired(false); // 신규도 허용
                     return repository.save(t);
                 });
     }
@@ -35,4 +42,3 @@ public class DeviceTokenController {
         repository.deleteByUserIdAndDeviceToken(userId, deviceToken);
     }
 }
-
