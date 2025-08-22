@@ -1,5 +1,8 @@
 package com.moneybuddy.moneylog.security;
 
+import com.moneybuddy.moneylog.jwt.JwtFilter;
+import com.moneybuddy.moneylog.jwt.JwtUtil;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -12,9 +15,6 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-
-import com.moneybuddy.moneylog.jwt.JwtFilter;
-import com.moneybuddy.moneylog.jwt.JwtUtil;
 
 import lombok.RequiredArgsConstructor;
 
@@ -37,10 +37,11 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/api/v1/users/delete").authenticated()
                         .requestMatchers("/api/v1/users/signup", "/api/v1/users/login").permitAll()
                         .anyRequest().authenticated()
                 )
-                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(jwtFilter(), UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }

@@ -2,6 +2,7 @@ package com.moneybuddy.moneylog.domain;
 
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 
 @Entity
@@ -14,7 +15,7 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(unique = true, nullable = false)
+    @Column(nullable = false, unique = true)
     private String email;
 
     @Column(nullable = false)
@@ -26,7 +27,7 @@ public class User {
 
     @Column(name = "password_changed_at")
     private LocalDateTime passwordChangedAt;
-
+    
     public User(String email, String password) {
         this.email = email;
         this.password = password;

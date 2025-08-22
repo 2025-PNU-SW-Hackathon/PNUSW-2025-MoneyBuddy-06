@@ -4,12 +4,16 @@ import com.moneybuddy.moneylog.dto.UserLoginRequest;
 import com.moneybuddy.moneylog.dto.UserLoginResponse;
 import com.moneybuddy.moneylog.dto.UserSignupRequest;
 import com.moneybuddy.moneylog.dto.UserSignupResponse;
+import com.moneybuddy.moneylog.dto.UserDeleteRequest;
 import com.moneybuddy.moneylog.service.UserService;
+
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import jakarta.validation.Valid;
+import jakarta.servlet.http.HttpServletRequest;
 
 @RestController
 @RequiredArgsConstructor
@@ -30,7 +34,7 @@ public class UserController {
                     .body(new UserSignupResponse("fail", e.getMessage()));
         }
     }
-}
+  
     @PostMapping("/login")
     public ResponseEntity<UserLoginResponse> login(@Valid @RequestBody UserLoginRequest request) {
         try {
@@ -39,6 +43,17 @@ public class UserController {
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest()
                     .body(new UserLoginResponse("로그인 실패: " + e.getMessage()));
+        }
+    }
+
+    @DeleteMapping("/delete")
+    public ResponseEntity<String> deleteUser(@Valid @RequestBody UserDeleteRequest request,
+                                             HttpServletRequest httpServletRequest) {
+        try {
+            userService.deleteUser(request, httpServletRequest);
+            return ResponseEntity.ok("회원 탈퇴가 완료되었습니다.");
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body("회원 탈퇴 실패: " + e.getMessage());
         }
     }
 }

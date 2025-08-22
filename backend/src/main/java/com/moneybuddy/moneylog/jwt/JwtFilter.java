@@ -1,8 +1,8 @@
 package com.moneybuddy.moneylog.jwt;
 
 import com.moneybuddy.moneylog.domain.User;
-import com.moneybuddy.moneylog.repository.RevokedAccessTokenRepository;
 import com.moneybuddy.moneylog.repository.UserRepository;
+import com.moneybuddy.moneylog.repository.RevokedAccessTokenRepository;
 import com.moneybuddy.moneylog.security.CustomUserDetails;
 
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -106,7 +106,6 @@ public class JwtFilter extends OncePerRequestFilter {
                 authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
                 SecurityContextHolder.getContext().setAuthentication(authentication);
-
             } catch (io.jsonwebtoken.JwtException e) {
                 unauthorized(response, "토큰이 유효하지 않습니다.");
                 return;
