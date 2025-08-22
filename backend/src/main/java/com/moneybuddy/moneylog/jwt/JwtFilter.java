@@ -3,16 +3,18 @@ package com.moneybuddy.moneylog.jwt;
 import com.moneybuddy.moneylog.repository.RevokedAccessTokenRepository;
 import com.moneybuddy.moneylog.repository.UserRepository;
 import com.moneybuddy.moneylog.security.CustomUserDetails;
-import jakarta.servlet.FilterChain;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import lombok.RequiredArgsConstructor;
+
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
+
+import lombok.RequiredArgsConstructor;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
 import java.time.ZoneId;
@@ -67,6 +69,17 @@ public class JwtFilter extends OncePerRequestFilter {
                         "PUT".equalsIgnoreCase(request.getMethod())
                                 && "/api/v1/users/password".equals(path);
 
+                // 비밀번호 변경 요청이 아닐 때만 "이전 토큰 차단" 적용
+                if (!isPasswordChange && user.getPasswordChangedAt() != null) {
+                    var changedAtInstant = user.getPasswordChangedAt()
+                            .atZone(java.time.ZoneId.systemDefault())
+                            .toInstant();
+
+                    if (iat == null || iat.toInstant().isBefore(changedAtInstant)) {
+                        unauthorized(response, "로그인이 만료되었습니다. 다시 로그인해 주세요.");
+                        return;
+                    }
+                  
                 // 토큰 발급 시각(iat)과 비번 변경 시각 비교
                 long tokenIssuedAt = Optional.ofNullable(jwtUtil.getIssuedAt(token))
                         .map(d -> d.toInstant().toEpochMilli())
