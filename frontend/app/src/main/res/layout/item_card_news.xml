@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_marginHorizontal="8dp"
+    app:cardCornerRadius="16dp"
+    app:cardElevation="2dp"
+    app:cardBackgroundColor="@android:color/white">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:padding="20dp">
+
+        <TextView
+            android:id="@+id/text_card_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="카드뉴스 제목이 여기에 표시됩니다"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:maxLines="2"
+            android:ellipsize="end"
+            android:textColor="@android:color/black" />
+
+        <TextView
+            android:id="@+id/text_card_content"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:layout_marginTop="8dp"
+            android:text="카드뉴스 본문 내용이 여기에 길게 표시될 수 있습니다. 본문 내용은 여러 줄이 될 수 있습니다."
+            android:textSize="14sp"
+            android:ellipsize="end"
+            android:textColor="#444444" />
+
+    </LinearLayout>
+
+</com.google.android.material.card.MaterialCardView>
