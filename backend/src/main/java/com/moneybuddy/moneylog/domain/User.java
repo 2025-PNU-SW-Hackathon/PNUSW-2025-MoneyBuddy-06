@@ -20,7 +20,7 @@ public class User {
     @Column(name = "password", nullable = false)
     private String password;
 
-    @Column(name = "mobti_type")
+    @Column(name = "mobti_type", nullable = false)
     private String mobti;
 
     @Column(name = "mobti_updated_at")
@@ -36,9 +36,10 @@ public class User {
     @Column(name = "password_changed_at")
     private LocalDateTime passwordChangedAt;
 
-    public User(String email, String password) {
+    public User(String email, String password, String mobti) {
         this.email = email;
         this.password = password;
+        this.mobti = mobti;
         this.score = 0;
     }
  
