@@ -18,20 +18,22 @@ repositories {
 }
 
 dependencies {
-	implementation 'org.springframework.boot:spring-boot-starter'
-	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
-
 	implementation 'org.springframework.boot:spring-boot-starter-web'
-
-
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
+  implementation 'org.springframework.boot:spring-boot-starter-security'
+	implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
 
 	// Spring Data JPA
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-
-	// MySQL JDBC Driver
+	
+  // MySQL JDBC Driver
 	runtimeOnly 'com.mysql:mysql-connector-j:8.0.33'
+
+  // Dev
+	developmentOnly 'org.springframework.boot:spring-boot-devtools'
+
+	// FCM(Firebase Admin)
+	implementation 'com.google.firebase:firebase-admin:9.3.0'
 
 	// Lombok
 	compileOnly 'org.projectlombok:lombok:1.18.32'
@@ -41,11 +43,10 @@ dependencies {
 	implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
 	runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.5'
 	runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.11.5'
-
-	// FCM
-	implementation 'com.google.firebase:firebase-admin:9.3.0'
-
-	implementation 'org.springframework.boot:spring-boot-starter-security'
+  
+  // Test
+  testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
 tasks.named('test') {
