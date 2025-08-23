@@ -6,13 +6,13 @@ import com.moneybuddy.moneylog.dto.response.QuizResponse;
 import com.moneybuddy.moneylog.dto.response.QuizResultResponse;
 import com.moneybuddy.moneylog.repository.UserRepository;
 import com.moneybuddy.moneylog.service.QuizService;
-import lombok.RequiredArgsConstructor;
+import com.moneybuddy.moneylog.security.CustomUserDetails;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import com.moneybuddy.moneylog.security.CustomUserDetails;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 
+import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping("/api/v1/quiz")
@@ -20,7 +20,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 public class QuizController {
 
     private final QuizService quizService;
-    private final UserRepository userRepository; // 추가 필요
+    private final UserRepository userRepository;
 
     @GetMapping("/today")
     public ResponseEntity<QuizResponse> getTodayQuiz(@AuthenticationPrincipal CustomUserDetails userDetails) {

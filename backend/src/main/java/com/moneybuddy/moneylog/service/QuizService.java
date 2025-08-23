@@ -9,9 +9,10 @@ import com.moneybuddy.moneylog.dto.response.QuizResultResponse;
 import com.moneybuddy.moneylog.repository.QuizRepository;
 import com.moneybuddy.moneylog.repository.UserQuizRepository;
 import com.moneybuddy.moneylog.repository.UserRepository;
-import lombok.RequiredArgsConstructor;
+
 import org.springframework.stereotype.Service;
 
+import lombok.RequiredArgsConstructor;
 import java.time.LocalDate;
 
 @Service
