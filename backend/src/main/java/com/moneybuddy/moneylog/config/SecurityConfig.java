@@ -1,4 +1,4 @@
-package com.moneybuddy.moneylog.security;
+package com.moneybuddy.moneylog.config;
 
 import com.moneybuddy.moneylog.jwt.JwtFilter;
 import com.moneybuddy.moneylog.jwt.JwtUtil;
@@ -40,6 +40,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/v1/users/delete").authenticated()
                         .requestMatchers("/api/v1/users/signup", "/api/v1/users/login").permitAll()
                         .requestMatchers("/api/v1/knowledge/**").permitAll()
+                        .requestMatchers("/api/v1/youth-policy/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtFilter(), UsernamePasswordAuthenticationFilter.class);
