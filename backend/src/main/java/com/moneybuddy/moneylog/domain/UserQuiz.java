@@ -35,6 +35,7 @@ public class UserQuiz {
     @Column(name = "is_correct", nullable = false)
     private Boolean isCorrect;
 
+    @Builder.Default
     @Column(name = "answered_at", nullable = false)
     private LocalDateTime answeredAt = LocalDateTime.now();
 }

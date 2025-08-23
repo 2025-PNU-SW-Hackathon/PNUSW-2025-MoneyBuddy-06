@@ -1,4 +1,4 @@
-package com.moneybuddy.moneylog.dto;
+package com.moneybuddy.moneylog.dto.response;
 
 import com.moneybuddy.moneylog.domain.YouthPolicy;
 import lombok.Builder;

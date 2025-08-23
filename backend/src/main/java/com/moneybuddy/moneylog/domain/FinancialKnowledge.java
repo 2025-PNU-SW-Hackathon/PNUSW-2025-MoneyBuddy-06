@@ -27,7 +27,4 @@ public class FinancialKnowledge {
         this.content = content;
         this.date = date;
     }
-
-    public FinancialKnowledge() {
-    }
 }

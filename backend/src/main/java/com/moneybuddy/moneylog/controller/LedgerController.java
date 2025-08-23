@@ -2,7 +2,7 @@ package com.moneybuddy.moneylog.controller;
 
 import com.moneybuddy.moneylog.dto.request.LedgerRequest;
 import com.moneybuddy.moneylog.dto.request.NotificationRequest;
-import com.moneybuddy.moneylog.dto.response.LedgerEntryDto;
+import com.moneybuddy.moneylog.dto.LedgerEntryDto;
 import com.moneybuddy.moneylog.security.CustomUserDetails;
 import com.moneybuddy.moneylog.service.LedgerService;
 import lombok.RequiredArgsConstructor;

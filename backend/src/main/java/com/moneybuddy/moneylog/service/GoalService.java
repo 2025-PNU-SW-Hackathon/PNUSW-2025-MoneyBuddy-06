@@ -1,7 +1,7 @@
 package com.moneybuddy.moneylog.service;
 
 import com.moneybuddy.moneylog.domain.Goal;
-import com.moneybuddy.moneylog.dto.response.GoalDto;
+import com.moneybuddy.moneylog.dto.GoalDto;
 import com.moneybuddy.moneylog.repository.GoalRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

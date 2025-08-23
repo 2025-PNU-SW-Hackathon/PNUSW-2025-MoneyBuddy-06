@@ -1,11 +1,9 @@
 package com.moneybuddy.moneylog.controller;
 
-import com.moneybuddy.moneylog.dto.response.LedgerEntryDto;
+import com.moneybuddy.moneylog.dto.LedgerEntryDto;
 import com.moneybuddy.moneylog.service.ReceiptService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.AccessDeniedException;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 

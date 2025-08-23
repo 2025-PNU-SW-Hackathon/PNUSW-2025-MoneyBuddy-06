@@ -3,7 +3,7 @@ package com.moneybuddy.moneylog.controller;
 import com.moneybuddy.moneylog.dto.MobtiBriefDto;
 import com.moneybuddy.moneylog.dto.MobtiFullDto;
 import com.moneybuddy.moneylog.dto.MobtiResultDto;
-import com.moneybuddy.moneylog.dto.MobtiSubmitRequest;
+import com.moneybuddy.moneylog.dto.request.MobtiSubmitRequest;
 import com.moneybuddy.moneylog.security.CustomUserDetails;
 import com.moneybuddy.moneylog.service.MobtiService;
 import lombok.RequiredArgsConstructor;

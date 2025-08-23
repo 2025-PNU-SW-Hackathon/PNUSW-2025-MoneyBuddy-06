@@ -1,6 +1,6 @@
 package com.moneybuddy.moneylog.controller;
 
-import com.moneybuddy.moneylog.dto.response.CategoryRatioViewDto;
+import com.moneybuddy.moneylog.dto.CategoryRatioViewDto;
 import com.moneybuddy.moneylog.security.CustomUserDetails;
 import com.moneybuddy.moneylog.service.BudgetAnalyticsService;
 import lombok.RequiredArgsConstructor;

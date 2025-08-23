@@ -33,7 +33,6 @@ public class YouthPolicy {
     @Column(columnDefinition = "TEXT")
     private String applicationMethod;
 
-
     @Column(columnDefinition = "TEXT", nullable = false)
     private String description;
 

@@ -5,7 +5,7 @@ import com.moneybuddy.moneylog.domain.User;
 import com.moneybuddy.moneylog.dto.MobtiBriefDto;
 import com.moneybuddy.moneylog.dto.MobtiFullDto;
 import com.moneybuddy.moneylog.dto.MobtiResultDto;
-import com.moneybuddy.moneylog.dto.MobtiSubmitRequest;
+import com.moneybuddy.moneylog.dto.request.MobtiSubmitRequest;
 import com.moneybuddy.moneylog.dto.UserProfileDto;
 import com.moneybuddy.moneylog.repository.MobtiInfoRepository;
 import com.moneybuddy.moneylog.repository.UserRepository;

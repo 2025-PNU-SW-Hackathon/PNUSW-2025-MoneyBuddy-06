@@ -1,7 +1,7 @@
 package com.moneybuddy.moneylog.controller;
 
 import com.moneybuddy.moneylog.dto.request.GoalUpsertRequest;
-import com.moneybuddy.moneylog.dto.response.GoalDto;
+import com.moneybuddy.moneylog.dto.GoalDto;
 import com.moneybuddy.moneylog.security.CustomUserDetails;
 import com.moneybuddy.moneylog.service.GoalService;
 import lombok.RequiredArgsConstructor;

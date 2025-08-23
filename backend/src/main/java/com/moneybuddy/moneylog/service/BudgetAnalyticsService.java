@@ -1,6 +1,7 @@
 package com.moneybuddy.moneylog.service;
 
-import com.moneybuddy.moneylog.dto.response.*;
+import com.moneybuddy.moneylog.dto.CategoryRatioItemDto;
+import com.moneybuddy.moneylog.dto.CategoryRatioViewDto;
 import com.moneybuddy.moneylog.repository.GoalRepository;
 import com.moneybuddy.moneylog.repository.LedgerRepository;
 import lombok.RequiredArgsConstructor;
