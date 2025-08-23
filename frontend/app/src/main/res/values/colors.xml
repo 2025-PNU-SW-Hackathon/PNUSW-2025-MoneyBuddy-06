@@ -9,4 +9,5 @@
     <color name="healthcare">#93C5FD</color>      <!-- Blue   → Pastel Blue -->
     <color name="clothing_beauty">#A5B4FC</color> <!-- Indigo → Pastel Indigo -->
     <color name="other">#D8B4FE</color>
+    <color name="bar_remainder">#FFE0E0E0</color>
 </resources>

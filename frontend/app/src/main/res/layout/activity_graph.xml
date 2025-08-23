@@ -161,7 +161,7 @@
             android:layout_width="match_parent" android:layout_height="wrap_content"
             android:orientation="vertical" android:padding="16dp">
 
-            <com.moneybuddy.moneylog.view.PieChartView
+            <com.moneybuddy.moneylog.ledger.view.PieChartView
                 android:id="@+id/pie"
                 android:layout_width="match_parent"
                 android:layout_height="300dp"
