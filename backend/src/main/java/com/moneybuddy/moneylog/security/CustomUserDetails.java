@@ -21,12 +21,12 @@ public class CustomUserDetails implements UserDetails {
 
     @Override
     public String getPassword() {
-        return null;
+        return null; // 사용 안 함
     }
 
     @Override
     public String getUsername() {
-        return email;
+        return email; // 사용자 이름 대신 이메일
     }
 
     @Override

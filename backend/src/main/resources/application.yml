@@ -3,31 +3,66 @@ spring:
     name: moneylog
 
   datasource:
-    url: jdbc:mysql://localhost:3306/moneylog?serverTimezone=Asia/Seoul
+    url: jdbc:mysql://localhost:3306/moneylog?serverTimezone=UTC&characterEncoding=UTF-8
     username: root
     password: 241122
     driver-class-name: com.mysql.cj.jdbc.Driver
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 2
+      pool-name: MoneylogHikariCP
 
   jpa:
     hibernate:
       ddl-auto: update
     show-sql: true
+    open-in-view: false
     properties:
       hibernate:
         format_sql: true
+        
+  jwt:
+    secret: "qM6bK3z9PxVtY7uJr1FgNcT4sA0HdXeZ"
+    expiration: 3600000
+    jdbc:
+      time_zone: Asia/Seoul
 
   sql:
     init:
       mode: always
       encoding: UTF-8
 
-  jwt:
-    secret: "qM6bK3z9PxVtY7uJr1FgNcT4sA0HdXeZ"
-    expiration: 3600000
+  jackson:
+    time-zone: Asia/Seoul
+    serialization:
+      write-dates-as-timestamps: false
+
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 10MB
+      max-request-size: 10MB
+
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.autoconfigure.security.servlet.UserDetailsServiceAutoConfiguration
+
+  task:
+    scheduling:
+      pool:
+        size: 2
+
+firebase:
+  enabled: true
 
 server:
   address: 0.0.0.0
   port: 8080
+
+clova:
+  ocr:
+    url: https://gdbjtc0gwz.apigw.ntruss.com/custom/v1/45221/34ee005010756fc54dbef3500d9cd6102f8676c91a737099b2fde189db9bb3c5/document/receipt
+    secret: UG9sa3ZTZk1OZWN5eGFEQnBHbUtHV1pOYUlMeGFaYmk=
 
 logging:
   level:
