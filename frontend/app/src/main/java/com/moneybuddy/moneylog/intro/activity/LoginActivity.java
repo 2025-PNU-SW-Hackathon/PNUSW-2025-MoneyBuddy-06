@@ -1,4 +1,4 @@
-package com.moneybuddy.moneylog.activity;
+package com.moneybuddy.moneylog.intro.activity;
 
 import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;

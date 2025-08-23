@@ -13,7 +13,7 @@
         android:theme="@style/Theme.Moneylog"
         tools:targetApi="31">
         <activity
-            android:name=".activity.IntroActivity"
+            android:name=".intro.activity.IntroActivity"
             android:exported="true"
             android:theme="@style/Theme.Splash">
             <intent-filter>
@@ -23,11 +23,11 @@
         </activity>
 
         <activity
-            android:name=".activity.MainActivity"
+            android:name=".intro.activity.MainActivity"
             android:exported="false" />
 
         <activity
-            android:name=".activity.LoginActivity"
+            android:name=".intro.activity.LoginActivity"
             android:exported="false" />
     </application>
 
