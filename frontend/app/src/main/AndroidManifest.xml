@@ -23,7 +23,7 @@
         </activity>
 
         <activity
-            android:name=".signup.activity.MainActivity"
+            android:name=".main.MainActivity"
             android:exported="false">
         </activity>
     </application>

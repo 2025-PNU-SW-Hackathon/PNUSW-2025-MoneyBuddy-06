@@ -1,4 +1,4 @@
-package com.moneybuddy.moneylog.signup.activity;
+package com.moneybuddy.moneylog.main;
 
 import android.os.Bundle;
 
