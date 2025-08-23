@@ -23,11 +23,7 @@
         </activity>
 
         <activity
-            android:name=".intro.activity.MainActivity"
-            android:exported="false" />
-
-        <activity
-            android:name=".intro.activity.LoginActivity"
+            android:name=".main.activity.MainActivity"
             android:exported="false" />
     </application>
 

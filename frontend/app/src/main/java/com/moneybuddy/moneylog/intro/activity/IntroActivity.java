@@ -9,6 +9,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.splashscreen.SplashScreen;
 
 import com.moneybuddy.moneylog.common.TokenManager;
+import com.moneybuddy.moneylog.main.activity.MainActivity;
 
 public class IntroActivity extends AppCompatActivity {
 
