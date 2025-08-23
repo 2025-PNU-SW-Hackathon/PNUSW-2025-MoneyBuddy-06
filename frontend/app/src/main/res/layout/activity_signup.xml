@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     android:background="#FFFEF7"
     android:padding="24dp"
-    tools:context=".activity.SignupActivity">
+    tools:context=".signup.activity.SignupActivity">
 
     <!-- 뒤로가기 버튼 -->
     <ImageView

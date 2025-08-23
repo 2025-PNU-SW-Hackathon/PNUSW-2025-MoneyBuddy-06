@@ -1,7 +1,7 @@
 package com.moneybuddy.moneylog.common;
 
-import com.moneybuddy.moneylog.dto.UserSignupRequest;
-import com.moneybuddy.moneylog.dto.UserSignupResponse;
+import com.moneybuddy.moneylog.signup.dto.UserSignupRequest;
+import com.moneybuddy.moneylog.signup.dto.UserSignupResponse;
 
 import retrofit2.Call;
 import retrofit2.http.Body;

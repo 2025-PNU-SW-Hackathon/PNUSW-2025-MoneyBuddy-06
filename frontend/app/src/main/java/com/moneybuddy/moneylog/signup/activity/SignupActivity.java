@@ -1,4 +1,4 @@
-package com.moneybuddy.moneylog.activity;
+package com.moneybuddy.moneylog.signup.activity;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -15,8 +15,8 @@ import android.widget.Toast;
 import com.moneybuddy.moneylog.R;
 import com.moneybuddy.moneylog.common.ApiService;
 import com.moneybuddy.moneylog.common.RetrofitClient;
-import com.moneybuddy.moneylog.dto.UserSignupRequest;
-import com.moneybuddy.moneylog.dto.UserSignupResponse;
+import com.moneybuddy.moneylog.signup.dto.UserSignupRequest;
+import com.moneybuddy.moneylog.signup.dto.UserSignupResponse;
 import com.google.gson.Gson;
 
 import java.io.IOException;

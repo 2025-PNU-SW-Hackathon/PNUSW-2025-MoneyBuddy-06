@@ -1,6 +1,7 @@
-package com.moneybuddy.moneylog.dto;
+package com.moneybuddy.moneylog.signup.dto;
 
 import com.google.gson.annotations.SerializedName;
+
 
 public class UserSignupResponse {
 
