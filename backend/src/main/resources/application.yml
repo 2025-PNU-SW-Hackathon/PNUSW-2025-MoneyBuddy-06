@@ -3,27 +3,47 @@ spring:
     name: moneylog
 
   datasource:
-    url: jdbc:mysql://localhost:3306/moneylog?serverTimezone=Asia/Seoul
+    url: jdbc:mysql://localhost:3306/moneylog?serverTimezone=UTC&characterEncoding=UTF-8
     username: root
     password: 241122
     driver-class-name: com.mysql.cj.jdbc.Driver
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 2
+      pool-name: MoneylogHikariCP
 
   jpa:
     hibernate:
       ddl-auto: update
     show-sql: true
+    open-in-view: false
     properties:
       hibernate:
         format_sql: true
+        jdbc:
+          time_zone: Asia/Seoul
 
   sql:
     init:
       mode: always
       encoding: UTF-8
 
+  jackson:
+    time-zone: Asia/Seoul
+    serialization:
+      write-dates-as-timestamps: false
+
   jwt:
     secret: "qM6bK3z9PxVtY7uJr1FgNcT4sA0HdXeZ"
     expiration: 3600000
+
+  task:
+    scheduling:
+      pool:
+        size: 2
+
+firebase:
+  enabled: true
 
 server:
   address: 0.0.0.0
