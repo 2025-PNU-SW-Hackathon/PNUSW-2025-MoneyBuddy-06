@@ -16,7 +16,7 @@ public class User {
 
     @Column(nullable = false, unique = true)
     private String email;
-
+  
     @Column(name = "password", nullable = false)
     private String password;
 
@@ -35,13 +35,13 @@ public class User {
 
     @Column(name = "password_changed_at")
     private LocalDateTime passwordChangedAt;
-    
+
     public User(String email, String password) {
         this.email = email;
         this.password = password;
         this.score = 0;
     }
-  
+ 
     public void increaseScore(int point) {
         this.score += point;
     }
