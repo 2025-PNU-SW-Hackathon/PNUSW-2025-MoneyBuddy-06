@@ -1,14 +1,16 @@
 package com.moneybuddy.moneylog.domain;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
 @Entity
 @Getter
 @Setter
+@NoArgsConstructor(access = AccessLevel.PROTECTED) // 기본 생성자 추가
+@AllArgsConstructor
+@Builder
 public class UserChallenge {
 
     @Id

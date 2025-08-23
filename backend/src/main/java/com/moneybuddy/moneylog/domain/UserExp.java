@@ -23,12 +23,15 @@ public class UserExp {
     @MapsId
     private User user;
 
-    public void addExperience(int amount, int expPerLevel) {
+    public boolean addExperience(int amount, int expPerLevel) {
         this.experience += amount;
+        boolean leveledUp = false;
         while (this.experience >= expPerLevel) {
             this.experience -= expPerLevel;
             this.level++;
+            leveledUp = true;
         }
+        return leveledUp;
     }
 }
 

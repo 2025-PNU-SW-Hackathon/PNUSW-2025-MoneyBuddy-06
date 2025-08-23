@@ -1,8 +1,6 @@
 package com.moneybuddy.moneylog.controller;
 
 import com.moneybuddy.moneylog.dto.request.ChallengeStatusRequest;
-import com.moneybuddy.moneylog.dto.response.ChallengeRewardResponse;
-import com.moneybuddy.moneylog.dto.request.ChallengeSuccessRequest;
 import com.moneybuddy.moneylog.dto.response.ChallengeStatusResponse;
 import com.moneybuddy.moneylog.security.CustomUserDetails;
 import com.moneybuddy.moneylog.service.ChallengeSuccessService;
@@ -14,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/challenges")
-public class ChallengeSuccessController {
+public class ChallengeStatusController {
 
     private final ChallengeSuccessService challengeSuccessService;
 

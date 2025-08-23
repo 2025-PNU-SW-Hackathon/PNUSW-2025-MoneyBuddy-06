@@ -14,6 +14,4 @@ public interface ChallengeRepository extends JpaRepository<Challenge, Long> {
 
     List<Challenge> findByTypeAndIsSharedTrue(String type);
 
-    List<Challenge> findByTypeAndCategoryAndIsAccountLinkedAndIsSharedTrue(String type, String category, boolean isAccountLinked);
-
 }
