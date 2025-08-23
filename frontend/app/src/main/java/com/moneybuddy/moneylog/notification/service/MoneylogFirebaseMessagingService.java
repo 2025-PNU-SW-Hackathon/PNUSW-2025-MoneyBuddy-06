@@ -1,4 +1,4 @@
-package com.moneybuddy.moneylog.service;
+package com.moneybuddy.moneylog.notification.service;
 
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -6,7 +6,6 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
-import android.net.Uri;
 import android.os.Build;
 
 import androidx.annotation.Nullable;
@@ -15,8 +14,8 @@ import androidx.core.app.NotificationCompat;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 import com.moneybuddy.moneylog.R;
-import com.moneybuddy.moneylog.activity.PushOpenActivity;
-import com.moneybuddy.moneylog.network.PushTrackingRepository;
+import com.moneybuddy.moneylog.notification.activity.PushOpenActivity;
+import com.moneybuddy.moneylog.notification.network.PushTrackingRepository;
 
 import java.util.Map;
 

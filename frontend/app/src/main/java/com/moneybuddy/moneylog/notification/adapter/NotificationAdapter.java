@@ -1,4 +1,4 @@
-package com.moneybuddy.moneylog.adapter;
+package com.moneybuddy.moneylog.notification.adapter;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,10 +9,9 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.moneybuddy.moneylog.R;
-import com.moneybuddy.moneylog.model.FooterMarker;
-import com.moneybuddy.moneylog.model.Notice;
-import com.moneybuddy.moneylog.viewholder.FooterViewHolder;
-import com.moneybuddy.moneylog.viewholder.NoticeViewHolder;
+import com.moneybuddy.moneylog.notification.model.Notice;
+import com.moneybuddy.moneylog.notification.viewholder.FooterViewHolder;
+import com.moneybuddy.moneylog.notification.viewholder.NoticeViewHolder;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;

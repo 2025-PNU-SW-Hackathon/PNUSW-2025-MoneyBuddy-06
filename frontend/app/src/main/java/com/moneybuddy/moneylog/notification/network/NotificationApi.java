@@ -1,9 +1,6 @@
-package com.moneybuddy.moneylog.network;
+package com.moneybuddy.moneylog.notification.network;
 
-import com.moneybuddy.moneylog.model.ListResponse;
-import com.moneybuddy.moneylog.model.Notice;
-
-import java.util.List;
+import com.moneybuddy.moneylog.notification.model.ListResponse;
 
 import retrofit2.Call;
 import retrofit2.http.GET;

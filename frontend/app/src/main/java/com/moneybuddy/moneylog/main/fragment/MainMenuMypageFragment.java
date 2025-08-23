@@ -1,4 +1,4 @@
-package com.moneybuddy.moneylog.fragment;
+package com.moneybuddy.moneylog.main.fragment;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;

@@ -1,4 +1,4 @@
-package com.moneybuddy.moneylog.fragment;
+package com.moneybuddy.moneylog.main.fragment;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -15,8 +15,8 @@ import com.google.android.material.badge.BadgeDrawable;
 import com.google.android.material.badge.BadgeUtils;
 import com.google.android.material.badge.ExperimentalBadgeUtils;
 import com.moneybuddy.moneylog.R;
-import com.moneybuddy.moneylog.activity.NotificationActivity;
-import com.moneybuddy.moneylog.network.NotificationRepository;
+import com.moneybuddy.moneylog.notification.activity.NotificationActivity;
+import com.moneybuddy.moneylog.notification.network.NotificationRepository;
 
 import retrofit2.Call;
 import retrofit2.Callback;

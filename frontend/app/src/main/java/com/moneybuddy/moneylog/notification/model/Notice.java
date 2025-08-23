@@ -1,4 +1,4 @@
-package com.moneybuddy.moneylog.model;
+package com.moneybuddy.moneylog.notification.model;
 
 import androidx.annotation.Nullable;
 import com.google.gson.annotations.SerializedName;

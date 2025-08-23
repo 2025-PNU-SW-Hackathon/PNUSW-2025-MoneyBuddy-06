@@ -1,4 +1,4 @@
-package com.moneybuddy.moneylog.activity;
+package com.moneybuddy.moneylog.main.activity;
 
 import android.os.Bundle;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -10,10 +10,10 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.moneybuddy.moneylog.R;
-import com.moneybuddy.moneylog.fragment.MainMenuChallengeFragment;
-import com.moneybuddy.moneylog.fragment.MainMenuHomeFragment;
-import com.moneybuddy.moneylog.fragment.MainMenuLedgerFragment;
-import com.moneybuddy.moneylog.fragment.MainMenuMypageFragment;
+import com.moneybuddy.moneylog.main.fragment.MainMenuChallengeFragment;
+import com.moneybuddy.moneylog.main.fragment.MainMenuHomeFragment;
+import com.moneybuddy.moneylog.main.fragment.MainMenuLedgerFragment;
+import com.moneybuddy.moneylog.main.fragment.MainMenuMypageFragment;
 
 public class MainMenuActivity extends AppCompatActivity {
 

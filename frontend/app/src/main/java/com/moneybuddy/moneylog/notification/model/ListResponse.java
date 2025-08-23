@@ -1,4 +1,4 @@
-package com.moneybuddy.moneylog.model;
+package com.moneybuddy.moneylog.notification.model;
 
 import java.util.List;
 

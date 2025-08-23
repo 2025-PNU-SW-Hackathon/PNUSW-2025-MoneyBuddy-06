@@ -1,4 +1,4 @@
-package com.moneybuddy.moneylog.viewholder;
+package com.moneybuddy.moneylog.notification.viewholder;
 
 import android.graphics.Typeface;
 import android.view.View;
@@ -8,7 +8,7 @@ import android.widget.TextView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.moneybuddy.moneylog.R;
-import com.moneybuddy.moneylog.model.Notice;
+import com.moneybuddy.moneylog.notification.model.Notice;
 
 public class NoticeViewHolder extends RecyclerView.ViewHolder {
     private final ImageView icon;

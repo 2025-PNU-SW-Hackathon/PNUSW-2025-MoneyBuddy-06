@@ -1,4 +1,4 @@
-package com.moneybuddy.moneylog.viewholder;
+package com.moneybuddy.moneylog.notification.viewholder;
 
 import android.view.View;
 

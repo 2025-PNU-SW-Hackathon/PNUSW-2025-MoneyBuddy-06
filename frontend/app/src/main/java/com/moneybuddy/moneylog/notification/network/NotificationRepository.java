@@ -1,8 +1,9 @@
-package com.moneybuddy.moneylog.network;
+package com.moneybuddy.moneylog.notification.network;
 
 import android.content.Context;
 
-import com.moneybuddy.moneylog.model.ListResponse;
+import com.moneybuddy.moneylog.common.RetrofitProvider;
+import com.moneybuddy.moneylog.notification.model.ListResponse;
 
 import retrofit2.Callback;
 

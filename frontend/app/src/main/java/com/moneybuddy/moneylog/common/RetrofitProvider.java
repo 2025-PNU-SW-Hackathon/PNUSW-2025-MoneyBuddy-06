@@ -1,4 +1,4 @@
-package com.moneybuddy.moneylog.network;
+package com.moneybuddy.moneylog.common;
 
 import android.content.Context;
 

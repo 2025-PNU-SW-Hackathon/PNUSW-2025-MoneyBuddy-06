@@ -1,4 +1,4 @@
-package com.moneybuddy.moneylog.activity;
+package com.moneybuddy.moneylog.notification.activity;
 
 import android.content.Intent;
 import android.graphics.Color;
@@ -17,11 +17,11 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.appbar.MaterialToolbar;
 import com.moneybuddy.moneylog.R;
-import com.moneybuddy.moneylog.adapter.NotificationAdapter;
-import com.moneybuddy.moneylog.model.FooterMarker;
-import com.moneybuddy.moneylog.model.ListResponse;
-import com.moneybuddy.moneylog.model.Notice;
-import com.moneybuddy.moneylog.network.NotificationRepository;
+import com.moneybuddy.moneylog.notification.adapter.NotificationAdapter;
+import com.moneybuddy.moneylog.notification.model.FooterMarker;
+import com.moneybuddy.moneylog.notification.model.ListResponse;
+import com.moneybuddy.moneylog.notification.model.Notice;
+import com.moneybuddy.moneylog.notification.network.NotificationRepository;
 import com.moneybuddy.moneylog.util.DeepLinkResolver;
 
 import java.util.ArrayList;

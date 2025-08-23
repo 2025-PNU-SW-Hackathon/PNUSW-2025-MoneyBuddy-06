@@ -1,9 +1,9 @@
-package com.moneybuddy.moneylog.network;
+package com.moneybuddy.moneylog.notification.network;
 
 import android.content.Context;
 import android.os.Build;
 
-import com.moneybuddy.moneylog.network.RetrofitProvider;
+import com.moneybuddy.moneylog.common.RetrofitProvider;
 
 import java.util.Map;
 

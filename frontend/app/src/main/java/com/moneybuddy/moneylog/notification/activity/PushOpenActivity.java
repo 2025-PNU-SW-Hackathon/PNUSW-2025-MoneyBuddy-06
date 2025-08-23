@@ -1,4 +1,4 @@
-package com.moneybuddy.moneylog.activity;
+package com.moneybuddy.moneylog.notification.activity;
 
 import android.content.Intent;
 import android.net.Uri;
@@ -7,8 +7,7 @@ import android.os.Bundle;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.moneybuddy.moneylog.activity.NotificationActivity;
-import com.moneybuddy.moneylog.network.PushTrackingRepository;
+import com.moneybuddy.moneylog.notification.network.PushTrackingRepository;
 
 import java.util.HashMap;
 import java.util.Map;
