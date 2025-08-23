@@ -1,4 +1,4 @@
-package com.moneybuddy.moneylog.activity;
+package com.moneybuddy.moneylog.finance.activity;
 
 import android.content.Intent;
 import android.net.Uri;
@@ -25,15 +25,14 @@ import androidx.viewpager2.widget.ViewPager2;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.tabs.TabLayout;
 import com.moneybuddy.moneylog.R;
-import com.moneybuddy.moneylog.api.QuizApiService;
-import com.moneybuddy.moneylog.api.RetrofitClient;
-import com.moneybuddy.moneylog.adapter.CardNewsAdapter;
-import com.moneybuddy.moneylog.dto.request.QuizAnswerRequest;
-import com.moneybuddy.moneylog.dto.response.KnowledgeResponse;
-import com.moneybuddy.moneylog.dto.response.QuizResponse;
-import com.moneybuddy.moneylog.dto.response.QuizResultResponse;
-import com.moneybuddy.moneylog.dto.response.YouthPolicyResponse;
-import com.moneybuddy.moneylog.network.FinanceApiService;
+import com.moneybuddy.moneylog.common.RetrofitClient;
+import com.moneybuddy.moneylog.finance.adapter.CardNewsAdapter;
+import com.moneybuddy.moneylog.finance.dto.request.QuizAnswerRequest;
+import com.moneybuddy.moneylog.finance.dto.response.KnowledgeResponse;
+import com.moneybuddy.moneylog.finance.dto.response.QuizResponse;
+import com.moneybuddy.moneylog.finance.dto.response.QuizResultResponse;
+import com.moneybuddy.moneylog.finance.dto.response.YouthPolicyResponse;
+import com.moneybuddy.moneylog.common.ApiService;
 
 import java.util.List;
 import retrofit2.Call;
@@ -59,7 +58,7 @@ public class FinanceInfoActivity extends AppCompatActivity {
     private ImageButton btnQuizO, btnQuizX;
 
     // 네트워크 및 데이터
-    private QuizApiService quizApiService;
+    private ApiService apiService;
     private Long currentQuizId;
 
     @Override
@@ -81,10 +80,12 @@ public class FinanceInfoActivity extends AppCompatActivity {
         setupCardNewsSection();
         loadCardNewsData();
 
-        // 퀴즈 API 서비스 초기화 및 데이터 로딩
-        quizApiService = RetrofitClient.getClient(this).create(QuizApiService.class);
+        // ApiService 초기화
+        apiService = RetrofitClient.getApiService(this);
+
+        // 데이터 로딩 호출
+        loadCardNewsData();
         loadTodayQuiz();
-        loadYouthPolicies();
 
         // 청년 정책 데이터 로딩
         loadYouthPolicies();
@@ -110,7 +111,6 @@ public class FinanceInfoActivity extends AppCompatActivity {
     }
 
     private void loadYouthPolicies() {
-        FinanceApiService apiService = RetrofitClient.getClient(this).create(FinanceApiService.class);
         Call<List<YouthPolicyResponse>> call = apiService.getAllYouthPolicies();
 
         call.enqueue(new Callback<List<YouthPolicyResponse>>() {
@@ -257,7 +257,6 @@ public class FinanceInfoActivity extends AppCompatActivity {
     }
 
     private void loadCardNewsData() {
-        FinanceApiService apiService = RetrofitClient.getClient(this).create(FinanceApiService.class);
         Call<List<KnowledgeResponse>> call = apiService.getTodayCardNews();
 
         call.enqueue(new Callback<List<KnowledgeResponse>>() {
@@ -279,7 +278,7 @@ public class FinanceInfoActivity extends AppCompatActivity {
     }
 
     private void loadTodayQuiz() {
-        quizApiService.getTodayQuiz().enqueue(new Callback<QuizResponse>() {
+        apiService.getTodayQuiz().enqueue(new Callback<QuizResponse>() {
             @Override
             public void onResponse(Call<QuizResponse> call, Response<QuizResponse> response) {
                 if (response.isSuccessful() && response.body() != null) {
@@ -303,7 +302,7 @@ public class FinanceInfoActivity extends AppCompatActivity {
     private void submitQuizAnswer(boolean userAnswer) {
         QuizAnswerRequest request = new QuizAnswerRequest(currentQuizId, userAnswer);
 
-        quizApiService.submitAnswer(request).enqueue(new Callback<QuizResultResponse>() {
+        apiService.submitAnswer(request).enqueue(new Callback<QuizResultResponse>() {
             @Override
             public void onResponse(Call<QuizResultResponse> call, Response<QuizResultResponse> response) {
                 if (response.isSuccessful() && response.body() != null) {

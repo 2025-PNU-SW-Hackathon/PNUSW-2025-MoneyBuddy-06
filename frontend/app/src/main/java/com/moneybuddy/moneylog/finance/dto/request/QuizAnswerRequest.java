@@ -1,4 +1,4 @@
-package com.moneybuddy.moneylog.dto.request;
+package com.moneybuddy.moneylog.finance.dto.request;
 
 public class QuizAnswerRequest {
     private Long quizId;

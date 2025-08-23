@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:background="#FFFEF7"
     android:orientation="vertical"
-    tools:context=".fragment.MainMenuHomeFragment">
+    tools:context=".main.fragment.MainMenuHomeFragment">
 
     <Button
         android:id="@+id/button4"

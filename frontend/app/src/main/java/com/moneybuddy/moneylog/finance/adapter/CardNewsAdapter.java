@@ -1,4 +1,4 @@
-package com.moneybuddy.moneylog.adapter;
+package com.moneybuddy.moneylog.finance.adapter;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -7,7 +7,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import com.moneybuddy.moneylog.R;
-import com.moneybuddy.moneylog.dto.response.KnowledgeResponse;
+import com.moneybuddy.moneylog.finance.dto.response.KnowledgeResponse;
 import java.util.ArrayList;
 import java.util.List;
 

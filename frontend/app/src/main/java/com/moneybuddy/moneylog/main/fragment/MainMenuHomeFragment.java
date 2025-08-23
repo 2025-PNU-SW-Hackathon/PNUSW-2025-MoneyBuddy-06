@@ -1,4 +1,4 @@
-package com.moneybuddy.moneylog.fragment;
+package com.moneybuddy.moneylog.main.fragment;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -12,7 +12,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.moneybuddy.moneylog.R;
-import com.moneybuddy.moneylog.activity.FinanceInfoActivity;
+import com.moneybuddy.moneylog.finance.activity.FinanceInfoActivity;
 
 public class MainMenuHomeFragment extends Fragment {
 
