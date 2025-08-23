@@ -13,7 +13,7 @@
         android:theme="@style/Theme.Moneylog"
         tools:targetApi="31">
         <activity
-            android:name=".activity.LoginActivity"
+            android:name=".login.activity.LoginActivity"
             android:exported="true">
 
             <intent-filter>
@@ -22,9 +22,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".activity.HomeActivity" />
-        <activity android:name=".activity.SignupActivity"/>
-        <activity android:name=".activity.ForgotPasswordActivity"/>
+        <activity android:name=".login.activity.HomeActivity" />
+        <activity android:name=".login.activity.SignupActivity"/>
+        <activity android:name=".login.activity.ForgotPasswordActivity"/>
 
     </application>
 

@@ -1,6 +1,6 @@
-package com.moneybuddy.moneylog.network;
-import com.moneybuddy.moneylog.dto.LoginRequest;
-import com.moneybuddy.moneylog.dto.LoginResponse;
+package com.moneybuddy.moneylog.login.network;
+import com.moneybuddy.moneylog.login.dto.LoginRequest;
+import com.moneybuddy.moneylog.login.dto.LoginResponse;
 
 import retrofit2.Call;
 import retrofit2.http.Body;

@@ -1,7 +1,10 @@
 // util/TokenInterceptor.java
-package com.moneybuddy.moneylog.util;
+package com.moneybuddy.moneylog.common;
 
 import androidx.annotation.Nullable;
+
+import com.moneybuddy.moneylog.util.AuthManager;
+
 import java.io.IOException;
 import okhttp3.Interceptor;
 import okhttp3.Request;

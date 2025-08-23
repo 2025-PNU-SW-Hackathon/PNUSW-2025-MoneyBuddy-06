@@ -1,10 +1,10 @@
-package com.moneybuddy.moneylog.network;
+package com.moneybuddy.moneylog.login.network;
 
 import android.content.Context;
 
-import com.moneybuddy.moneylog.dto.LoginRequest;
-import com.moneybuddy.moneylog.dto.LoginResponse;
-import com.moneybuddy.moneylog.network.RetrofitProvider;
+import com.moneybuddy.moneylog.login.dto.LoginRequest;
+import com.moneybuddy.moneylog.login.dto.LoginResponse;
+import com.moneybuddy.moneylog.common.RetrofitProvider;
 import com.moneybuddy.moneylog.util.ErrorParser;
 
 import retrofit2.Call;

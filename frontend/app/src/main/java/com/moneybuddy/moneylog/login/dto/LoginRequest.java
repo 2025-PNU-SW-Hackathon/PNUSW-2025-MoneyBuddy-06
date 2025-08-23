@@ -1,4 +1,4 @@
-package com.moneybuddy.moneylog.dto;
+package com.moneybuddy.moneylog.login.dto;
 
 public class LoginRequest {
     public String email;

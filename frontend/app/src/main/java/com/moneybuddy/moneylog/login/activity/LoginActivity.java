@@ -1,4 +1,4 @@
-package com.moneybuddy.moneylog.activity;
+package com.moneybuddy.moneylog.login.activity;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -12,8 +12,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.moneybuddy.moneylog.R;
-import com.moneybuddy.moneylog.dto.LoginResponse;
-import com.moneybuddy.moneylog.network.AuthRepository;
+import com.moneybuddy.moneylog.login.dto.LoginResponse;
+import com.moneybuddy.moneylog.login.network.AuthRepository;
 import com.moneybuddy.moneylog.util.AuthManager;
 
 public class LoginActivity extends AppCompatActivity {

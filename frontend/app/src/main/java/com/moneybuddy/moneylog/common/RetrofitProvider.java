@@ -1,10 +1,10 @@
-package com.moneybuddy.moneylog.network;
+package com.moneybuddy.moneylog.common;
 
 import android.content.Context;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.moneybuddy.moneylog.util.TokenInterceptor; // 선택
+import com.moneybuddy.moneylog.login.network.AuthApi;
 
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;

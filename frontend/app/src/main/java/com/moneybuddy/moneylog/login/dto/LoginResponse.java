@@ -1,4 +1,4 @@
-package com.moneybuddy.moneylog.dto;
+package com.moneybuddy.moneylog.login.dto;
 
 // 백엔드: token, userId, email, message
 public class LoginResponse {
