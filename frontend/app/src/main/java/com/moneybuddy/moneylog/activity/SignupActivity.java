@@ -3,6 +3,7 @@ package com.moneybuddy.moneylog.activity;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.util.Patterns;
@@ -12,14 +13,19 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.moneybuddy.moneylog.R;
+import com.moneybuddy.moneylog.common.ApiService;
+import com.moneybuddy.moneylog.common.RetrofitClient;
+import com.moneybuddy.moneylog.dto.UserSignupRequest;
+import com.moneybuddy.moneylog.dto.UserSignupResponse;
+import com.google.gson.Gson;
+
+import java.io.IOException;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
-import retrofit2.http.Body;
-import retrofit2.http.POST;
+
+import com.moneybuddy.moneylog.activity.LoginActivity;
 
 public class SignupActivity extends AppCompatActivity {
     private ImageView ivBackArrow;
@@ -32,19 +38,23 @@ public class SignupActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_signup);
 
+        // UI 요소 초기화
         ivBackArrow = findViewById(R.id.ic_arrow_back);
         etEmail = findViewById(R.id.et_email);
         etPassword = findViewById(R.id.et_password);
         etPasswordConfirm = findViewById(R.id.et_password_confirm);
         btnSignup = findViewById(R.id.btn_signup);
+        
+        apiService = RetrofitClient.getApiService();
 
+        // 뒤로가기 버튼 클릭
         ivBackArrow.setOnClickListener(v -> finish());
 
+        // 회원가입 버튼 클릭 시 유효성 검사 및 API 호출
         btnSignup.setOnClickListener(v -> attemptSignUp());
-
-        setupRetrofit();
     }
 
+    // 회원가입 시도
     private void attemptSignUp() {
         String email = etEmail.getText().toString().trim();
         String password = etPassword.getText().toString().trim();
@@ -72,35 +82,52 @@ public class SignupActivity extends AppCompatActivity {
             return;
         }
 
+        // 서버에 회원가입 요청
         registerUser(email, password);
     }
 
-    private void setupRetrofit() {
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("http://server-address.com/") // 실제 API 서버 주소
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-
-        apiService = retrofit.create(ApiService.class);
-    }
-
+    // 서버에 실제 회원가입 요청
     private void registerUser(String email, String password) {
-        SignupRequest signupRequest = new SignupRequest(email, password);
-        Call<Void> call = apiService.signup(signupRequest);
+        UserSignupRequest signupRequest = new UserSignupRequest(email, password);
+        Call<UserSignupResponse> call = apiService.signup(signupRequest);
 
-        call.enqueue(new Callback<>() {
+        call.enqueue(new Callback<UserSignupResponse>() {
             @Override
-            public void onResponse(@NonNull Call<Void> call, @NonNull Response<Void> response) {
-                if (response.isSuccessful()) {
-                    showToast("회원가입이 완료되었습니다. 로그인 해주세요.");
-                    finish();
+            public void onResponse(@NonNull Call<UserSignupResponse> call, @NonNull Response<UserSignupResponse> response) {
+                // HTTP 통신 성공
+                if (response.isSuccessful() && response.body() != null) {
+                    UserSignupResponse signupResponse = response.body();
+                    if ("success".equals(signupResponse.getStatus())) {
+                        // 회원가입 성공
+                        showToast(signupResponse.getMessage());
+                        // 로그인 화면으로 이동
+                        Intent intent = new Intent(SignupActivity.this, LoginActivity.class);
+                        startActivity(intent);
+                        finish(); // 현재 액티비티 종료
+                    } else {
+                        // 실패 메시지 띄움
+                        showToast(signupResponse.getMessage());
+                    }
                 } else {
-                    showToast("회원가입에 실패했습니다. (에러 코드: " + response.code() + ")");
+                    // HTTP 통신은 성공했으나, 서버에서 4xx, 5xx 에러 응답
+                    try {
+                        if (response.errorBody() != null) {
+                            String errorBodyString = response.errorBody().string();
+                            UserSignupResponse errorResponse = new Gson().fromJson(errorBodyString, UserSignupResponse.class);
+                            showToast(errorResponse.getMessage());
+                        } else {
+                            showToast("회원가입에 실패했습니다. (에러 코드: " + response.code() + ")");
+                        }
+                    } catch (IOException e) {
+                        Log.e("SignupActivity", "Error parsing error body", e);
+                        showToast("오류가 발생했습니다.");
+                    }
                 }
             }
 
             @Override
-            public void onFailure(@NonNull Call<Void> call, @NonNull Throwable t) {
+            public void onFailure(@NonNull Call<UserSignupResponse> call, @NonNull Throwable t) {
+                // 네트워크 연결 실패 등
                 showToast("네트워크 오류가 발생했습니다.");
                 Log.e("SignupActivity", "Network error: " + t.getMessage());
             }
@@ -110,19 +137,4 @@ public class SignupActivity extends AppCompatActivity {
     private void showToast(String message) {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
     }
-}
-
-class SignupRequest {
-    private final String email;
-    private final String password;
-
-    public SignupRequest(String email, String password) {
-        this.email = email;
-        this.password = password;
-    }
-}
-
-interface ApiService {
-    @POST("signup")
-    Call<Void> signup(@Body SignupRequest signupRequest);
 }
