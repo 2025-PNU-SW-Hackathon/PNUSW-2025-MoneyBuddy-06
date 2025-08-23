@@ -14,4 +14,5 @@ public interface UserRepository extends JpaRepository<User, Long> {
     // 모든 사용자 ID만 가져오기
     @Query("select u.id from User u")
     List<Long> findAllIds();
+
 }

@@ -20,6 +20,10 @@ spring:
     properties:
       hibernate:
         format_sql: true
+        
+  jwt:
+    secret: "qM6bK3z9PxVtY7uJr1FgNcT4sA0HdXeZ"
+    expiration: 3600000
         jdbc:
           time_zone: Asia/Seoul
 
@@ -32,10 +36,6 @@ spring:
     time-zone: Asia/Seoul
     serialization:
       write-dates-as-timestamps: false
-
-  jwt:
-    secret: "qM6bK3z9PxVtY7uJr1FgNcT4sA0HdXeZ"
-    expiration: 3600000
 
   servlet:
     multipart:

@@ -8,4 +8,4 @@ public enum NotificationType {
     QUIZ_TODAY,
     FINANCE_INFO,
     LEVEL_UP
-}
+  }

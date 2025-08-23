@@ -44,7 +44,7 @@ public class JwtFilter extends OncePerRequestFilter {
 
             try {
                 jwtUtil.validateToken(token);
-
+              
                 // 로그아웃된 토큰인지 체크
                 String jti = jwtUtil.getJti(token);
                 if (jti != null && revokedRepo.existsByJti(jti)) {
