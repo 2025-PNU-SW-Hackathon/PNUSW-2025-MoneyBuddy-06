@@ -4,11 +4,12 @@ import com.moneybuddy.moneylog.domain.User;
 import com.moneybuddy.moneylog.domain.UserDeviceToken;
 import com.moneybuddy.moneylog.repository.UserDeviceTokenRepository;
 import com.moneybuddy.moneylog.repository.UserRepository;
-import lombok.RequiredArgsConstructor;
+
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import lombok.RequiredArgsConstructor;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 
@@ -40,6 +41,12 @@ public class UserAccountService {
             t.setReauthRequired(true);
         }
 
+        // 비밀번호 변경 시각 기록
+        try {
+            user.getClass().getDeclaredField("passwordChangedAt");
+            user.setPasswordChangedAt(LocalDateTime.now());
+        } catch (NoSuchFieldException ignored) {}
+
         userRepository.save(user);
     }
 
@@ -64,6 +71,6 @@ public class UserAccountService {
     @Transactional
     public void updatePushEnabled(Long userId, boolean enabled) {
         User u = userRepository.findById(userId).orElseThrow();
-        u.setNotificationEnabled(enabled); // DB에 저장 → 로그인/재로그인과 무관하게 유지
+        u.setNotificationEnabled(enabled); // DB에 저장 -> 로그인/재로그인과 무관하게 유지
     }
 }
