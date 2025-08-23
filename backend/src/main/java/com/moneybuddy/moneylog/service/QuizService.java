@@ -3,15 +3,16 @@ package com.moneybuddy.moneylog.service;
 import com.moneybuddy.moneylog.domain.Quiz;
 import com.moneybuddy.moneylog.domain.User;
 import com.moneybuddy.moneylog.domain.UserQuiz;
-import com.moneybuddy.moneylog.dto.QuizAnswerRequest;
-import com.moneybuddy.moneylog.dto.QuizResponse;
-import com.moneybuddy.moneylog.dto.QuizResultResponse;
+import com.moneybuddy.moneylog.dto.request.QuizAnswerRequest;
+import com.moneybuddy.moneylog.dto.response.QuizResponse;
+import com.moneybuddy.moneylog.dto.response.QuizResultResponse;
 import com.moneybuddy.moneylog.repository.QuizRepository;
 import com.moneybuddy.moneylog.repository.UserQuizRepository;
 import com.moneybuddy.moneylog.repository.UserRepository;
-import lombok.RequiredArgsConstructor;
+
 import org.springframework.stereotype.Service;
 
+import lombok.RequiredArgsConstructor;
 import java.time.LocalDate;
 
 @Service
