@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.moneybuddy.moneylog.client.ClovaReceiptOcrClient;
 import com.moneybuddy.moneylog.domain.EntryType;
 import com.moneybuddy.moneylog.domain.Ledger;
-import com.moneybuddy.moneylog.dto.response.LedgerEntryDto;
+import com.moneybuddy.moneylog.dto.LedgerEntryDto;
 import com.moneybuddy.moneylog.model.NotificationAction;
 import com.moneybuddy.moneylog.model.NotificationType;
 import com.moneybuddy.moneylog.model.TargetType;

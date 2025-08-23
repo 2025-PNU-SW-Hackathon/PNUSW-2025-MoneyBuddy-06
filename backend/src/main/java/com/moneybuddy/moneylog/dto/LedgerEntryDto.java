@@ -1,4 +1,4 @@
-package com.moneybuddy.moneylog.dto.response;
+package com.moneybuddy.moneylog.dto;
 
 import com.moneybuddy.moneylog.domain.Ledger;
 import lombok.Data;

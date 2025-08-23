@@ -29,6 +29,7 @@ public class Quiz {
     @Column(name = "quiz_date", nullable = false, unique = true)
     private LocalDate quizDate;
 
+    @Builder.Default
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
 }

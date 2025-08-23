@@ -1,4 +1,4 @@
-package com.moneybuddy.moneylog.dto.response;
+package com.moneybuddy.moneylog.dto;
 
 import java.math.BigDecimal;
 

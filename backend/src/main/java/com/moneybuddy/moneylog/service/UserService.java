@@ -1,9 +1,9 @@
 package com.moneybuddy.moneylog.service;
 
-import com.moneybuddy.moneylog.dto.UserSignupRequest;
-import com.moneybuddy.moneylog.dto.UserLoginRequest;
-import com.moneybuddy.moneylog.dto.UserLoginResponse;
-import com.moneybuddy.moneylog.dto.UserDeleteRequest;
+import com.moneybuddy.moneylog.dto.request.UserSignupRequest;
+import com.moneybuddy.moneylog.dto.request.UserLoginRequest;
+import com.moneybuddy.moneylog.dto.response.UserLoginResponse;
+import com.moneybuddy.moneylog.dto.request.UserDeleteRequest;
 import com.moneybuddy.moneylog.repository.UserRepository;
 import com.moneybuddy.moneylog.domain.User;
 import com.moneybuddy.moneylog.jwt.JwtUtil;
@@ -54,7 +54,7 @@ public class UserService {
         }
 
         jwtUtil.validateToken(token);
-        String email = jwtUtil.getEmailFromToken(token);
+        String email = jwtUtil.getEmail(token);
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
 

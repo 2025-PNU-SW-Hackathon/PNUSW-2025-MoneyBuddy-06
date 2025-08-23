@@ -1,7 +1,7 @@
 package com.moneybuddy.moneylog.controller;
 
-import com.moneybuddy.moneylog.dto.response.DaySummaryDto;
-import com.moneybuddy.moneylog.dto.response.MonthSummaryDto;
+import com.moneybuddy.moneylog.dto.DaySummaryDto;
+import com.moneybuddy.moneylog.dto.MonthSummaryDto;
 import com.moneybuddy.moneylog.security.CustomUserDetails;
 import com.moneybuddy.moneylog.service.LedgerQueryService;
 import lombok.RequiredArgsConstructor;

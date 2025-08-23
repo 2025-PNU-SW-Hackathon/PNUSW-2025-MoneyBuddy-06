@@ -21,7 +21,7 @@ import lombok.RequiredArgsConstructor;
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
-  
+
     private final JwtUtil jwtUtil;
     private final JwtFilter jwtFilter;
 
@@ -39,16 +39,12 @@ public class SecurityConfig {
                         .requestMatchers("/api/v1/users/delete").authenticated()
                         .requestMatchers("/api/v1/users/signup", "/api/v1/users/login").permitAll()
                         .requestMatchers("/api/v1/knowledge/**").permitAll()
+                        .requestMatchers("/api/v1/youth-policy/**").permitAll() // ✅ config 버전 반영
                         .anyRequest().authenticated()
                 )
-                .addFilterBefore(jwtFilter(), UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
-    }
-
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
     }
 
     @Bean

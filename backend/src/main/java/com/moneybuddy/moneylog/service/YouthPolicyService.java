@@ -1,7 +1,7 @@
 package com.moneybuddy.moneylog.service;
 
 import com.moneybuddy.moneylog.domain.YouthPolicy;
-import com.moneybuddy.moneylog.dto.YouthPolicyResponse;
+import com.moneybuddy.moneylog.dto.response.YouthPolicyResponse;
 import com.moneybuddy.moneylog.repository.YouthPolicyRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
