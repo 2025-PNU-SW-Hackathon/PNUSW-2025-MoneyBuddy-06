@@ -2,12 +2,17 @@ package com.moneybuddy.moneylog.service;
 
 import com.moneybuddy.moneylog.domain.*;
 import com.moneybuddy.moneylog.dto.response.ChallengeStatusResponse;
+import com.moneybuddy.moneylog.model.NotificationAction;
+import com.moneybuddy.moneylog.model.NotificationType;
+import com.moneybuddy.moneylog.model.TargetType;
+import com.moneybuddy.moneylog.port.Notifier;
 import com.moneybuddy.moneylog.repository.*;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -17,6 +22,7 @@ public class ChallengeSuccessService {
     private final ChallengeRepository challengeRepository;
     private final UserChallengeSuccessRepository successRepository;
     private final UserExpRepository userExpRepository;
+    private final Notifier notifier;
 
     // 경험치 상수 정의
     private static final int EXP_PER_SUCCESS = 25;
@@ -56,7 +62,7 @@ public class ChallengeSuccessService {
             LocalDate start = userChallenge.getJoinedAt().toLocalDate();
             LocalDate end = start.plusDays(parseGoalPeriod(challenge.getGoalPeriod()));
 
-            // 유효 기간 내 성공 횟수 계산
+            // 챌린지 기간 내 성공 횟수 계산
             long successCount = successRepository.countByUserIdAndChallengeIdAndSuccessDateBetween(
                     userId, challengeId, start, end.minusDays(1)
             );
@@ -67,19 +73,47 @@ public class ChallengeSuccessService {
                 userChallenge.setRewarded(true);
                 userChallengeRepository.save(userChallenge);
 
-                // 경험치 지금
+                // 경험치 지급
                 UserExp userExp = userExpRepository.findById(userId)
                         .orElseThrow(() -> new IllegalArgumentException("사용자의 경험치 정보를 찾을 수 없습니다."));
-                userExp.addExperience(EXP_PER_SUCCESS, EXP_PER_LEVEL);
+                boolean leveledUp = userExp.addExperience(EXP_PER_SUCCESS, EXP_PER_LEVEL);
                 userExpRepository.save(userExp);
+
+                // 챌린지 성공 알림
+                notifier.send(
+                        userId,
+                        NotificationType.CHALLENGE_SUCCESS,
+                        TargetType.CHALLENGE,
+                        challengeId,
+                        "챌린지 성공!",
+                        challenge.getTitle() + " 챌린지를 달성했어요 👏",
+                        NotificationAction.OPEN_CHALLENGE_DETAIL,
+                        Map.of("challengeId", challengeId),
+                        "/challenges/" + challengeId
+                );
+
+                // 레벨업 알림
+                if (leveledUp) {
+                    notifier.send(
+                            userId,
+                            NotificationType.LEVEL_UP,
+                            TargetType.PROFILE,
+                            null,
+                            "레벨 업! 🎉",
+                            "새 레벨에 도달했습니다.레벨을 확인해보세요.",
+                            NotificationAction.OPEN_PROFILE_LEVEL,
+                            Map.of("newLevel", userExp.getLevel()),
+                            "/profile/level"
+                    );
+                }
 
                 message = "축하합니다! 챌린지를 성공하고 경험치 " + EXP_PER_SUCCESS + "점을 획득했습니다!";
             } else {
+                // 하루 성공 기록만
                 message = "하루 성공 기록 완료!";
             }
 
         } else {
-            // 성공 기록 취소
             successRepository.deleteByUserIdAndChallengeIdAndSuccessDate(userId, challengeId, today);
             message = "하루 성공 기록이 취소되었습니다.";
         }
