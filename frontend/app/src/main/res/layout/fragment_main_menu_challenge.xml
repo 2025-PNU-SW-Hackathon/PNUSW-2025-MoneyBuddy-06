@@ -3,4 +3,4 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".fragment.MainMenuChallengeFragment"></androidx.constraintlayout.widget.ConstraintLayout>
+    tools:context=".main.fragment.MainMenuChallengeFragment"></androidx.constraintlayout.widget.ConstraintLayout>

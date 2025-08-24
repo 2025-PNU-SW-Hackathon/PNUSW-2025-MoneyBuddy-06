@@ -16,13 +16,13 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
         <activity
-            android:name=".activity.ChangePasswordActivity"
+            android:name=".mypage.activity.ChangePasswordActivity"
             android:exported="false" />
         <activity
-            android:name=".activity.MypageActivity"
+            android:name=".mypage.activity.MypageActivity"
             android:exported="false" />
         <activity
-            android:name=".activity.MainMenuActivity"
+            android:name=".main.activity.MainMenuActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

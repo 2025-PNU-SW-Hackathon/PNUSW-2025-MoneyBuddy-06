@@ -1,4 +1,4 @@
-package com.moneybuddy.moneylog.dto;
+package com.moneybuddy.moneylog.mypage.dto;
 
 import com.google.gson.annotations.SerializedName;
 

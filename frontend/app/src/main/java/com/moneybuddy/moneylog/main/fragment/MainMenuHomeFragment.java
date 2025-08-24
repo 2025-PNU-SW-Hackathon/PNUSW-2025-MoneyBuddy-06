@@ -1,4 +1,4 @@
-package com.moneybuddy.moneylog.fragment;
+package com.moneybuddy.moneylog.main.fragment;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -10,13 +10,11 @@ import android.widget.Button;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.moneybuddy.moneylog.R;
-import com.moneybuddy.moneylog.activity.MypageActivity;
+import com.moneybuddy.moneylog.mypage.activity.MypageActivity;
 
 public class MainMenuHomeFragment extends Fragment {
 

@@ -1,4 +1,4 @@
-package com.moneybuddy.moneylog.activity;
+package com.moneybuddy.moneylog.main.activity;
 
 import android.os.Bundle;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
