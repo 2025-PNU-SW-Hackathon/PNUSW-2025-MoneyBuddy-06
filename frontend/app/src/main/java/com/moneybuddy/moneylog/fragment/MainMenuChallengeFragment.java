@@ -7,6 +7,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
+import android.widget.ImageButton;
 import android.widget.RadioGroup;
 import android.widget.Toast;
 
@@ -14,12 +16,15 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.OptIn;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import com.google.android.material.badge.ExperimentalBadgeUtils;
 import com.moneybuddy.moneylog.R;
 import com.moneybuddy.moneylog.activity.ChallengeCategoryActivity;
 import com.moneybuddy.moneylog.activity.ChallengeCreateActivity;
@@ -37,11 +42,18 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+import com.google.android.material.badge.BadgeDrawable;
+import com.google.android.material.badge.BadgeUtils;
+
 public class MainMenuChallengeFragment extends Fragment {
     private ChallengeViewModel viewModel;
     private ChallengeAdapter adapter;
     private SwipeRefreshLayout swipeRefresh;
     private ChallengeApiService apiService;
+
+    private ImageButton filterButton;
+    private FrameLayout filterButtonContainer;
+    private BadgeDrawable badge;
 
     private ActivityResultLauncher<Intent> categoryFilterLauncher;
 
@@ -77,8 +89,24 @@ public class MainMenuChallengeFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         viewModel = new ViewModelProvider(this).get(ChallengeViewModel.class);
+
+        initializeBadge(view);
         setupViews(view);
         observeViewModel();
+    }
+
+    @OptIn(markerClass = ExperimentalBadgeUtils.class)
+    private void initializeBadge(View view) {
+        filterButton = view.findViewById(R.id.imageButton2);
+        filterButtonContainer = view.findViewById(R.id.filter_button_container);
+
+        // 뱃지 생성
+        badge = BadgeDrawable.create(requireContext());
+        badge.setVisible(false);
+
+        badge.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.red));
+
+        BadgeUtils.attachBadgeDrawable(badge, filterButton, filterButtonContainer);
     }
 
     private void setupViews(View view) {
@@ -99,7 +127,7 @@ public class MainMenuChallengeFragment extends Fragment {
         swipeRefresh.setOnRefreshListener(() -> viewModel.loadChallenges());
         view.findViewById(R.id.fab).setOnClickListener(v -> startActivity(new Intent(getContext(), ChallengeCreateActivity.class)));
 
-        view.findViewById(R.id.imageButton2).setOnClickListener(v -> {
+        filterButton.setOnClickListener(v -> {
             Intent intent = new Intent(getContext(), ChallengeCategoryActivity.class);
             categoryFilterLauncher.launch(intent);
         });
@@ -131,6 +159,10 @@ public class MainMenuChallengeFragment extends Fragment {
             if (viewModel.getCurrentFilter() == ChallengeFilter.RECOMMENDED) {
                 adapter.setTodoList(todos);
             }
+        });
+
+        viewModel.isCategoryFilterActive().observe(getViewLifecycleOwner(), isActive -> {
+            badge.setVisible(isActive);
         });
     }
 

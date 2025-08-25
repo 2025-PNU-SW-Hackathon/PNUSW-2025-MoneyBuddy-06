@@ -26,6 +26,10 @@ public class ChallengeViewModel extends AndroidViewModel {
     private final MutableLiveData<String> joinResult = new MutableLiveData<>();
     private ChallengeFilter currentFilter = ChallengeFilter.ONGOING;
 
+    private final MutableLiveData<Boolean> _isCategoryFilterActive = new MutableLiveData<>(false);
+    public LiveData<Boolean> isCategoryFilterActive() { return _isCategoryFilterActive; }
+
+
     public ChallengeViewModel(@NonNull Application application) {
         super(application);
         this.repository = new ChallengeRepository(ApiClient.getApiService(application));
@@ -47,6 +51,8 @@ public class ChallengeViewModel extends AndroidViewModel {
     }
 
     public void applyCategoryFilter(List<String> categories) {
+        _isCategoryFilterActive.setValue(true);
+
         isLoading.setValue(true);
         repository.filterChallenges(currentFilter, categories).enqueue(new Callback<List<ChallengeCardResponse>>() {
             @Override
@@ -64,6 +70,8 @@ public class ChallengeViewModel extends AndroidViewModel {
     }
 
     public void loadChallenges() {
+        _isCategoryFilterActive.setValue(false);
+
         isLoading.setValue(true);
         if (currentFilter == ChallengeFilter.RECOMMENDED) {
             ((Call<List<RecommendedChallengeResponse>>) repository.getChallenges(currentFilter)).enqueue(createCallback());
@@ -128,4 +136,3 @@ public class ChallengeViewModel extends AndroidViewModel {
         };
     }
 }
-

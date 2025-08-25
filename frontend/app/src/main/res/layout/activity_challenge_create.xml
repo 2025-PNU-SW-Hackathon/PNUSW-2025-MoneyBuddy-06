@@ -146,7 +146,8 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:maxLength="20"
-                        android:hint="20자 이하로 작성해주세요."/>
+                        android:hint="20자 이하로 작성해주세요."
+                        android:padding="0dp"/>
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <!-- 5. 챌린지 소개 -->

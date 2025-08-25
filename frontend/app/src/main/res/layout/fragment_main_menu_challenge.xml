@@ -80,18 +80,24 @@
 
     </RadioGroup>
 
-    <ImageButton
-        android:id="@+id/imageButton2"
-        android:layout_width="24dp"
-        android:layout_height="24dp"
+    <FrameLayout
+        android:id="@+id/filter_button_container"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_marginTop="15dp"
         android:layout_marginEnd="40dp"
-        android:background="@null"
-        android:contentDescription="챌린지 카테고리 검색"
-        android:src="@drawable/challenge_filter"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/radioGroup4"
-        tools:layout_editor_absoluteY="110dp" />
+        app:layout_constraintTop_toBottomOf="@id/radioGroup4">
+
+        <ImageButton
+            android:id="@+id/imageButton2"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:background="@null"
+            android:contentDescription="챌린지 카테고리 검색"
+            android:src="@drawable/challenge_filter" />
+
+    </FrameLayout>
 
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton

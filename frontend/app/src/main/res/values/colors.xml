@@ -12,4 +12,5 @@
 
     <color name="my_challenge_color">#C1D194</color>
     <color name="other_challenge_color">#F5F3DF</color>
+    <color name="red">#FF0000</color>
 </resources>

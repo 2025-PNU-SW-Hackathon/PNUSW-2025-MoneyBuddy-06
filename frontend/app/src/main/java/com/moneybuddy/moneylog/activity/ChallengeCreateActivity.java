@@ -111,6 +111,7 @@ public class ChallengeCreateActivity extends AppCompatActivity {
                 layoutChallengeCategory.setVisibility(View.GONE);
                 textViewSpendingType.setVisibility(View.GONE);
                 textViewChallengeCategory.setVisibility(View.GONE);
+                textViewGoalValue.setText("목표 금액");
             }
         });
 
