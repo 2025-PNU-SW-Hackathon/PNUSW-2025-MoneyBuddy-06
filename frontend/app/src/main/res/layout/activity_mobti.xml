@@ -128,7 +128,7 @@
             <View android:layout_width="match_parent" android:layout_height="16dp"/>
 
             <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnGoHome"
+                android:id="@+id/btnRetakeMobti"
                 android:layout_width="match_parent"
                 android:layout_height="56dp"
                 android:layout_marginTop="8dp"
