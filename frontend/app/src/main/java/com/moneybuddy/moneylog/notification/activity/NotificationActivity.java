@@ -17,6 +17,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.appbar.MaterialToolbar;
 import com.moneybuddy.moneylog.R;
+import com.moneybuddy.moneylog.UserRepository;
 import com.moneybuddy.moneylog.notification.adapter.NotificationAdapter;
 import com.moneybuddy.moneylog.notification.model.FooterMarker;
 import com.moneybuddy.moneylog.notification.model.ListResponse;
@@ -76,7 +77,7 @@ public class NotificationActivity extends AppCompatActivity
     }
 
     private void loadFirstPage() {
-        repo.fetchList(null, 20, new Callback<ListResponse>() {
+        repo.getNotifications(null, 20, new Callback<ListResponse>() { // ✅ 메서드명 수정
             @Override
             public void onResponse(Call<ListResponse> call, Response<ListResponse> res) {
                 if (!res.isSuccessful() || res.body() == null || res.body().items == null) {
@@ -154,24 +155,16 @@ public class NotificationActivity extends AppCompatActivity
 
     // ===== 클릭 시 라우팅 =====
     @Override
-    public void onNotificationClick(Notice n) {
-        String path = (n.deeplink != null && !n.deeplink.isEmpty())
-                ? n.deeplink
-                : DeepLinkResolver.build(n.action, n.params);
-        try {
-            startActivity(new Intent(Intent.ACTION_VIEW, DeepLinkResolver.toUri(path)));
-        } catch (Exception ignored) { /* 폴백 필요시 처리 */ }
+    public void onNotificationClick(Notice item) {
+        // 1) 이동
+        DeepLinkResolver.resolve(this, item.deeplink);
 
-        // 읽음 처리(fire-and-forget)
-        repo.markRead(n.id, new Callback<Void>() {
-            @Override public void onResponse(Call<Void> call, Response<Void> response) {}
-            @Override public void onFailure(Call<Void> call, Throwable t) {}
-        });
-    }
+        // 2) 읽음 처리 (fire-and-forget)
+        repo.markAsRead(item.id); // ✅ 토큰 인자 제거 (인터셉터가 자동 첨부)
+        // 또는: repo.markRead(item.id, null);
 
-    // ===== 메뉴 텍스트/컬러 유틸 =====
-    private void setMarkAllTitle(String title) {
-        if (markAllItem != null) markAllItem.setTitle(title);
+        item.isRead = true;
+        adapter.notifyDataSetChanged();
     }
 
     /** 메뉴 아이템 텍스트 색 바꾸기 */
@@ -212,4 +205,11 @@ public class NotificationActivity extends AppCompatActivity
     }
 
     private void toast(String m) { Toast.makeText(this, m, Toast.LENGTH_SHORT).show(); }
+
+    // ...클래스 하단 어딘가에 추가 (tintMarkAllAsDisabled 위/아래 아무데나 OK)
+    private void setMarkAllTitle(String title) {
+        if (markAllItem != null) markAllItem.setTitle(title);
+    }
+
 }
+

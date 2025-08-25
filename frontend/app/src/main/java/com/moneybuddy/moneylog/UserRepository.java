@@ -4,7 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 
 import androidx.annotation.Nullable;
-
+import retrofit2.Response;
 /**
  * 앱 전역 사용자 상태/토큰 저장소 (SharedPreferences 기반)
  *

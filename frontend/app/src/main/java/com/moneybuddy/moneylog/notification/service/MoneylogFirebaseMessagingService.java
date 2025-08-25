@@ -109,4 +109,12 @@ public class MoneylogFirebaseMessagingService extends FirebaseMessagingService {
         else if (v != null) return v; }
         return null;
     }
+
+    private void markReadAsync(int id) {
+        // Context 필요하므로 getApplicationContext() 사용
+        new com.moneybuddy.moneylog.notification.network.NotificationRepository(getApplicationContext())
+                .markRead(id, null); // fire-and-forget
+    }
+
+
 }

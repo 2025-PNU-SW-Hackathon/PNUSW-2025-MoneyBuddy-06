@@ -73,14 +73,21 @@ public class MainMenuHomeFragment extends Fragment {
 
     @ExperimentalBadgeUtils
     private void refreshUnreadBadge() {
-        repo.unreadCount(new Callback<Integer>() {
-            @Override public void onResponse(Call<Integer> call, Response<Integer> res) {
+        repo.getUnreadCount(new Callback<Integer>() {
+            @Override
+            public void onResponse(Call<Integer> call, Response<Integer> res) {
                 int count = (res.isSuccessful() && res.body() != null) ? res.body() : 0;
+
+                //하나 이상이면 점만 표시
                 badge.clearNumber();
                 badge.setVisible(count > 0);
+
                 BadgeUtils.attachBadgeDrawable(badge, bellBtn);
             }
-            @Override public void onFailure(Call<Integer> call, Throwable t) {
+
+            @Override
+            public void onFailure(Call<Integer> call, Throwable t) {
+                // 실패하면 안 보이게
                 badge.setVisible(false);
                 BadgeUtils.attachBadgeDrawable(badge, bellBtn);
             }

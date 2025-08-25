@@ -3,7 +3,7 @@ package com.moneybuddy.moneylog.notification.network;
 import android.content.Context;
 import android.os.Build;
 
-import com.moneybuddy.moneylog.common.RetrofitProvider;
+import com.moneybuddy.moneylog.common.RetrofitClient;
 
 import java.util.Map;
 
@@ -16,7 +16,7 @@ public class PushTrackingRepository {
 
     public PushTrackingRepository(Context appCtx) {
         this.ctx = appCtx.getApplicationContext();
-        this.api = RetrofitProvider.get(ctx).create(PushTrackingApi.class);
+        this.api = RetrofitClient.get(ctx).create(PushTrackingApi.class);
     }
 
     public void registerToken(String token, Callback<Void> cb) {
