@@ -16,7 +16,7 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
         <activity
-            android:name=".activity.MainMenuActivity"
+            android:name=".main.activity.MainMenuActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -24,8 +24,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".activity.ChallengeCreateActivity"/>
-        <activity android:name=".activity.ChallengeCategoryActivity"/>
-        <activity android:name=".activity.ChallengeDetailActivity"/>
+        <activity android:name=".challenge.activity.ChallengeCreateActivity"/>
+        <activity android:name=".challenge.activity.ChallengeCategoryActivity"/>
+        <activity android:name=".challenge.activity.ChallengeDetailActivity"/>
     </application>
 </manifest>

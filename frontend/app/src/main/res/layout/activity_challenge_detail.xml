@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#FFFEF7"
-    tools:context=".activity.ChallengeDetailActivity"
+    tools:context=".challenge.activity.ChallengeDetailActivity"
     android:orientation="vertical"
     android:fillViewport="true"
     android:scrollbars="none">
