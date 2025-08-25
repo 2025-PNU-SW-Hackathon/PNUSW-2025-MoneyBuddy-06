@@ -24,7 +24,6 @@
         </activity>
         <activity android:name=".login.activity.HomeActivity" />
         <activity android:name=".login.activity.SignupActivity"/>
-        <activity android:name=".login.activity.ForgotPasswordActivity"/>
 
     </application>
 

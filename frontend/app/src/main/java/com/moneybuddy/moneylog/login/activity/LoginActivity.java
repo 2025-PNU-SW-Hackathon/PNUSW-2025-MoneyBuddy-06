@@ -29,13 +29,6 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        // ---- 밑줄 텍스트 & 클릭 이동 ----
-        TextView tvForgot = findViewById(R.id.tvForgotPassword);
-        tvForgot.setText(Html.fromHtml(getString(R.string.underlined_text1), Html.FROM_HTML_MODE_LEGACY));
-        tvForgot.setOnClickListener(v -> {
-            Intent intent = new Intent(LoginActivity.this, ForgotPasswordActivity.class);
-            startActivity(intent);
-        });
 
         TextView tvSignUp = findViewById(R.id.tvSignUp);
         tvSignUp.setText(Html.fromHtml(getString(R.string.underlined_text2), Html.FROM_HTML_MODE_LEGACY));
