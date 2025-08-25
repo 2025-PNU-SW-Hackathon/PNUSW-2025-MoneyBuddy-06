@@ -24,6 +24,10 @@
 
         <activity android:name=".mobti.activity.MobtiResultActivity" />
         <activity android:name=".mobti.activity.MobtiSurveyActivity" />
+        <!-- AndroidManifest.xml -->
+        <activity android:name=".mobti.activity.MobtiActivity" />
+
+
     </application>
 
 </manifest>

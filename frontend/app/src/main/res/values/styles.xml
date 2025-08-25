@@ -1,9 +1,0 @@
-<resources>
-    <!-- 원형 모양 오버레이 -->
-    <style name="ShapeAppearanceOverlay.Money">
-        <item name="cornerFamily">rounded</item>
-        <item name="cornerSize">50%</item>
-    </style>
-
-
-</resources>

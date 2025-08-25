@@ -1,9 +1,12 @@
-<resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Base application theme. -->
-    <style name="Base.Theme.Moneylog" parent="Theme.AppCompat.Light.NoActionBar">
-        <!-- Customize your light theme here. -->
-        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
-    </style>
+<resources>
+    <!-- 앱 공통 테마: Material3 사용 -->
+    <style name="Theme.Moneylog" parent="Theme.Material3.Light.NoActionBar">
+        <!-- 선택: 색상만 잡아줌 -->
+        <item name="colorPrimary">@color/sage_600</item>
+        <item name="colorSecondary">@color/sage_500</item>
 
-    <style name="Theme.Moneylog" parent="Base.Theme.Moneylog" />
+        <!-- 상태바 가독성 -->
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:windowLightStatusBar">true</item>
+    </style>
 </resources>
