@@ -24,5 +24,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".activity.ChallengeCreateActivity"/>
+        <activity android:name=".activity.ChallengeCategoryActivity"/>
+        <activity android:name=".activity.ChallengeDetailActivity"/>
     </application>
 </manifest>

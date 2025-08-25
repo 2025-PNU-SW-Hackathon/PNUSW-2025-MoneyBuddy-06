@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FFFEF7"
+    tools:context=".activity.ChallengeCreateActivity"
+    android:padding="16dp"
+    android:orientation="vertical">
+
+    <ImageButton
+        android:id="@+id/arrow_back"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@null"
+        android:contentDescription="뒤로가기 버튼"
+        android:src="@drawable/challenge_arrow_back" />
+
+    <RadioGroup
+        android:id="@+id/radiogroup_challenge_type"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="50dp"
+        android:layout_marginStart="25dp">
+
+        <RadioButton
+            android:checked="true"
+            android:id="@+id/radiobutton_spending"
+            android:layout_width="80dp"
+            android:layout_height="30dp"
+            android:text="지출 챌린지"
+            android:textSize="13sp"
+            android:textAlignment="center"
+            android:button="@null"
+            android:background="@drawable/challenge_radio_button"
+            android:elevation="2dp"/>
+
+        <RadioButton
+            android:id="@+id/radiobutton_savings"
+            android:layout_width="80dp"
+            android:layout_height="30dp"
+            android:text="저축 챌린지"
+            android:textSize="13sp"
+            android:textAlignment="center"
+            android:button="@null"
+            android:background="@drawable/challenge_radio_button"
+            android:layout_marginStart="15dp"
+            android:elevation="2dp"/>
+    </RadioGroup>
+
+    <LinearLayout
+        android:id="@+id/layout_challenge_category"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="40dp"
+        android:orientation="vertical"
+        android:layout_marginStart="25dp">
+        <RadioGroup
+            android:id="@+id/radiogroup_challenge_category1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <RadioButton
+                android:checked="true"
+                android:id="@+id/radiobutton_food"
+                android:layout_width="wrap_content"
+                android:layout_height="30dp"
+                android:text="식비"
+                android:textSize="13sp"
+                android:textAlignment="center"
+                android:button="@null"
+                android:background="@drawable/challenge_radio_button"
+                android:elevation="2dp"/>
+
+            <RadioButton
+                android:id="@+id/radiobutton_transport"
+                android:layout_width="wrap_content"
+                android:layout_height="30dp"
+                android:text="교통"
+                android:textSize="13sp"
+                android:textAlignment="center"
+                android:button="@null"
+                android:background="@drawable/challenge_radio_button"
+                android:layout_marginStart="15dp"
+                android:elevation="2dp"/>
+
+            <RadioButton
+                android:id="@+id/radiobutton_culture"
+                android:layout_width="70dp"
+                android:layout_height="30dp"
+                android:text="문화여가"
+                android:textSize="13sp"
+                android:textAlignment="center"
+                android:button="@null"
+                android:background="@drawable/challenge_radio_button"
+                android:elevation="2dp"
+                android:layout_marginStart="15dp"/>
+
+            <RadioButton
+                android:id="@+id/radiobutton_health"
+                android:layout_width="70dp"
+                android:layout_height="30dp"
+                android:text="의료건강"
+                android:textSize="13sp"
+                android:textAlignment="center"
+                android:button="@null"
+                android:background="@drawable/challenge_radio_button"
+                android:layout_marginStart="15dp"
+                android:elevation="2dp"/>
+
+        </RadioGroup>
+        <RadioGroup
+            android:id="@+id/radiogroup_challenge_category2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="20dp">
+
+            <RadioButton
+                android:id="@+id/radiobutton_beauty"
+                android:layout_width="70dp"
+                android:layout_height="30dp"
+                android:text="의류미용"
+                android:textSize="13sp"
+                android:textAlignment="center"
+                android:button="@null"
+                android:background="@drawable/challenge_radio_button"
+                android:elevation="2dp"/>
+
+            <RadioButton
+                android:id="@+id/radiobutton_cafe"
+                android:layout_width="80dp"
+                android:layout_height="30dp"
+                android:text="카페베이커리"
+                android:textSize="13sp"
+                android:textAlignment="center"
+                android:button="@null"
+                android:background="@drawable/challenge_radio_button"
+                android:layout_marginStart="15dp"
+                android:elevation="2dp"/>
+
+            <RadioButton
+                android:id="@+id/radiobutton_others"
+                android:layout_width="wrap_content"
+                android:layout_height="30dp"
+                android:text="기타"
+                android:textSize="13sp"
+                android:textAlignment="center"
+                android:button="@null"
+                android:background="@drawable/challenge_radio_button"
+                android:layout_marginStart="15dp"
+                android:elevation="2dp"/>
+
+        </RadioGroup>
+    </LinearLayout>
+    
+    <Button
+        android:id="@+id/button_submit"
+        android:layout_width="210dp"
+        android:layout_height="39dp"
+        android:text="결과보기"
+        android:textSize="13sp"
+        android:background="@drawable/challenge_rounded_button"
+        app:backgroundTint="@color/green"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="50dp"
+        android:translationZ="10dp"/>
+    <TextView
+        android:id="@+id/textview_initialize"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/initialize"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="5dp"/>
+</LinearLayout>
