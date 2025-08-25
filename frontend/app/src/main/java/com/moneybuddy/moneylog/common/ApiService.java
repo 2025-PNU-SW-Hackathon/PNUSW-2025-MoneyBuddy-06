@@ -1,4 +1,6 @@
-package com.moneybuddy.moneylog;
+package com.moneybuddy.moneylog.common;
+
+import com.moneybuddy.moneylog.MobtiResultData;
 
 import retrofit2.Call;
 import retrofit2.http.Body;

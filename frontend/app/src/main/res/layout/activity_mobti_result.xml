@@ -1,69 +1,173 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FFFEF7">
+    android:orientation="vertical"
+    android:background="@color/cream_050">
 
-    <ImageView
-        android:id="@+id/imageView2"
-        android:layout_width="299dp"
-        android:layout_height="299dp"
-        android:background="@drawable/circle_mask"
-        android:scaleType="centerCrop"
-        android:clipToOutline="true"
-        android:contentDescription="사용자 이미지"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.168" />
-
-    <TextView
-        android:id="@+id/textView2"
-        android:layout_width="285dp"
-        android:layout_height="94dp"
-        android:gravity="center_horizontal|center_vertical"
-        android:text="MoBTI"
-        android:textColor="@color/black"
-        android:textSize="36sp"
-        android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imageView2"
-        app:layout_constraintVertical_bias="0.069" />
-
-    <TextView
-        android:id="@+id/textView6"
-        android:layout_width="326dp"
+    <!-- 상단 툴바 (뒤로가기) -->
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/toolbar"
+        style="@style/Widget.MaterialComponents.Toolbar"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center_horizontal|center_vertical"
-        android:minHeight="116dp"
-        android:text="MoBTI 설명"
-        android:textColor="@color/black"
-        android:textSize="24sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.494"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView2"
-        app:layout_constraintVertical_bias="0.12" />
+        android:background="@color/cream_050"
+        app:navigationIcon="?attr/homeAsUpIndicator"
+        app:title="" />
 
-    <Button
-        android:id="@+id/button6"
-        android:layout_width="289dp"
-        android:layout_height="67dp"
-        android:background="@drawable/rounded_button"
-        android:text="Money log  시작하기"
-        android:textAllCaps="false"
-        android:textSize="24sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView6"
-        app:layout_constraintVertical_bias="0.23" />
+    <!-- 본문 스크롤 -->
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:fillViewport="true">
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingHorizontal="24dp"
+            android:paddingBottom="16dp">
+
+            <!-- 제목 -->
+            <TextView
+                android:id="@+id/tvHeader"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="당신의 MoBTI는?"
+                android:textAlignment="center"
+                android:textColor="#111111"
+                android:textSize="28sp"
+                android:textStyle="bold"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="20dp" />
+
+            <!-- 마스코트 (원형 테두리) -->
+            <com.google.android.material.imageview.ShapeableImageView
+                android:id="@+id/imgMascot"
+                android:layout_width="156dp"
+                android:layout_height="156dp"
+                android:layout_gravity="center_horizontal"
+                android:src="@drawable/ic_mascot_placeholder"
+                android:contentDescription="@string/app_name"
+                app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.Money.Circle"
+                app:strokeWidth="1dp"
+                app:strokeColor="@color/sage_200" />
+
+            <!-- 타입 코드 -->
+            <TextView
+                android:id="@+id/tvTypeCode"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="12dp"
+                android:text="EMCP"
+                android:textColor="@color/sage_600"
+                android:textSize="36sp"
+                android:textStyle="bold" />
+
+            <!-- 3개 섹션 카드 -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                app:cardBackgroundColor="@android:color/white"
+                app:cardCornerRadius="18dp"
+                app:strokeWidth="1dp"
+                app:strokeColor="@color/sage_600">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="18dp">
+
+                    <!-- 섹션 1 타이틀 -->
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="실속꾼인 당신은"
+                        android:textColor="#222222"
+                        android:textStyle="bold"
+                        android:textSize="16sp"
+                        android:layout_marginBottom="8dp" />
+
+                    <!-- 섹션 1 본문 -->
+                    <TextView
+                        android:id="@+id/section1Body"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textColor="#333333"
+                        android:textSize="14sp"
+                        android:lineSpacingExtra="2dp"
+                        android:text="• 유행을 따르기보다는, 오랫동안 만족하며 쓸 수 있는 실용적인 제품을 선호해요.\n• '안전빵이 최고'라는 생각으로, 이미 많은 사람들에게 검증된 제품을 구매해요.\n• 구매 전, 수많은 후기를 읽어보고 장단점을 철저하게 분석한 뒤 계획적으로 구매해요."
+                        android:layout_marginBottom="16dp" />
+
+                    <!-- 섹션 2 타이틀 -->
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="🍰  나의 소비 성향은?"
+                        android:textColor="#222222"
+                        android:textStyle="bold"
+                        android:textSize="16sp"
+                        android:layout_marginBottom="8dp" />
+
+                    <!-- 섹션 2 본문 -->
+                    <TextView
+                        android:id="@+id/section2Body"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textColor="#333333"
+                        android:textSize="14sp"
+                        android:lineSpacingExtra="2dp"
+                        android:text="• 소비는 '실패 없는 투자'와 같아야 한다고 생각해요. 나의 돈과 시간은 소중하니까요.\n• '싸고 좋은' 물건을 찾아냈을 때 가장 큰 희열을 느껴요.\n• 현명하게 돈을 쓰는 법을 알고 있다는 사실에 스스로 만족해요."
+                        android:layout_marginBottom="16dp" />
+
+                    <!-- 섹션 3 타이틀 -->
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="😎  친구와의 관계에서 소비 스타일은?"
+                        android:textColor="#222222"
+                        android:textStyle="bold"
+                        android:textSize="16sp"
+                        android:layout_marginBottom="8dp" />
+
+                    <!-- 섹션 3 본문 -->
+                    <TextView
+                        android:id="@+id/section3Body"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textColor="#333333"
+                        android:textSize="14sp"
+                        android:lineSpacingExtra="2dp"
+                        android:text="• 친구들 사이에서 '인간 가격비교 사이트'로 불리며, 쇼핑 조언을 도맡아 해요.\n• 1원까지 정확하게 나누는 더치페이를 선호하며, 금전 관계가 깔끔해요." />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- 하단 여백 -->
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="16dp" />
+
+            <!-- 하단 버튼 (라이트 그린, 검은 글씨) -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnGoHome"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="12dp"
+                android:text="머니로그 시작하기"
+                android:textAllCaps="false"
+                android:textSize="18sp"
+                android:textColor="#151515"
+                app:cornerRadius="14dp"
+                app:strokeWidth="1dp"
+                app:strokeColor="@color/sage_600"
+                app:backgroundTint="@color/button_light_green" />
+        </LinearLayout>
+    </ScrollView>
+
+</LinearLayout>

@@ -13,7 +13,7 @@
         android:theme="@style/Theme.Moneylog"
         tools:targetApi="31">
         <activity
-        android:name=".activity.MobtiMainActivity"
+        android:name=".mobti.activity.MobtiIntroActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -22,9 +22,8 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".activity.MobtiActivity"/>
-
-        <activity android:name=".activity.MobtiResultActivity"/>
+        <activity android:name=".mobti.activity.MobtiResultActivity" />
+        <activity android:name=".mobti.activity.MobtiSurveyActivity" />
     </application>
 
 </manifest>

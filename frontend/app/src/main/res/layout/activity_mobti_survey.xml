@@ -1,0 +1,880 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:background="#FFFFFF"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <!-- 상단 앱바 -->
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/toolbar"
+        style="@style/Widget.MaterialComponents.Toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#FFFFFF"
+        app:navigationIcon="?attr/homeAsUpIndicator"
+        app:title=""
+        app:contentInsetStartWithNavigation="0dp" />
+
+    <!-- 진행 바 + 남은 문항 텍스트 -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingHorizontal="16dp"
+        android:paddingBottom="8dp">
+
+        <com.google.android.material.progressindicator.LinearProgressIndicator
+            android:id="@+id/progress"
+            android:layout_width="match_parent"
+            android:layout_height="8dp"
+            app:trackCornerRadius="8dp"
+            app:trackThickness="8dp"
+            app:indicatorColor="@color/sage_500"
+            app:trackColor="@color/sage_050"
+            app:progress="0" />
+
+        <TextView
+            android:id="@+id/tvProgress"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:text="0 / 20 문항"
+            android:textColor="#666666"
+            android:textSize="12sp" />
+    </LinearLayout>
+
+    <!-- 스크롤 영역 -->
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <LinearLayout
+            android:id="@+id/container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingHorizontal="16dp"
+            android:paddingBottom="24dp">
+
+            <!-- ===== 질문 블록: Q1 ~ Q20 ===== -->
+            <!-- 공통: ChipGroup은 단일선택, 기본 미선택 -->
+            <!-- 배경 카드 @drawable/card_bg 재사용 -->
+
+            <!-- Q1 -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="12dp"
+                android:background="@drawable/card_bg"
+                android:layout_marginBottom="12dp">
+
+                <TextView
+                    android:id="@+id/tvQuestion1"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="비싸더라도 내가 좋아하는 브랜드라면 구매한다."
+                    android:textSize="15sp"
+                    android:textColor="#222222"
+                    android:lineSpacingExtra="2dp" />
+
+                <com.google.android.material.chip.ChipGroup
+                    android:id="@+id/chipGroup1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    app:singleSelection="true"
+                    app:selectionRequired="false"
+                    app:chipSpacingHorizontal="16dp">
+
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chip1_O"
+                        android:layout_width="wrap_content"
+                        android:layout_height="40dp"
+                        android:text="O"
+                        android:checkable="true"
+                        android:clickable="true"
+                        android:paddingHorizontal="22dp"
+                        app:chipMinHeight="40dp"
+                        app:chipCornerRadius="999dp"
+                        app:checkedIconVisible="false"
+                        app:chipBackgroundColor="@color/chip_o_bg"
+                        android:textColor="@color/chip_o_text"
+                        app:chipStrokeColor="@color/chip_o_stroke"
+                        app:chipStrokeWidth="1dp" />
+
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chip1_X"
+                        android:layout_width="wrap_content"
+                        android:layout_height="40dp"
+                        android:text="X"
+                        android:checkable="true"
+                        android:clickable="true"
+                        android:paddingHorizontal="22dp"
+                        app:chipMinHeight="40dp"
+                        app:chipCornerRadius="999dp"
+                        app:checkedIconVisible="false"
+                        app:chipBackgroundColor="@color/chip_x_bg"
+                        android:textColor="@color/chip_x_text"
+                        app:chipStrokeColor="@color/chip_x_stroke"
+                        app:chipStrokeWidth="1dp" />
+                </com.google.android.material.chip.ChipGroup>
+            </LinearLayout>
+
+            <!-- Q2 -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="12dp"
+                android:background="@drawable/card_bg"
+                android:layout_marginBottom="12dp">
+
+                <TextView
+                    android:id="@+id/tvQuestion2"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="유행 브랜드보다 아이템의 실용성을 중시한다."
+                    android:textColor="#222222"
+                    android:textSize="15sp"
+                    android:lineSpacingExtra="2dp" />
+
+                <com.google.android.material.chip.ChipGroup
+                    android:id="@+id/chipGroup2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    app:singleSelection="true"
+                    app:selectionRequired="false"
+                    app:chipSpacingHorizontal="16dp">
+
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chip2_O"
+                        android:layout_width="wrap_content"
+                        android:layout_height="40dp"
+                        android:text="O"
+                        android:checkable="true"
+                        android:clickable="true"
+                        android:paddingHorizontal="22dp"
+                        app:chipMinHeight="40dp"
+                        app:chipCornerRadius="999dp"
+                        app:checkedIconVisible="false"
+                        app:chipBackgroundColor="@color/chip_o_bg"
+                        android:textColor="@color/chip_o_text"
+                        app:chipStrokeColor="@color/chip_o_stroke"
+                        app:chipStrokeWidth="1dp" />
+
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chip2_X"
+                        android:layout_width="wrap_content"
+                        android:layout_height="40dp"
+                        android:text="X"
+                        android:checkable="true"
+                        android:clickable="true"
+                        android:paddingHorizontal="22dp"
+                        app:chipMinHeight="40dp"
+                        app:chipCornerRadius="999dp"
+                        app:checkedIconVisible="false"
+                        app:chipBackgroundColor="@color/chip_x_bg"
+                        android:textColor="@color/chip_x_text"
+                        app:chipStrokeColor="@color/chip_x_stroke"
+                        app:chipStrokeWidth="1dp" />
+                </com.google.android.material.chip.ChipGroup>
+            </LinearLayout>
+
+            <!-- Q3 -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="12dp"
+                android:background="@drawable/card_bg"
+                android:layout_marginBottom="12dp">
+
+                <TextView
+                    android:id="@+id/tvQuestion3"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="큰 소비 전에는 반드시 비교·검색을 한다."
+                    android:textColor="#222222"
+                    android:textSize="15sp"
+                    android:lineSpacingExtra="2dp" />
+
+                <com.google.android.material.chip.ChipGroup
+                    android:id="@+id/chipGroup3"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    app:singleSelection="true"
+                    app:selectionRequired="false"
+                    app:chipSpacingHorizontal="16dp">
+
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chip3_O"
+                        android:layout_width="wrap_content"
+                        android:layout_height="40dp"
+                        android:text="O"
+                        android:checkable="true"
+                        android:clickable="true"
+                        android:paddingHorizontal="22dp"
+                        app:chipMinHeight="40dp"
+                        app:chipCornerRadius="999dp"
+                        app:checkedIconVisible="false"
+                        app:chipBackgroundColor="@color/chip_o_bg"
+                        android:textColor="@color/chip_o_text"
+                        app:chipStrokeColor="@color/chip_o_stroke"
+                        app:chipStrokeWidth="1dp" />
+
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chip3_X"
+                        android:layout_width="wrap_content"
+                        android:layout_height="40dp"
+                        android:text="X"
+                        android:checkable="true"
+                        android:clickable="true"
+                        android:paddingHorizontal="22dp"
+                        app:chipMinHeight="40dp"
+                        app:chipCornerRadius="999dp"
+                        app:checkedIconVisible="false"
+                        app:chipBackgroundColor="@color/chip_x_bg"
+                        android:textColor="@color/chip_x_text"
+                        app:chipStrokeColor="@color/chip_x_stroke"
+                        app:chipStrokeWidth="1dp" />
+                </com.google.android.material.chip.ChipGroup>
+            </LinearLayout>
+
+            <!-- Q4 -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="12dp"
+                android:background="@drawable/card_bg"
+                android:layout_marginBottom="12dp">
+
+                <TextView
+                    android:id="@+id/tvQuestion4"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="나를 위한 작은 사치를 잘 한다."
+                    android:textColor="#222222"
+                    android:textSize="15sp" />
+
+                <com.google.android.material.chip.ChipGroup
+                    android:id="@+id/chipGroup4"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    app:singleSelection="true"
+                    app:selectionRequired="false"
+                    app:chipSpacingHorizontal="16dp">
+
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chip4_O"
+                        android:layout_width="wrap_content"
+                        android:layout_height="40dp"
+                        android:text="O"
+                        android:checkable="true"
+                        android:clickable="true"
+                        android:paddingHorizontal="22dp"
+                        app:chipMinHeight="40dp"
+                        app:chipCornerRadius="999dp"
+                        app:checkedIconVisible="false"
+                        app:chipBackgroundColor="@color/chip_o_bg"
+                        android:textColor="@color/chip_o_text"
+                        app:chipStrokeColor="@color/chip_o_stroke"
+                        app:chipStrokeWidth="1dp" />
+
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chip4_X"
+                        android:layout_width="wrap_content"
+                        android:layout_height="40dp"
+                        android:text="X"
+                        android:checkable="true"
+                        android:clickable="true"
+                        android:paddingHorizontal="22dp"
+                        app:chipMinHeight="40dp"
+                        app:chipCornerRadius="999dp"
+                        app:checkedIconVisible="false"
+                        app:chipBackgroundColor="@color/chip_x_bg"
+                        android:textColor="@color/chip_x_text"
+                        app:chipStrokeColor="@color/chip_x_stroke"
+                        app:chipStrokeWidth="1dp" />
+                </com.google.android.material.chip.ChipGroup>
+            </LinearLayout>
+
+            <!-- Q5 -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="12dp"
+                android:background="@drawable/card_bg"
+                android:layout_marginBottom="12dp">
+
+                <TextView
+                    android:id="@+id/tvQuestion5"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="수입·지출에 맞춘 예산을 (대체로) 지킨다."
+                    android:textColor="#222222"
+                    android:textSize="15sp" />
+
+                <com.google.android.material.chip.ChipGroup
+                    android:id="@+id/chipGroup5"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    app:singleSelection="true"
+                    app:selectionRequired="false"
+                    app:chipSpacingHorizontal="16dp">
+
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chip5_O"
+                        android:layout_width="wrap_content"
+                        android:layout_height="40dp"
+                        android:text="O"
+                        android:checkable="true"
+                        android:clickable="true"
+                        android:paddingHorizontal="22dp"
+                        app:chipMinHeight="40dp"
+                        app:chipCornerRadius="999dp"
+                        app:checkedIconVisible="false"
+                        app:chipBackgroundColor="@color/chip_o_bg"
+                        android:textColor="@color/chip_o_text"
+                        app:chipStrokeColor="@color/chip_o_stroke"
+                        app:chipStrokeWidth="1dp" />
+
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chip5_X"
+                        android:layout_width="wrap_content"
+                        android:layout_height="40dp"
+                        android:text="X"
+                        android:checkable="true"
+                        android:clickable="true"
+                        android:paddingHorizontal="22dp"
+                        app:chipMinHeight="40dp"
+                        app:chipCornerRadius="999dp"
+                        app:checkedIconVisible="false"
+                        app:chipBackgroundColor="@color/chip_x_bg"
+                        android:textColor="@color/chip_x_text"
+                        app:chipStrokeColor="@color/chip_x_stroke"
+                        app:chipStrokeWidth="1dp" />
+                </com.google.android.material.chip.ChipGroup>
+            </LinearLayout>
+
+            <!-- Q6 ~ Q20 : 텍스트만 바꿔서 동일 패턴 -->
+            <!-- Q6 -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="12dp"
+                android:background="@drawable/card_bg"
+                android:layout_marginBottom="12dp">
+
+                <TextView
+                    android:id="@+id/tvQuestion6"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="트렌드보다 나의 스타일을 더 중요하게 여긴다."
+                    android:textColor="#222222"
+                    android:textSize="15sp" />
+
+                <com.google.android.material.chip.ChipGroup
+                    android:id="@+id/chipGroup6"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    app:singleSelection="true"
+                    app:selectionRequired="false"
+                    app:chipSpacingHorizontal="16dp">
+
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chip6_O"
+                        android:layout_width="wrap_content"
+                        android:layout_height="40dp"
+                        android:text="O"
+                        android:checkable="true"
+                        android:clickable="true"
+                        android:paddingHorizontal="22dp"
+                        app:chipMinHeight="40dp"
+                        app:chipCornerRadius="999dp"
+                        app:checkedIconVisible="false"
+                        app:chipBackgroundColor="@color/chip_o_bg"
+                        android:textColor="@color/chip_o_text"
+                        app:chipStrokeColor="@color/chip_o_stroke"
+                        app:chipStrokeWidth="1dp" />
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chip6_X"
+                        android:layout_width="wrap_content"
+                        android:layout_height="40dp"
+                        android:text="X"
+                        android:checkable="true"
+                        android:clickable="true"
+                        android:paddingHorizontal="22dp"
+                        app:chipMinHeight="40dp"
+                        app:chipCornerRadius="999dp"
+                        app:checkedIconVisible="false"
+                        app:chipBackgroundColor="@color/chip_x_bg"
+                        android:textColor="@color/chip_x_text"
+                        app:chipStrokeColor="@color/chip_x_stroke"
+                        app:chipStrokeWidth="1dp" />
+                </com.google.android.material.chip.ChipGroup>
+            </LinearLayout>
+
+            <!-- Q7 -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="12dp"
+                android:background="@drawable/card_bg"
+                android:layout_marginBottom="12dp">
+
+                <TextView
+                    android:id="@+id/tvQuestion7"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="소비를 할 때는 즉흥적이기보다 계획하는 편이다."
+                    android:textColor="#222222"
+                    android:textSize="15sp" />
+
+                <com.google.android.material.chip.ChipGroup
+                    android:id="@+id/chipGroup7"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    app:singleSelection="true"
+                    app:selectionRequired="false"
+                    app:chipSpacingHorizontal="16dp">
+
+                    <com.google.android.material.chip.Chip android:id="@+id/chip7_O" android:layout_width="wrap_content" android:layout_height="40dp" android:text="O" android:checkable="true" android:clickable="true" android:paddingHorizontal="22dp" app:chipMinHeight="40dp" app:chipCornerRadius="999dp" app:checkedIconVisible="false" app:chipBackgroundColor="@color/chip_o_bg" android:textColor="@color/chip_o_text" app:chipStrokeColor="@color/chip_o_stroke" app:chipStrokeWidth="1dp"/>
+                    <com.google.android.material.chip.Chip android:id="@+id/chip7_X" android:layout_width="wrap_content" android:layout_height="40dp" android:text="X" android:checkable="true" android:clickable="true" android:paddingHorizontal="22dp" app:chipMinHeight="40dp" app:chipCornerRadius="999dp" app:checkedIconVisible="false" app:chipBackgroundColor="@color/chip_x_bg" android:textColor="@color/chip_x_text" app:chipStrokeColor="@color/chip_x_stroke" app:chipStrokeWidth="1dp"/>
+                </com.google.android.material.chip.ChipGroup>
+            </LinearLayout>
+
+            <!-- Q8 -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="12dp"
+                android:background="@drawable/card_bg"
+                android:layout_marginBottom="12dp">
+
+                <TextView
+                    android:id="@+id/tvQuestion8"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="먹고 싶은 건 가격이 좀 비싸도 한 번쯤 산다."
+                    android:textColor="#222222"
+                    android:textSize="15sp" />
+
+                <com.google.android.material.chip.ChipGroup
+                    android:id="@+id/chipGroup8"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    app:singleSelection="true"
+                    app:selectionRequired="false"
+                    app:chipSpacingHorizontal="16dp">
+
+                    <com.google.android.material.chip.Chip android:id="@+id/chip8_O" android:layout_width="wrap_content" android:layout_height="40dp" android:text="O" android:checkable="true" android:clickable="true" android:paddingHorizontal="22dp" app:chipMinHeight="40dp" app:chipCornerRadius="999dp" app:checkedIconVisible="false" app:chipBackgroundColor="@color/chip_o_bg" android:textColor="@color/chip_o_text" app:chipStrokeColor="@color/chip_o_stroke" app:chipStrokeWidth="1dp"/>
+                    <com.google.android.material.chip.Chip android:id="@+id/chip8_X" android:layout_width="wrap_content" android:layout_height="40dp" android:text="X" android:checkable="true" android:clickable="true" android:paddingHorizontal="22dp" app:chipMinHeight="40dp" app:chipCornerRadius="999dp" app:checkedIconVisible="false" app:chipBackgroundColor="@color/chip_x_bg" android:textColor="@color/chip_x_text" app:chipStrokeColor="@color/chip_x_stroke" app:chipStrokeWidth="1dp"/>
+                </com.google.android.material.chip.ChipGroup>
+            </LinearLayout>
+
+            <!-- Q9 -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="12dp"
+                android:background="@drawable/card_bg"
+                android:layout_marginBottom="12dp">
+
+                <TextView
+                    android:id="@+id/tvQuestion9"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="꼭 필요하지 않은 물건은 아무리 싸도 잘 사지 않는다."
+                    android:textColor="#222222"
+                    android:textSize="15sp" />
+
+                <com.google.android.material.chip.ChipGroup
+                    android:id="@+id/chipGroup9"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    app:singleSelection="true"
+                    app:selectionRequired="false"
+                    app:chipSpacingHorizontal="16dp">
+
+                    <com.google.android.material.chip.Chip android:id="@+id/chip9_O" android:layout_width="wrap_content" android:layout_height="40dp" android:text="O" android:checkable="true" android:clickable="true" android:paddingHorizontal="22dp" app:chipMinHeight="40dp" app:chipCornerRadius="999dp" app:checkedIconVisible="false" app:chipBackgroundColor="@color/chip_o_bg" android:textColor="@color/chip_o_text" app:chipStrokeColor="@color/chip_o_stroke" app:chipStrokeWidth="1dp"/>
+                    <com.google.android.material.chip.Chip android:id="@+id/chip9_X" android:layout_width="wrap_content" android:layout_height="40dp" android:text="X" android:checkable="true" android:clickable="true" android:paddingHorizontal="22dp" app:chipMinHeight="40dp" app:chipCornerRadius="999dp" app:checkedIconVisible="false" app:chipBackgroundColor="@color/chip_x_bg" android:textColor="@color/chip_x_text" app:chipStrokeColor="@color/chip_x_stroke" app:chipStrokeWidth="1dp"/>
+                </com.google.android.material.chip.ChipGroup>
+            </LinearLayout>
+
+            <!-- Q10 -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="12dp"
+                android:background="@drawable/card_bg"
+                android:layout_marginBottom="12dp">
+
+                <TextView
+                    android:id="@+id/tvQuestion10"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="믿고 사는 브랜드가 있다."
+                    android:textColor="#222222"
+                    android:textSize="15sp" />
+
+                <com.google.android.material.chip.ChipGroup
+                    android:id="@+id/chipGroup10"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    app:singleSelection="true"
+                    app:selectionRequired="false"
+                    app:chipSpacingHorizontal="16dp">
+
+                    <com.google.android.material.chip.Chip android:id="@+id/chip10_O" android:layout_width="wrap_content" android:layout_height="40dp" android:text="O" android:checkable="true" android:clickable="true" android:paddingHorizontal="22dp" app:chipMinHeight="40dp" app:chipCornerRadius="999dp" app:checkedIconVisible="false" app:chipBackgroundColor="@color/chip_o_bg" android:textColor="@color/chip_o_text" app:chipStrokeColor="@color/chip_o_stroke" app:chipStrokeWidth="1dp"/>
+                    <com.google.android.material.chip.Chip android:id="@+id/chip10_X" android:layout_width="wrap_content" android:layout_height="40dp" android:text="X" android:checkable="true" android:clickable="true" android:paddingHorizontal="22dp" app:chipMinHeight="40dp" app:chipCornerRadius="999dp" app:checkedIconVisible="false" app:chipBackgroundColor="@color/chip_x_bg" android:textColor="@color/chip_x_text" app:chipStrokeColor="@color/chip_x_stroke" app:chipStrokeWidth="1dp"/>
+                </com.google.android.material.chip.ChipGroup>
+            </LinearLayout>
+
+            <!-- Q11 -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="12dp"
+                android:background="@drawable/card_bg"
+                android:layout_marginBottom="12dp">
+
+                <TextView
+                    android:id="@+id/tvQuestion11"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="이번 달 소비 계획이나 예산을 미리 세운다."
+                    android:textColor="#222222"
+                    android:textSize="15sp" />
+
+                <com.google.android.material.chip.ChipGroup
+                    android:id="@+id/chipGroup11"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    app:singleSelection="true"
+                    app:selectionRequired="false"
+                    app:chipSpacingHorizontal="16dp">
+
+                    <com.google.android.material.chip.Chip android:id="@+id/chip11_O" android:layout_width="wrap_content" android:layout_height="40dp" android:text="O" android:checkable="true" android:clickable="true" android:paddingHorizontal="22dp" app:chipMinHeight="40dp" app:chipCornerRadius="999dp" app:checkedIconVisible="false" app:chipBackgroundColor="@color/chip_o_bg" android:textColor="@color/chip_o_text" app:chipStrokeColor="@color/chip_o_stroke" app:chipStrokeWidth="1dp"/>
+                    <com.google.android.material.chip.Chip android:id="@+id/chip11_X" android:layout_width="wrap_content" android:layout_height="40dp" android:text="X" android:checkable="true" android:clickable="true" android:paddingHorizontal="22dp" app:chipMinHeight="40dp" app:chipCornerRadius="999dp" app:checkedIconVisible="false" app:chipBackgroundColor="@color/chip_x_bg" android:textColor="@color/chip_x_text" app:chipStrokeColor="@color/chip_x_stroke" app:chipStrokeWidth="1dp"/>
+                </com.google.android.material.chip.ChipGroup>
+            </LinearLayout>
+
+            <!-- Q12 -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="12dp"
+                android:background="@drawable/card_bg"
+                android:layout_marginBottom="12dp">
+
+                <TextView
+                    android:id="@+id/tvQuestion12"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="같은 기능이라면 더 저렴한 제품을 고른다."
+                    android:textColor="#222222"
+                    android:textSize="15sp" />
+
+                <com.google.android.material.chip.ChipGroup
+                    android:id="@+id/chipGroup12"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    app:singleSelection="true"
+                    app:selectionRequired="false"
+                    app:chipSpacingHorizontal="16dp">
+
+                    <com.google.android.material.chip.Chip android:id="@+id/chip12_O" android:layout_width="wrap_content" android:layout_height="40dp" android:text="O" android:checkable="true" android:clickable="true" android:paddingHorizontal="22dp" app:chipMinHeight="40dp" app:chipCornerRadius="999dp" app:checkedIconVisible="false" app:chipBackgroundColor="@color/chip_o_bg" android:textColor="@color/chip_o_text" app:chipStrokeColor="@color/chip_o_stroke" app:chipStrokeWidth="1dp"/>
+                    <com.google.android.material.chip.Chip android:id="@+id/chip12_X" android:layout_width="wrap_content" android:layout_height="40dp" android:text="X" android:checkable="true" android:clickable="true" android:paddingHorizontal="22dp" app:chipMinHeight="40dp" app:chipCornerRadius="999dp" app:checkedIconVisible="false" app:chipBackgroundColor="@color/chip_x_bg" android:textColor="@color/chip_x_text" app:chipStrokeColor="@color/chip_x_stroke" app:chipStrokeWidth="1dp"/>
+                </com.google.android.material.chip.ChipGroup>
+            </LinearLayout>
+
+            <!-- Q13 -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="12dp"
+                android:background="@drawable/card_bg"
+                android:layout_marginBottom="12dp">
+
+                <TextView
+                    android:id="@+id/tvQuestion13"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="돈을 쓰라고 있는 것이라는 말에 공감한다."
+                    android:textColor="#222222"
+                    android:textSize="15sp" />
+
+                <com.google.android.material.chip.ChipGroup
+                    android:id="@+id/chipGroup13"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    app:singleSelection="true"
+                    app:selectionRequired="false"
+                    app:chipSpacingHorizontal="16dp">
+
+                    <com.google.android.material.chip.Chip android:id="@+id/chip13_O" android:layout_width="wrap_content" android:layout_height="40dp" android:text="O" android:checkable="true" android:clickable="true" android:paddingHorizontal="22dp" app:chipMinHeight="40dp" app:chipCornerRadius="999dp" app:checkedIconVisible="false" app:chipBackgroundColor="@color/chip_o_bg" android:textColor="@color/chip_o_text" app:chipStrokeColor="@color/chip_o_stroke" app:chipStrokeWidth="1dp"/>
+                    <com.google.android.material.chip.Chip android:id="@+id/chip13_X" android:layout_width="wrap_content" android:layout_height="40dp" android:text="X" android:checkable="true" android:clickable="true" android:paddingHorizontal="22dp" app:chipMinHeight="40dp" app:chipCornerRadius="999dp" app:checkedIconVisible="false" app:chipBackgroundColor="@color/chip_x_bg" android:textColor="@color/chip_x_text" app:chipStrokeColor="@color/chip_x_stroke" app:chipStrokeWidth="1dp"/>
+                </com.google.android.material.chip.ChipGroup>
+            </LinearLayout>
+
+            <!-- Q14 -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="12dp"
+                android:background="@drawable/card_bg"
+                android:layout_marginBottom="12dp">
+
+                <TextView
+                    android:id="@+id/tvQuestion14"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="유행을 즐기기보다 검증된 제품을 선호한다."
+                    android:textColor="#222222"
+                    android:textSize="15sp" />
+
+                <com.google.android.material.chip.ChipGroup
+                    android:id="@+id/chipGroup14"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    app:singleSelection="true"
+                    app:selectionRequired="false"
+                    app:chipSpacingHorizontal="16dp">
+
+                    <com.google.android.material.chip.Chip android:id="@+id/chip14_O" android:layout_width="wrap_content" android:layout_height="40dp" android:text="O" android:checkable="true" android:clickable="true" android:paddingHorizontal="22dp" app:chipMinHeight="40dp" app:chipCornerRadius="999dp" app:checkedIconVisible="false" app:chipBackgroundColor="@color/chip_o_bg" android:textColor="@color/chip_o_text" app:chipStrokeColor="@color/chip_o_stroke" app:chipStrokeWidth="1dp"/>
+                    <com.google.android.material.chip.Chip android:id="@+id/chip14_X" android:layout_width="wrap_content" android:layout_height="40dp" android:text="X" android:checkable="true" android:clickable="true" android:paddingHorizontal="22dp" app:chipMinHeight="40dp" app:chipCornerRadius="999dp" app:checkedIconVisible="false" app:chipBackgroundColor="@color/chip_x_bg" android:textColor="@color/chip_x_text" app:chipStrokeColor="@color/chip_x_stroke" app:chipStrokeWidth="1dp"/>
+                </com.google.android.material.chip.ChipGroup>
+            </LinearLayout>
+
+            <!-- Q15 -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="12dp"
+                android:background="@drawable/card_bg"
+                android:layout_marginBottom="12dp">
+
+                <TextView
+                    android:id="@+id/tvQuestion15"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="감각적이기보다 기능/편의성을 더 중시한다."
+                    android:textColor="#222222"
+                    android:textSize="15sp" />
+
+                <com.google.android.material.chip.ChipGroup
+                    android:id="@+id/chipGroup15"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    app:singleSelection="true"
+                    app:selectionRequired="false"
+                    app:chipSpacingHorizontal="16dp">
+
+                    <com.google.android.material.chip.Chip android:id="@+id/chip15_O" android:layout_width="wrap_content" android:layout_height="40dp" android:text="O" android:checkable="true" android:clickable="true" android:paddingHorizontal="22dp" app:chipMinHeight="40dp" app:chipCornerRadius="999dp" app:checkedIconVisible="false" app:chipBackgroundColor="@color/chip_o_bg" android:textColor="@color/chip_o_text" app:chipStrokeColor="@color/chip_o_stroke" app:chipStrokeWidth="1dp"/>
+                    <com.google.android.material.chip.Chip android:id="@+id/chip15_X" android:layout_width="wrap_content" android:layout_height="40dp" android:text="X" android:checkable="true" android:clickable="true" android:paddingHorizontal="22dp" app:chipMinHeight="40dp" app:chipCornerRadius="999dp" app:checkedIconVisible="false" app:chipBackgroundColor="@color/chip_x_bg" android:textColor="@color/chip_x_text" app:chipStrokeColor="@color/chip_x_stroke" app:chipStrokeWidth="1dp"/>
+                </com.google.android.material.chip.ChipGroup>
+            </LinearLayout>
+
+            <!-- Q16 -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="12dp"
+                android:background="@drawable/card_bg"
+                android:layout_marginBottom="12dp">
+
+                <TextView
+                    android:id="@+id/tvQuestion16"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="쇼핑할 때 ‘지금’보다 ‘나중’의 활용도를 더 생각한다."
+                    android:textColor="#222222"
+                    android:textSize="15sp" />
+
+                <com.google.android.material.chip.ChipGroup
+                    android:id="@+id/chipGroup16"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    app:singleSelection="true"
+                    app:selectionRequired="false"
+                    app:chipSpacingHorizontal="16dp">
+
+                    <com.google.android.material.chip.Chip android:id="@+id/chip16_O" android:layout_width="wrap_content" android:layout_height="40dp" android:text="O" android:checkable="true" android:clickable="true" android:paddingHorizontal="22dp" app:chipMinHeight="40dp" app:chipCornerRadius="999dp" app:checkedIconVisible="false" app:chipBackgroundColor="@color/chip_o_bg" android:textColor="@color/chip_o_text" app:chipStrokeColor="@color/chip_o_stroke" app:chipStrokeWidth="1dp"/>
+                    <com.google.android.material.chip.Chip android:id="@+id/chip16_X" android:layout_width="wrap_content" android:layout_height="40dp" android:text="X" android:checkable="true" android:clickable="true" android:paddingHorizontal="22dp" app:chipMinHeight="40dp" app:chipCornerRadius="999dp" app:checkedIconVisible="false" app:chipBackgroundColor="@color/chip_x_bg" android:textColor="@color/chip_x_text" app:chipStrokeColor="@color/chip_x_stroke" app:chipStrokeWidth="1dp"/>
+                </com.google.android.material.chip.ChipGroup>
+            </LinearLayout>
+
+            <!-- Q17 -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="12dp"
+                android:background="@drawable/card_bg"
+                android:layout_marginBottom="12dp">
+
+                <TextView
+                    android:id="@+id/tvQuestion17"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="작은 돈을 아끼기 위해 불편함을 감수하기보다 효율을 중시한다."
+                    android:textColor="#222222"
+                    android:textSize="15sp" />
+
+                <com.google.android.material.chip.ChipGroup
+                    android:id="@+id/chipGroup17"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    app:singleSelection="true"
+                    app:selectionRequired="false"
+                    app:chipSpacingHorizontal="16dp">
+
+                    <com.google.android.material.chip.Chip android:id="@+id/chip17_O" android:layout_width="wrap_content" android:layout_height="40dp" android:text="O" android:checkable="true" android:clickable="true" android:paddingHorizontal="22dp" app:chipMinHeight="40dp" app:chipCornerRadius="999dp" app:checkedIconVisible="false" app:chipBackgroundColor="@color/chip_o_bg" android:textColor="@color/chip_o_text" app:chipStrokeColor="@color/chip_o_stroke" app:chipStrokeWidth="1dp"/>
+                    <com.google.android.material.chip.Chip android:id="@+id/chip17_X" android:layout_width="wrap_content" android:layout_height="40dp" android:text="X" android:checkable="true" android:clickable="true" android:paddingHorizontal="22dp" app:chipMinHeight="40dp" app:chipCornerRadius="999dp" app:checkedIconVisible="false" app:chipBackgroundColor="@color/chip_x_bg" android:textColor="@color/chip_x_text" app:chipStrokeColor="@color/chip_x_stroke" app:chipStrokeWidth="1dp"/>
+                </com.google.android.material.chip.ChipGroup>
+            </LinearLayout>
+
+            <!-- Q18 -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="12dp"
+                android:background="@drawable/card_bg"
+                android:layout_marginBottom="12dp">
+
+                <TextView
+                    android:id="@+id/tvQuestion18"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="친구나 인플루언서의 추천이 구매 결정에 영향을 끼친다."
+                    android:textColor="#222222"
+                    android:textSize="15sp" />
+
+                <com.google.android.material.chip.ChipGroup
+                    android:id="@+id/chipGroup18"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    app:singleSelection="true"
+                    app:selectionRequired="false"
+                    app:chipSpacingHorizontal="16dp">
+
+                    <com.google.android.material.chip.Chip android:id="@+id/chip18_O" android:layout_width="wrap_content" android:layout_height="40dp" android:text="O" android:checkable="true" android:clickable="true" android:paddingHorizontal="22dp" app:chipMinHeight="40dp" app:chipCornerRadius="999dp" app:checkedIconVisible="false" app:chipBackgroundColor="@color/chip_o_bg" android:textColor="@color/chip_o_text" app:chipStrokeColor="@color/chip_o_stroke" app:chipStrokeWidth="1dp"/>
+                    <com.google.android.material.chip.Chip android:id="@+id/chip18_X" android:layout_width="wrap_content" android:layout_height="40dp" android:text="X" android:checkable="true" android:clickable="true" android:paddingHorizontal="22dp" app:chipMinHeight="40dp" app:chipCornerRadius="999dp" app:checkedIconVisible="false" app:chipBackgroundColor="@color/chip_x_bg" android:textColor="@color/chip_x_text" app:chipStrokeColor="@color/chip_x_stroke" app:chipStrokeWidth="1dp"/>
+                </com.google.android.material.chip.ChipGroup>
+            </LinearLayout>
+
+            <!-- Q19 -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="12dp"
+                android:background="@drawable/card_bg"
+                android:layout_marginBottom="12dp">
+
+                <TextView
+                    android:id="@+id/tvQuestion19"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="할인/이벤트에 쉽게 이끌려 구매를 결정하는 편이다."
+                    android:textColor="#222222"
+                    android:textSize="15sp" />
+
+                <com.google.android.material.chip.ChipGroup
+                    android:id="@+id/chipGroup19"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    app:singleSelection="true"
+                    app:selectionRequired="false"
+                    app:chipSpacingHorizontal="16dp">
+
+                    <com.google.android.material.chip.Chip android:id="@+id/chip19_O" android:layout_width="wrap_content" android:layout_height="40dp" android:text="O" android:checkable="true" android:clickable="true" android:paddingHorizontal="22dp" app:chipMinHeight="40dp" app:chipCornerRadius="999dp" app:checkedIconVisible="false" app:chipBackgroundColor="@color/chip_o_bg" android:textColor="@color/chip_o_text" app:chipStrokeColor="@color/chip_o_stroke" app:chipStrokeWidth="1dp"/>
+                    <com.google.android.material.chip.Chip android:id="@+id/chip19_X" android:layout_width="wrap_content" android:layout_height="40dp" android:text="X" android:checkable="true" android:clickable="true" android:paddingHorizontal="22dp" app:chipMinHeight="40dp" app:chipCornerRadius="999dp" app:checkedIconVisible="false" app:chipBackgroundColor="@color/chip_x_bg" android:textColor="@color/chip_x_text" app:chipStrokeColor="@color/chip_x_stroke" app:chipStrokeWidth="1dp"/>
+                </com.google.android.material.chip.ChipGroup>
+            </LinearLayout>
+
+            <!-- Q20 -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="12dp"
+                android:background="@drawable/card_bg"
+                android:layout_marginBottom="12dp">
+
+                <TextView
+                    android:id="@+id/tvQuestion20"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="소비 후 지출 기록을 남기는 편이다."
+                    android:textColor="#222222"
+                    android:textSize="15sp" />
+
+                <com.google.android.material.chip.ChipGroup
+                    android:id="@+id/chipGroup20"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    app:singleSelection="true"
+                    app:selectionRequired="false"
+                    app:chipSpacingHorizontal="16dp">
+
+                    <com.google.android.material.chip.Chip android:id="@+id/chip20_O" android:layout_width="wrap_content" android:layout_height="40dp" android:text="O" android:checkable="true" android:clickable="true" android:paddingHorizontal="22dp" app:chipMinHeight="40dp" app:chipCornerRadius="999dp" app:checkedIconVisible="false" app:chipBackgroundColor="@color/chip_o_bg" android:textColor="@color/chip_o_text" app:chipStrokeColor="@color/chip_o_stroke" app:chipStrokeWidth="1dp"/>
+                    <com.google.android.material.chip.Chip android:id="@+id/chip20_X" android:layout_width="wrap_content" android:layout_height="40dp" android:text="X" android:checkable="true" android:clickable="true" android:paddingHorizontal="22dp" app:chipMinHeight="40dp" app:chipCornerRadius="999dp" app:checkedIconVisible="false" app:chipBackgroundColor="@color/chip_x_bg" android:textColor="@color/chip_x_text" app:chipStrokeColor="@color/chip_x_stroke" app:chipStrokeWidth="1dp"/>
+                </com.google.android.material.chip.ChipGroup>
+            </LinearLayout>
+
+            <!-- 하단 완료 버튼 -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnSubmit"
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:text="검사 완료  >"
+                android:textAllCaps="false"
+                android:textSize="16sp"
+                android:layout_marginTop="4dp"
+                android:layout_marginBottom="8dp"
+                app:cornerRadius="26dp"
+                app:backgroundTint="@color/sage_600"
+                android:textColor="@android:color/white" />
+
+        </LinearLayout>
+    </ScrollView>
+
+</LinearLayout>
