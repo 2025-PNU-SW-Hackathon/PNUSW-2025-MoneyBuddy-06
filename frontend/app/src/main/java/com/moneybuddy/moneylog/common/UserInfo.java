@@ -1,4 +1,4 @@
-package com.moneybuddy.moneylog;
+package com.moneybuddy.moneylog.common;
 
 public class UserInfo {
     private String token;

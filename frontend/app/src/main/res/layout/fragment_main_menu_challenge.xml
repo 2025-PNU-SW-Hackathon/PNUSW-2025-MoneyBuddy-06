@@ -1,6 +1,143 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".fragment.MainMenuChallengeFragment"></androidx.constraintlayout.widget.ConstraintLayout>
+    android:background="#FFFEF7"
+    tools:context=".main.fragment.fragment.MainMenuChallengeFragment">
+
+    <RadioGroup
+        android:id="@+id/radioGroup4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="60dp"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <RadioButton
+            android:id="@+id/radioButton12"
+            android:layout_width="80dp"
+            android:layout_height="30dp"
+            android:layout_marginStart="10dp"
+            android:layout_marginBottom="5dp"
+            android:background="@drawable/challenge_radio_button"
+            android:button="@null"
+            android:checked="true"
+            android:elevation="2dp"
+            android:gravity="center"
+            android:padding="0dp"
+            android:text="진행 중"
+            android:textColor="@color/black"
+            android:textSize="12sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <RadioButton
+            android:id="@+id/radioButton13"
+            android:layout_width="80dp"
+            android:layout_height="30dp"
+            android:layout_marginStart="10dp"
+            android:background="@drawable/challenge_radio_button"
+            android:button="@null"
+            android:elevation="2dp"
+            android:gravity="center"
+            android:padding="0dp"
+            android:text="진행 완료"
+            android:textColor="@color/black"
+            android:textSize="12sp" />
+
+        <RadioButton
+            android:id="@+id/radioButton10"
+            android:layout_width="80dp"
+            android:layout_height="30dp"
+            android:layout_marginStart="10dp"
+            android:background="@drawable/challenge_radio_button"
+            android:button="@null"
+            android:elevation="2dp"
+            android:gravity="center"
+            android:padding="0dp"
+            android:text="전체"
+            android:textColor="@color/black"
+            android:textSize="12sp" />
+
+        <RadioButton
+            android:id="@+id/radioButton11"
+            android:layout_width="80dp"
+            android:layout_height="30dp"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="10dp"
+            android:background="@drawable/challenge_radio_button"
+            android:button="@null"
+            android:elevation="2dp"
+            android:gravity="center"
+            android:padding="0dp"
+            android:text="추천 챌린지"
+            android:textColor="@color/black"
+            android:textSize="12sp" />
+
+    </RadioGroup>
+
+    <FrameLayout
+        android:id="@+id/filter_button_container"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
+        android:layout_marginEnd="40dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/radioGroup4">
+
+        <ImageButton
+            android:id="@+id/imageButton2"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:background="@null"
+            android:contentDescription="챌린지 카테고리 검색"
+            android:src="@drawable/challenge_filter" />
+
+    </FrameLayout>
+
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
+        android:contentDescription="챌린지 추가하기 floating 버튼"
+        android:elevation="6dp"
+        app:backgroundTint="#86935A"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.Material3.FloatingActionButton.Round"
+        app:srcCompat="@drawable/challenge_floating_add"
+        app:tint="@android:color/white" />
+
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/swipeRefreshLayout"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="10dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/filter_button_container">
+
+        <androidx.coordinatorlayout.widget.CoordinatorLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recyclerView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+
+        </androidx.coordinatorlayout.widget.CoordinatorLayout>
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,4 +1,4 @@
-package com.moneybuddy.moneylog.fragment;
+package com.moneybuddy.moneylog.main.fragment.fragment;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -7,12 +7,12 @@ import android.view.ViewGroup;
 import androidx.fragment.app.Fragment;
 import com.moneybuddy.moneylog.R;
 
-public class MainMenuHomeFragment extends Fragment {
+public class MainMenuMypageFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        ViewGroup rootView = (ViewGroup)inflater.inflate(R.layout.fragment_main_menu_home, container, false);
+        ViewGroup rootView = (ViewGroup)inflater.inflate(R.layout.fragment_main_menu_mypage, container, false);
 
         return rootView;
     }

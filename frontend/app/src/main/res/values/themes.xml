@@ -3,7 +3,10 @@
 
     <!-- Base app theme -->
     <style name="Base.Theme.Moneylog" parent="Theme.Material3.Light.NoActionBar">
-        <item name="colorPrimary">#F5F3DF</item>
+    </style>
+
+    <style name="ShapeAppearanceOverlay.Material3.FloatingActionButton.Round">
+        <item name="cornerSize">50%</item>
     </style>
 </resources>
 
