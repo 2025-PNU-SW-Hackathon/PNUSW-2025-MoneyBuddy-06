@@ -16,4 +16,12 @@
 
     // signup-ui
     <color name="text_input_box_stroke">#86935A</color>
+    <color name="food">#FCA5A5</color>            <!-- Red  → Pastel Red -->
+    <color name="cafe_bakery">#FDBA74</color>     <!-- Orange → Pastel Orange -->
+    <color name="transport">#FDE047</color>       <!-- Yellow → Pastel Yellow -->
+    <color name="culture_leisure">#86EFAC</color> <!-- Green  → Pastel Green -->
+    <color name="healthcare">#93C5FD</color>      <!-- Blue   → Pastel Blue -->
+    <color name="clothing_beauty">#A5B4FC</color> <!-- Indigo → Pastel Indigo -->
+    <color name="other">#D8B4FE</color>
+    <color name="bar_remainder">#FFE0E0E0</color>
 </resources>

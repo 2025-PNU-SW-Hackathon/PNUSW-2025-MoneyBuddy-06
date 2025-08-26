@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ripple xmlns:android="http://schemas.android.com/apk/res/android"
+    android:color="#1F000000">
+    <item>
+        <shape android:shape="rectangle">
+            <corners android:radius="26dp"/>
+            <solid android:color="#BDBDBD"/> <!-- 지출(선택) 회색 -->
+            <padding android:left="12dp" android:top="10dp"
+                android:right="12dp" android:bottom="10dp"/>
+        </shape>
+    </item>
+</ripple>
