@@ -10,10 +10,10 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.moneybuddy.moneylog.R;
-import com.moneybuddy.moneylog.main.fragment.fragment.MainMenuChallengeFragment;
-import com.moneybuddy.moneylog.main.fragment.fragment.MainMenuHomeFragment;
-import com.moneybuddy.moneylog.main.fragment.fragment.MainMenuLedgerFragment;
-import com.moneybuddy.moneylog.main.fragment.fragment.MainMenuMypageFragment;
+import com.moneybuddy.moneylog.main.fragment.MainMenuChallengeFragment;
+import com.moneybuddy.moneylog.main.fragment.MainMenuHomeFragment;
+import com.moneybuddy.moneylog.main.fragment.MainMenuLedgerFragment;
+import com.moneybuddy.moneylog.main.fragment.MainMenuMypageFragment;
 
 public class MainMenuActivity extends AppCompatActivity {
 

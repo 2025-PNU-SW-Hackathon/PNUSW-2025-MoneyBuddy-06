@@ -3,8 +3,9 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.INTERNET" />
-
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <application
+        android:name=".common.MoneyLogApp"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -15,10 +16,8 @@
         android:theme="@style/Base.Theme.Moneylog"
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
-
-<!--      앱 실행 시 첫 화면-->
         <activity
-            android:name=".login.activity.LoginActivity"
+            android:name=".main.activity.MainMenuActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -34,7 +33,6 @@
         </activity>
 
 <!--      Fragment 교체 activity-->
-        <activity android:name=".main.activity.MainMenuActivity"/>
 
 <!--      login 브랜치에서 사용한 임시 activity -> 나중에 삭제-->
         <activity android:name=".login.activity.HomeActivity" />
@@ -45,5 +43,8 @@
         <activity android:name=".challenge.activity.ChallengeCategoryActivity"/>
         <activity android:name=".challenge.activity.ChallengeDetailActivity"/>
 
+        <activity android:name=".notification.activity.NotificationActivity"
+            android:exported="false"
+            android:label="@string/app_name" />
     </application>
 </manifest>

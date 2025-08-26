@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:background="#FFFEF7"
     android:orientation="vertical"
-    tools:context=".main.fragment.fragment.MainMenuHomeFragment">
+    tools:context=".main.fragment.MainMenuHomeFragment">
 
     <Button
         android:id="@+id/button4"
@@ -45,6 +45,9 @@
         android:layout_marginTop="16dp"
         android:background="@android:color/transparent"
         android:foreground="@drawable/home_notifications"
+        android:minWidth="0dp"
+        android:minHeight="0dp"
+        android:padding="0dp"
         app:layout_constraintBottom_toTopOf="@+id/button4"
         app:layout_constraintEnd_toStartOf="@+id/imageView3"
         app:layout_constraintHorizontal_bias="0.089"
