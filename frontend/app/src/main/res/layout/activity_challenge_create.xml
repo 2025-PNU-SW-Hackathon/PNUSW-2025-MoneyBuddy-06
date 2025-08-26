@@ -1,0 +1,271 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FFFEF7"
+    tools:context=".challenge.activity.ChallengeCreateActivity">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true"
+        tools:context=".ChallengeCreateActivity">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <ImageButton
+                android:id="@+id/arrow_back"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@null"
+                android:contentDescription="뒤로가기 버튼"
+                android:src="@drawable/challenge_arrow_back"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+                <!-- 1. 챌린지 유형 -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="챌린지 유형"
+                    android:layout_marginTop="30dp"/>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                    android:id="@+id/layout_challenge_type"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    app:boxStrokeColor="@color/text_input_box_stroke_color"
+                    android:background="@color/white"
+                    android:layout_marginTop="5dp"
+                    app:boxCornerRadiusBottomEnd="10dp"
+                    app:boxCornerRadiusBottomStart="10dp"
+                    app:boxCornerRadiusTopEnd="10dp"
+                    app:boxCornerRadiusTopStart="10dp">
+
+                    <AutoCompleteTextView
+                        android:id="@+id/dropdown_challenge_type"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:inputType="none"
+                        android:padding="0dp"/>
+                </com.google.android.material.textfield.TextInputLayout>
+
+                    <!-- 2. 지출 챌린지 유형 (코드에서 숨김/표시 처리) -->
+                    <TextView
+                        android:id="@+id/tv_spending_type"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="지출 챌린지 유형"
+                        android:layout_marginTop="16dp"/>
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                        android:id="@+id/layout_spending_type"
+                        android:layout_width="match_parent"
+                        android:layout_height="50dp"
+                        android:visibility="visible"
+                        app:boxStrokeColor="@color/text_input_box_stroke_color"
+                        android:background="@color/white"
+                        android:layout_marginTop="5dp"
+                        app:boxCornerRadiusBottomEnd="10dp"
+                        app:boxCornerRadiusBottomStart="10dp"
+                        app:boxCornerRadiusTopEnd="10dp"
+                        app:boxCornerRadiusTopStart="10dp">
+
+                        <AutoCompleteTextView
+                            android:id="@+id/dropdown_spending_type"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:inputType="none"
+                            tools:ignore="LabelFor"
+                            android:padding="0dp"/>
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <!-- 3. 챌린지 카테고리 -->
+                    <TextView
+                        android:id="@+id/tv_challenge_category"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="챌린지 카테고리"
+                        android:layout_marginTop="16dp"/>
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/layout_challenge_category"
+                        style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                        android:layout_width="match_parent"
+                        android:layout_height="50dp"
+                        android:visibility="visible"
+                        app:boxStrokeColor="@color/text_input_box_stroke_color"
+                        android:background="@color/white"
+                        android:layout_marginTop="5dp"
+                        app:boxCornerRadiusBottomEnd="10dp"
+                        app:boxCornerRadiusBottomStart="10dp"
+                        app:boxCornerRadiusTopEnd="10dp"
+                        app:boxCornerRadiusTopStart="10dp">
+
+                        <AutoCompleteTextView
+                            android:id="@+id/dropdown_challenge_category"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:inputType="none"
+                            tools:ignore="LabelFor"
+                            android:padding="0dp"/>
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                <!-- 4. 챌린지 제목 -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="챌린지 제목"
+                    android:layout_marginTop="16dp"/>
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/layout_challenge_title"
+                    style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:layout_marginTop="5dp"
+                    app:boxCornerRadiusBottomEnd="10dp"
+                    app:boxCornerRadiusBottomStart="10dp"
+                    app:boxCornerRadiusTopEnd="10dp"
+                    app:boxCornerRadiusTopStart="10dp"
+                    app:boxBackgroundColor="@color/white"
+                    app:boxStrokeColor="@color/text_input_box_stroke_color"
+                    app:counterEnabled="true"
+                    app:counterMaxLength="20"
+                    android:textColorHint="@color/darker_gray"
+                    app:hintTextColor="@color/darker_gray">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/input_challenge_title"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:maxLength="20"
+                        android:hint="20자 이하로 작성해주세요."
+                        android:padding="0dp"/>
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <!-- 5. 챌린지 소개 -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="챌린지 소개"
+                    android:layout_marginTop="16dp"/>
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/layout_challenge_intro"
+                    style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    app:boxCornerRadiusBottomEnd="10dp"
+                    app:boxCornerRadiusBottomStart="10dp"
+                    app:boxCornerRadiusTopEnd="10dp"
+                    app:boxCornerRadiusTopStart="10dp"
+                    app:boxBackgroundColor="@color/white"
+                    app:boxStrokeColor="@color/text_input_box_stroke_color"
+                    app:counterEnabled="true"
+                    app:counterMaxLength="30"
+                    android:textColorHint="@color/darker_gray"
+                    app:hintTextColor="@color/darker_gray">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/input_challenge_intro"
+                        android:layout_width="match_parent"
+                        android:layout_height="150dp"
+                        android:maxLength="30"
+                        android:hint="30자 이하로 작성해주세요."
+                        android:gravity="top|start"/>
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <!-- 6. 목표 기간 -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="목표 기간"
+                    android:layout_marginTop="16dp"/>
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/layout_goal_period"
+                    style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    app:boxStrokeColor="@color/text_input_box_stroke_color"
+                    android:background="@color/white"
+                    android:layout_marginTop="5dp"
+                    app:boxCornerRadiusBottomEnd="10dp"
+                    app:boxCornerRadiusBottomStart="10dp"
+                    app:boxCornerRadiusTopEnd="10dp"
+                    app:boxCornerRadiusTopStart="10dp">
+
+                    <AutoCompleteTextView
+                        android:id="@+id/dropdown_goal_period"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:inputType="none"
+                        tools:ignore="LabelFor"
+                        android:padding="0dp"/>
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <!-- 7. 목표 금액 / 횟수 -->
+                <TextView
+                    android:id="@+id/tv_goal_value"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="목표 금액/횟수"
+                    android:layout_marginTop="16dp"/>
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/layout_goal_value"
+                    style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:layout_marginTop="5dp"
+                    app:boxCornerRadiusBottomEnd="10dp"
+                    app:boxCornerRadiusBottomStart="10dp"
+                    app:boxCornerRadiusTopEnd="10dp"
+                    app:boxCornerRadiusTopStart="10dp"
+                    app:boxBackgroundColor="@color/white"
+                    app:boxStrokeColor="@color/text_input_box_stroke_color">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/input_goal_value"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:inputType="number"
+                        android:padding="0dp"/>
+                </com.google.android.material.textfield.TextInputLayout>
+
+            <!-- 8. 확인 체크박스 -->
+                <CheckBox
+                    android:id="@+id/checkbox_share"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="24dp"
+                    android:layout_marginStart="25dp"
+                    android:text="챌린지를 공유하시겠습니까?" />
+
+                <CheckBox
+                    android:id="@+id/checkbox_confirm"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="25dp"
+                    android:text="한번 만든 챌린지는 수정할 수 없어요.\n다시 한번 확인해주세요." />
+
+                <!-- 만들기 버튼 -->
+                <Button
+                    android:id="@+id/button_create_challenge"
+                    android:layout_width="120dp"
+                    android:layout_height="40dp"
+                    android:layout_marginTop="24dp"
+                    android:background="@drawable/challenge_rounded_button"
+                    app:backgroundTint="@color/green"
+                    android:text="만들기"
+                    android:layout_gravity="center_horizontal" />
+            </LinearLayout>
+    </ScrollView>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
