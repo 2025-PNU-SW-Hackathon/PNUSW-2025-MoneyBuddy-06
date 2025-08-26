@@ -15,22 +15,28 @@
         android:theme="@style/Base.Theme.Moneylog"
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
-      // 앱 실행 시 첫 화면
+
+<!--      앱 실행 시 첫 화면-->
         <activity
             android:name=".login.activity.LoginActivity"
             android:exported="true">
-
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-      
-      // Fragment 교체 activity
-        <activity android:name=".main.activity.MainMenuActivity">
 
-      // login 브랜치에서 사용한 임시 activity -> 나중에 삭제
+        <activity android:name=".signup.activity.SignupActivity"/>
+
+        <activity
+            android:name=".main.MainActivity"
+            android:exported="false">
+        </activity>
+
+<!--      Fragment 교체 activity-->
+        <activity android:name=".main.activity.MainMenuActivity"/>
+
+<!--      login 브랜치에서 사용한 임시 activity -> 나중에 삭제-->
         <activity android:name=".login.activity.HomeActivity" />
         <activity android:name=".login.activity.SignupActivity"/>
 
