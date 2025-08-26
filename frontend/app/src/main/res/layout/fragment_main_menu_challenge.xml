@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#FFFEF7"
-    tools:context=".main.fragment.fragment.MainMenuChallengeFragment">
+    tools:context=".main.fragment.MainMenuChallengeFragment">
 
     <RadioGroup
         android:id="@+id/radioGroup4"

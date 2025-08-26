@@ -47,8 +47,6 @@ public class MainMenuActivity extends AppCompatActivity {
                 transaction.replace(R.id.menu_frame_layout, fragmentChallenge).commitAllowingStateLoss();
             } else if (id == R.id.menu_ledger) {
                 transaction.replace(R.id.menu_frame_layout, fragmentLedger).commitAllowingStateLoss();
-            } else if (id == R.id.menu_mypage) {
-                transaction.replace(R.id.menu_frame_layout, fragmentMypage).commitAllowingStateLoss();
             }
             return true;
         }

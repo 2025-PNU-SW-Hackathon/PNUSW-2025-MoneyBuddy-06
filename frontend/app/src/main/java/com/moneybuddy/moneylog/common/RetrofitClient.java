@@ -5,42 +5,86 @@ import android.content.Context;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
-import okhttp3.Authenticator;
 import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
-import okhttp3.Route;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-// 앱 전체에서 Retrofit 인스턴스를 하나만 생성하고 공유함
-public class RetrofitClient {
-    private static volatile Retrofit retrofit = null;
-    private static final String BASE_URL = "http://server-address/"; // 서버 주소로 변경하기
+/**
+ * 앱 전역에서 하나의 Retrofit 인스턴스를 제공.
+ * - DEBUG: 에뮬레이터 호스트 http://10.0.2.2:8080/
+ * - RELEASE: 실제 API URL 로 교체
+ *
+ * TokenManager 싱글턴을 통해 Authorization 헤더를 자동 첨부합니다.
+ */
+public final class RetrofitClient {
 
-    // 외부에서 직접 객체를 생성하는 것을 막음 (싱글턴 패턴)
+    private static volatile Retrofit instance;
+
+    // ⚠️ DEBUG/RELEASE 분기: 필요에 맞게 바꾸세요.
+    private static final String BASE_URL_DEBUG   = "http://10.0.2.2:8080/";
+    private static final String BASE_URL_RELEASE = "https://api.moneylog.app/"; // 예시
+
     private RetrofitClient() {}
 
-    public static Retrofit getClient() {
-        if (retrofit == null) {
+    /** Retrofit 인스턴스 */
+    public static Retrofit get(Context ctx) {
+        if (instance == null) {
             synchronized (RetrofitClient.class) {
-                if (retrofit == null) {
-                    retrofit = new Retrofit.Builder()
-                            .baseUrl(BASE_URL)
-                            .addConverterFactory(GsonConverterFactory.create())
+                if (instance == null) {
+                    Context appCtx = ctx.getApplicationContext();
+
+                    // Gson
+                    Gson gson = new GsonBuilder()
+                            .setLenient()
+                            .create();
+
+                    // 로깅 (DEBUG 일 때만 BODY)
+                    HttpLoggingInterceptor log = new HttpLoggingInterceptor();
+                    log.setLevel(BuildConfig.DEBUG
+                            ? HttpLoggingInterceptor.Level.BODY
+                            : HttpLoggingInterceptor.Level.NONE);
+
+                    // Authorization 헤더 자동 첨부 인터셉터
+                    Interceptor auth = chain -> {
+                        Request original = chain.request();
+                        String token = TokenManager.getInstance(appCtx).getToken(); // null일 수 있음
+                        if (token != null && !token.isEmpty()) {
+                            Request withAuth = original.newBuilder()
+                                    .header("Authorization", "Bearer " + token)
+                                    .build();
+                            return chain.proceed(withAuth);
+                        }
+                        return chain.proceed(original);
+                    };
+
+                    OkHttpClient client = new OkHttpClient.Builder()
+                            .addInterceptor(log)
+                            .addInterceptor(auth)
+                            .connectTimeout(15, TimeUnit.SECONDS)
+                            .readTimeout(20, TimeUnit.SECONDS)
+                            .writeTimeout(20, TimeUnit.SECONDS)
+                            .build();
+
+                    String baseUrl = BuildConfig.DEBUG ? BASE_URL_DEBUG : BASE_URL_RELEASE;
+
+                    instance = new Retrofit.Builder()
+                            .baseUrl(baseUrl)
+                            .addConverterFactory(GsonConverterFactory.create(gson))
+                            .client(client)
                             .build();
                 }
             }
         }
-        return retrofit;
+        return instance;
     }
 
-    // ApiService 인터페이스를 쉽게 사용할 수 있도록 도와주는 메소드
-    public static ApiService getApiService() {
-        return getClient().create(ApiService.class);
+    /** ApiService 바로 얻기 (권장 진입점) */
+    public static ApiService getApiService(Context ctx) {
+        return get(ctx).create(ApiService.class);
     }
 }

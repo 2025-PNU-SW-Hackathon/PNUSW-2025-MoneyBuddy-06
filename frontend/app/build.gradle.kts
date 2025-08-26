@@ -60,6 +60,9 @@ dependencies {
     implementation("androidx.recyclerview:recyclerview:1.3.2")
     implementation("androidx.coordinatorlayout:coordinatorlayout:1.2.0")
 
+    implementation("androidx.appcompat:appcompat:1.7.1")
+    implementation("androidx.activity:activity:1.10.1")
+    implementation("androidx.constraintlayout:constraintlayout:2.2.1")
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
@@ -79,6 +82,11 @@ dependencies {
     implementation("com.google.firebase:firebase-messaging")
 
 // ⚠ google-services 플러그인은 사용하지 않습니다 (파일 없이 코드 초기화하므로).
+    implementation("androidx.viewpager2:viewpager2:1.1.0")
+
+    // Retrofit
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
 
     // Navigation Bar
     implementation("com.google.android.material:material:1.9.0")
