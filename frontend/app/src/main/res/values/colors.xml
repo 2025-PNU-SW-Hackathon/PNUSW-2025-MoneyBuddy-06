@@ -2,5 +2,18 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="green">#86935A</color>
+    <color name="pink">#F5DFDF</color>
+    <color name="gray">#D9D9D9</color>
+    <color name="darker_gray">#757575</color>
+
+    <color name="radio_unchecked_button">#F5F3DF</color>
+    <color name="radio_checked_button">#C4C9B3</color>
+
+    <color name="my_challenge_color">#C1D194</color>
+    <color name="other_challenge_color">#F5F3DF</color>
+    <color name="red">#FF0000</color>
+
+    // signup-ui
     <color name="text_input_box_stroke">#86935A</color>
 </resources>

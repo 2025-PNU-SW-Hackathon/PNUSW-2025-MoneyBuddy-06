@@ -1,9 +1,16 @@
 <resources>
     <string name="app_name">Moneylog</string>
+<!--    signup-ui-->
     <string name="back_button">뒤로가기 버튼</string>
     <string name="hello">반가워요</string>
     <string name="email_hint">이메일</string>
     <string name="password_hint">비밀번호</string>
     <string name="password_confirm_hint">비밀번호 확인</string>
     <string name="signup">회원가입</string>
+<!--    login-ui-->
+    <string name="underlined_text1"><![CDATA[<u>비밀번호를 잊으셨나요?</u>]]></string>
+    <string name="underlined_text2"><![CDATA[<u>처음이신가요?</u>]]></string>
+
+<!--    challenge-ui-->
+    <string name="initialize"><u><i>초기화</i></u></string>
 </resources>

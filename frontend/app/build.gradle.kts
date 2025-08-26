@@ -40,6 +40,29 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
-    implementation(libs.retrofit)
-    implementation(libs.retrofit.converter.gson)
+
+    implementation("androidx.recyclerview:recyclerview:1.4.0")
+
+
+    // Retrofit, okhttp
+    implementation("com.squareup.retrofit2:retrofit:2.11.0")
+    implementation("com.squareup.retrofit2:converter-gson:2.11.0")
+    implementation("com.squareup.okhttp3:okhttp:4.12.0")
+    implementation("com.squareup.okhttp3:logging-interceptor:4.12.0")
+
+
+    // Navigation Bar
+    implementation("com.google.android.material:material:1.9.0")
+
+    // swiprefreshlayout (fragment_main_menu_challenge.xml에서 사용)
+    implementation ("androidx.swiperefreshlayout:swiperefreshlayout:1.1.0")
+
+    // paging
+    implementation("androidx.paging:paging-runtime:3.2.1")
+    implementation("androidx.paging:paging-rxjava3:3.2.1")
+
+    implementation("androidx.lifecycle:lifecycle-reactivestreams:2.6.2")
+
+    compileOnly("org.projectlombok:lombok:1.18.32")
+    annotationProcessor("org.projectlombok:lombok:1.18.32")
 }

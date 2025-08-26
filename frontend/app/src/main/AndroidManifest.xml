@@ -2,6 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <uses-permission android:name="android.permission.INTERNET" />
+
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -10,11 +12,13 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.Moneylog"
+        android:theme="@style/Base.Theme.Moneylog"
+        android:usesCleartextTraffic="true"
         tools:targetApi="31">
 
+<!--      앱 실행 시 첫 화면-->
         <activity
-            android:name=".signup.activity.SignupActivity"
+            android:name=".login.activity.LoginActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -22,10 +26,24 @@
             </intent-filter>
         </activity>
 
+        <activity android:name=".signup.activity.SignupActivity"/>
+
         <activity
             android:name=".main.MainActivity"
             android:exported="false">
         </activity>
-    </application>
 
+<!--      Fragment 교체 activity-->
+        <activity android:name=".main.activity.MainMenuActivity"/>
+
+<!--      login 브랜치에서 사용한 임시 activity -> 나중에 삭제-->
+        <activity android:name=".login.activity.HomeActivity" />
+        <activity android:name=".login.activity.SignupActivity"/>
+
+
+        <activity android:name=".challenge.activity.ChallengeCreateActivity"/>
+        <activity android:name=".challenge.activity.ChallengeCategoryActivity"/>
+        <activity android:name=".challenge.activity.ChallengeDetailActivity"/>
+
+    </application>
 </manifest>
