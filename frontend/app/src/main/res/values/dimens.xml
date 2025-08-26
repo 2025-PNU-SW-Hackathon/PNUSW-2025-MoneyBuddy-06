@@ -6,4 +6,7 @@
     <dimen name="home_bell_icon_size">20dp</dimen>
 
     <dimen name="home_top_icon_size">40dp</dimen>
+
+    <dimen name="hairline">1dp</dimen>
+
 </resources>

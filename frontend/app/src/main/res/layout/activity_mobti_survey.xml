@@ -2,7 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
-    android:background="#FFFFFF"
+    android:background="#D9E6BA"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -11,7 +11,7 @@
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#FFFFFF"
+        android:background="#D9E6BA"
         app:navigationIcon="?attr/homeAsUpIndicator"
         app:title=""
         app:contentInsetStartWithNavigation="0dp" />
@@ -22,16 +22,19 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:paddingHorizontal="16dp"
-        android:paddingBottom="8dp">
+        android:paddingBottom="8dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp">
 
         <com.google.android.material.progressindicator.LinearProgressIndicator
             android:id="@+id/progress"
             android:layout_width="match_parent"
-            android:layout_height="8dp"
+            android:layout_height="20dp"
+            android:layout_gravity="center"
             app:trackCornerRadius="8dp"
-            app:trackThickness="8dp"
-            app:indicatorColor="@color/sage_500"
-            app:trackColor="@color/sage_050"
+            app:trackThickness="15dp"
+            app:indicatorColor="#77875D"
+            app:trackColor="#C6D3B0"
             android:indeterminate="false"
             android:max="100"
             android:progress="0" />
@@ -57,49 +60,185 @@
             android:id="@+id/container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:background="@drawable/card_bg"
             android:orientation="vertical"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
             android:paddingHorizontal="16dp"
             android:paddingBottom="24dp">
 
 
             <!-- Q1. 비싸더라도 내가 좋아하는 브랜드라면 구매한다. -->
-             <include layout="@layout/item_mobti_q_common" android:id="@+id/q1" />
+            <include layout="@layout/item_mobti_q_common" android:id="@+id/q1" />
+            <com.google.android.material.divider.MaterialDivider
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:dividerColor="@color/line_soft"
+                app:dividerThickness="@dimen/hairline"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp"/>
             <!-- Q2. 나는 돈을 써서 ~ 잔고 확인 즐거움 -->
             <include layout="@layout/item_mobti_q_common" android:id="@+id/q2" />
+            <com.google.android.material.divider.MaterialDivider
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:dividerColor="@color/line_soft"
+                app:dividerThickness="@dimen/hairline"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp"/>
             <!-- Q3. 요즘 유행하는 브랜드나 아이템에 관심이 많다. -->
             <include layout="@layout/item_mobti_q_common" android:id="@+id/q3" />
+            <com.google.android.material.divider.MaterialDivider
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:dividerColor="@color/line_soft"
+                app:dividerThickness="@dimen/hairline"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp"/>
             <!-- Q4. 큰 소비 전엔 반드시 비교검색 -->
             <include layout="@layout/item_mobti_q_common" android:id="@+id/q4" />
+            <com.google.android.material.divider.MaterialDivider
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:dividerColor="@color/line_soft"
+                app:dividerThickness="@dimen/hairline"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp"/>
             <!-- Q5. 나를 위한 작은 사치는 꼭 필요 -->
             <include layout="@layout/item_mobti_q_common" android:id="@+id/q5" />
+            <com.google.android.material.divider.MaterialDivider
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:dividerColor="@color/line_soft"
+                app:dividerThickness="@dimen/hairline"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp"/>
             <!-- Q6. 수익 생기면 저축/이체 습관 -->
             <include layout="@layout/item_mobti_q_common" android:id="@+id/q6" />
+            <com.google.android.material.divider.MaterialDivider
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:dividerColor="@color/line_soft"
+                app:dividerThickness="@dimen/hairline"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp"/>
             <!-- Q7. 트렌드보다 내 스타일 -->
             <include layout="@layout/item_mobti_q_common" android:id="@+id/q7" />
+            <com.google.android.material.divider.MaterialDivider
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:dividerColor="@color/line_soft"
+                app:dividerThickness="@dimen/hairline"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp"/>
             <!-- Q8. 소비는 즉흥적으로 결정 -->
             <include layout="@layout/item_mobti_q_common" android:id="@+id/q8" />
+            <com.google.android.material.divider.MaterialDivider
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:dividerColor="@color/line_soft"
+                app:dividerThickness="@dimen/hairline"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp"/>
             <!-- Q9. 먹고 싶은 건 비싸도 참지 못함 -->
             <include layout="@layout/item_mobti_q_common" android:id="@+id/q9" />
+            <com.google.android.material.divider.MaterialDivider
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:dividerColor="@color/line_soft"
+                app:dividerThickness="@dimen/hairline"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp"/>
             <!-- Q10. 꼭 필요하지 않으면 사지 않음 -->
             <include layout="@layout/item_mobti_q_common" android:id="@+id/q10" />
+            <com.google.android.material.divider.MaterialDivider
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:dividerColor="@color/line_soft"
+                app:dividerThickness="@dimen/hairline"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp"/>
             <!-- Q11. 믿고 사는 브랜드가 있다 -->
             <include layout="@layout/item_mobti_q_common" android:id="@+id/q11" />
+            <com.google.android.material.divider.MaterialDivider
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:dividerColor="@color/line_soft"
+                app:dividerThickness="@dimen/hairline"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp"/>
             <!-- Q12. 이번 달 소비 계획/예산을 미리 세운다 -->
             <include layout="@layout/item_mobti_q_common" android:id="@+id/q12" />
+            <com.google.android.material.divider.MaterialDivider
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:dividerColor="@color/line_soft"
+                app:dividerThickness="@dimen/hairline"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp"/>
             <!-- Q13. 같은 기능이면 더 저렴한 제품 선택 -->
             <include layout="@layout/item_mobti_q_common" android:id="@+id/q13" />
+            <com.google.android.material.divider.MaterialDivider
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:dividerColor="@color/line_soft"
+                app:dividerThickness="@dimen/hairline"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp"/>
             <!-- Q14. “돈은 쓰라고 있는 거지” 공감 -->
             <include layout="@layout/item_mobti_q_common" android:id="@+id/q14" />
+            <com.google.android.material.divider.MaterialDivider
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:dividerColor="@color/line_soft"
+                app:dividerThickness="@dimen/hairline"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp"/>
             <!-- Q15. 유행보다 검증된 제품 선호 -->
             <include layout="@layout/item_mobti_q_common" android:id="@+id/q15" />
+            <com.google.android.material.divider.MaterialDivider
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:dividerColor="@color/line_soft"
+                app:dividerThickness="@dimen/hairline"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp"/>
             <!-- Q16. 기분/분위기에 따라 소비 패턴 달라짐 -->
             <include layout="@layout/item_mobti_q_common" android:id="@+id/q16" />
+            <com.google.android.material.divider.MaterialDivider
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:dividerColor="@color/line_soft"
+                app:dividerThickness="@dimen/hairline"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp"/>
             <!-- Q17. 내 기분보다 필요 여부를 먼저 -->
             <include layout="@layout/item_mobti_q_common" android:id="@+id/q17" />
+            <com.google.android.material.divider.MaterialDivider
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:dividerColor="@color/line_soft"
+                app:dividerThickness="@dimen/hairline"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp"/>
             <!-- Q18. 불편함 감수보다 편리함 위해 돈 더 씀 -->
             <include layout="@layout/item_mobti_q_common" android:id="@+id/q18" />
+            <com.google.android.material.divider.MaterialDivider
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:dividerColor="@color/line_soft"
+                app:dividerThickness="@dimen/hairline"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp"/>
             <!-- Q19. 친구/인플루언서 추천이 영향 -->
             <include layout="@layout/item_mobti_q_common" android:id="@+id/q19" />
+            <com.google.android.material.divider.MaterialDivider
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:dividerColor="@color/line_soft"
+                app:dividerThickness="@dimen/hairline"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp"/>
             <!-- Q20. 할인/이벤트 보상에 이끌려 구매 -->
             <include layout="@layout/item_mobti_q_common" android:id="@+id/q20" />
 

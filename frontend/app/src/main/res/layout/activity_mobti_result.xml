@@ -62,18 +62,36 @@
             </FrameLayout>
 
 
-
-            <!-- 타입 코드 -->
-            <TextView
-                android:id="@+id/tvTypeCode"
+            <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:layout_marginTop="12dp"
-                android:text="EMCP"
-                android:textColor="@color/sage_600"
-                android:textSize="36sp"
-                android:textStyle="bold" />
+                android:orientation="vertical"
+                android:layout_gravity="center">
+                <!-- 타입 코드 -->
+                <TextView
+                    android:id="@+id/tvTypeCode"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+
+                    android:layout_marginTop="12dp"
+                    android:text="EMCP"
+                    android:textColor="@color/sage_600"
+                    android:textSize="36sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/tvTypeCodeKrname"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/sage_800"
+                    android:textSize="14sp"
+                    android:textAlignment="center"
+                    android:layout_marginBottom="8dp"
+                    android:text="실속꾼 펭귄" />
+
+            </LinearLayout>
+
+
 
             <!-- 설명 카드 (card_bg 드로어블 사용) -->
             <LinearLayout
@@ -92,7 +110,7 @@
                     android:textStyle="bold"
                     android:textSize="16sp"
                     android:layout_marginBottom="8dp"
-                    android:text="" />
+                    android:text="실속꾼 펭귄인 당신은" />
 
                 <TextView
                     android:id="@+id/section1Body"
@@ -159,6 +177,7 @@
                 app:strokeWidth="1dp"
                 app:strokeColor="@color/sage_600"
                 app:backgroundTint="@color/button_light_green" />
+
         </LinearLayout>
     </ScrollView>
 </LinearLayout>

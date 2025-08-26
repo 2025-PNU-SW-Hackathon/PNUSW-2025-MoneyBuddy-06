@@ -38,4 +38,6 @@
     <color name="my_button_green">#4CAF50</color>
     <color name="light_green_background">#E6F1DE</color>
     <color name="home_top_icon_tint">#2F2F2F</color>
+    <color name="line_soft">#33000000</color> <!-- 20% 투명 블랙: 아주 은은한 선 -->
+
 </resources>
