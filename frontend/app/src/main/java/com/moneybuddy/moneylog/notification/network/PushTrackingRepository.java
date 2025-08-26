@@ -16,7 +16,7 @@ public class PushTrackingRepository {
 
     public PushTrackingRepository(Context appCtx) {
         this.ctx = appCtx.getApplicationContext();
-        this.api = RetrofitClient.getClient().create(PushTrackingApi.class);
+        this.api = RetrofitClient.getService(ctx, PushTrackingApi.class);
     }
 
     public void registerToken(String token, Callback<Void> cb) {

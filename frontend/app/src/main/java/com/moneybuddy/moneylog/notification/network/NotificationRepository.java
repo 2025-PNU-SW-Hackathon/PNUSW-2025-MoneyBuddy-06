@@ -18,9 +18,10 @@ public class NotificationRepository {
     private final NotificationApi api;
 
     public NotificationRepository(Context ctx) {
-        Retrofit retrofit = RetrofitClient.getClient();
-        this.api = retrofit.create(NotificationApi.class);
+        this.api = com.moneybuddy.moneylog.common.RetrofitClient
+                .getService(ctx, com.moneybuddy.moneylog.notification.network.NotificationApi.class);
     }
+
 
     // ======================
     // 목록/카운트 조회

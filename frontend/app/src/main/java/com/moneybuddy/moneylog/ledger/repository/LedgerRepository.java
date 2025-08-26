@@ -2,11 +2,11 @@ package com.moneybuddy.moneylog.ledger.repository;
 
 import android.content.Context;
 
+import com.moneybuddy.moneylog.common.RetrofitClient;
 import com.moneybuddy.moneylog.ledger.dto.request.LedgerCreateRequest;
 import com.moneybuddy.moneylog.ledger.dto.response.LedgerDayResponse;
 import com.moneybuddy.moneylog.ledger.dto.response.LedgerMonthResponse;
 import com.moneybuddy.moneylog.ledger.network.LedgerApi;
-import com.moneybuddy.moneylog.common.RetrofitProvider;
 
 import retrofit2.Call;
 
@@ -14,7 +14,7 @@ public class LedgerRepository {
     private final LedgerApi api;
 
     public LedgerRepository(Context ctx, String token) {
-        api = RetrofitProvider.get(ctx).create(LedgerApi.class);
+        api = RetrofitClient.getService(ctx, LedgerApi.class);
     }
 
     public Call<LedgerApi.WrappedEntry> create(LedgerCreateRequest req) {

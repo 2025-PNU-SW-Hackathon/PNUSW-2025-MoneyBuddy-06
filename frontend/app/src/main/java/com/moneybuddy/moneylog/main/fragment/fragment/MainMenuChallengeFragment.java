@@ -28,11 +28,11 @@ import com.google.android.material.badge.ExperimentalBadgeUtils;
 import com.moneybuddy.moneylog.R;
 import com.moneybuddy.moneylog.challenge.activity.ChallengeCategoryActivity;
 import com.moneybuddy.moneylog.challenge.activity.ChallengeCreateActivity;
-import com.moneybuddy.moneylog.challenge.adapter.adapter.ChallengeAdapter;
+import com.moneybuddy.moneylog.challenge.adapter.ChallengeAdapter;
 import com.moneybuddy.moneylog.challenge.dto.ChallengeStatusRequest;
 import com.moneybuddy.moneylog.challenge.dto.ChallengeStatusResponse;
 import com.moneybuddy.moneylog.challenge.model.ChallengeFilter;
-import com.moneybuddy.moneylog.common.network.ApiClient;
+import com.moneybuddy.moneylog.common.ApiClient;
 import com.moneybuddy.moneylog.challenge.network.ChallengeApiService;
 import com.moneybuddy.moneylog.challenge.viewmodel.ChallengeViewModel;
 

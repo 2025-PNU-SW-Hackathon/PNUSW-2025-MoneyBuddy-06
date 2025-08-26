@@ -12,7 +12,7 @@ import com.moneybuddy.moneylog.challenge.dto.RecommendedChallengeResponse;
 import com.moneybuddy.moneylog.challenge.dto.UserChallengeRequest;
 import com.moneybuddy.moneylog.challenge.dto.UserChallengeResponse;
 import com.moneybuddy.moneylog.challenge.model.ChallengeFilter;
-import com.moneybuddy.moneylog.common.network.ApiClient;
+import com.moneybuddy.moneylog.common.ApiClient;
 import com.moneybuddy.moneylog.challenge.repository.ChallengeRepository;
 import java.util.ArrayList;
 import java.util.List;

@@ -16,7 +16,7 @@ public class MobtiRepository {
     private final MobtiApi api;
 
     public MobtiRepository(Context ctx) {
-        this.api = RetrofitClient.getClient().create(MobtiApi.class);
+        this.api = RetrofitClient.getService(ctx, MobtiApi.class);
     }
 
     public Call<MobtiResultDto> submit(MobtiSubmitRequest body) { return api.submit(body); }

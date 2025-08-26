@@ -2,9 +2,9 @@ package com.moneybuddy.moneylog.ledger.repository;
 
 import android.content.Context;
 
+import com.moneybuddy.moneylog.common.RetrofitClient;
 import com.moneybuddy.moneylog.ledger.dto.response.BudgetGoalDto;
 import com.moneybuddy.moneylog.ledger.network.LedgerApi;
-import com.moneybuddy.moneylog.common.RetrofitProvider;
 
 import retrofit2.Call;
 
@@ -12,7 +12,7 @@ public class BudgetRepository {
     private final LedgerApi api;
 
     public BudgetRepository(Context ctx, String token) {
-        api = RetrofitProvider.get(ctx).create(LedgerApi.class);
+        api = RetrofitClient.getService(ctx, LedgerApi.class);
     }
 
     public Call<BudgetGoalDto> getGoal(String ym) {

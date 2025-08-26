@@ -1,4 +1,4 @@
-package com.moneybuddy.moneylog.challenge.adapter.adapter;
+package com.moneybuddy.moneylog.challenge.adapter;
 
 import android.content.Context;
 import android.content.Intent;

@@ -6,7 +6,6 @@ import android.net.Uri;
 
 import com.moneybuddy.moneylog.common.ResultCallback;
 import com.moneybuddy.moneylog.ledger.dto.response.LedgerEntryDto;
-import com.moneybuddy.moneylog.common.RetrofitProvider;
 import com.moneybuddy.moneylog.ledger.network.ReceiptApi;
 
 import java.io.File;
@@ -33,8 +32,9 @@ public class ReceiptRepository {
 
     public ReceiptRepository(Context ctx, String jwtToken) {
         this.appCtx = ctx.getApplicationContext();
-        this.api = RetrofitProvider.get(appCtx).create(ReceiptApi.class);
+        this.api = com.moneybuddy.moneylog.common.RetrofitClient.getService(appCtx, ReceiptApi.class);
     }
+
 
     /** ① Call 반환형: 호출부에서 enqueue 하기 위함 (ReceiptOcrLauncher에서 사용) */
     public Call<LedgerEntryDto> uploadOcr(Uri imageUri) throws Exception {

@@ -4,6 +4,7 @@ import android.content.Context;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.moneybuddy.moneylog.BuildConfig;
 
 import java.util.concurrent.TimeUnit;
 
@@ -14,52 +15,40 @@ import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-/**
- * 앱 전역에서 하나의 Retrofit 인스턴스를 제공.
- * - DEBUG: 에뮬레이터 호스트 http://10.0.2.2:8080/
- * - RELEASE: 실제 API URL 로 교체
- *
- * TokenManager 싱글턴을 통해 Authorization 헤더를 자동 첨부합니다.
- */
 public final class RetrofitClient {
 
     private static volatile Retrofit instance;
 
-    // ⚠️ DEBUG/RELEASE 분기: 필요에 맞게 바꾸세요.
+    // 필요 시 교체
     private static final String BASE_URL_DEBUG   = "http://10.0.2.2:8080/";
-    private static final String BASE_URL_RELEASE = "https://api.moneylog.app/"; // 예시
+    private static final String BASE_URL_RELEASE = "https://api.moneylog.app/";
 
     private RetrofitClient() {}
 
-    /** Retrofit 인스턴스 */
+    /** 전역 Retrofit 인스턴스 */
     public static Retrofit get(Context ctx) {
         if (instance == null) {
             synchronized (RetrofitClient.class) {
                 if (instance == null) {
-                    Context appCtx = ctx.getApplicationContext();
+                    Context app = ctx.getApplicationContext();
 
-                    // Gson
-                    Gson gson = new GsonBuilder()
-                            .setLenient()
-                            .create();
+                    Gson gson = new GsonBuilder().setLenient().create();
 
-                    // 로깅 (DEBUG 일 때만 BODY)
                     HttpLoggingInterceptor log = new HttpLoggingInterceptor();
                     log.setLevel(BuildConfig.DEBUG
                             ? HttpLoggingInterceptor.Level.BODY
                             : HttpLoggingInterceptor.Level.NONE);
 
-                    // Authorization 헤더 자동 첨부 인터셉터
+                    // 토큰 자동 첨부
                     Interceptor auth = chain -> {
-                        Request original = chain.request();
-                        String token = TokenManager.getInstance(appCtx).getToken(); // null일 수 있음
+                        Request req = chain.request();
+                        String token = TokenManager.getInstance(app).getToken();
                         if (token != null && !token.isEmpty()) {
-                            Request withAuth = original.newBuilder()
+                            req = req.newBuilder()
                                     .header("Authorization", "Bearer " + token)
                                     .build();
-                            return chain.proceed(withAuth);
                         }
-                        return chain.proceed(original);
+                        return chain.proceed(req);
                     };
 
                     OkHttpClient client = new OkHttpClient.Builder()
@@ -83,8 +72,18 @@ public final class RetrofitClient {
         return instance;
     }
 
-    /** ApiService 바로 얻기 (권장 진입점) */
-    public static ApiService getApiService(Context ctx) {
-        return get(ctx).create(ApiService.class);
+    /** 임의의 API 인터페이스 생성 (권장) */
+    public static <T> T getService(Context ctx, Class<T> apiClass) {
+        return get(ctx).create(apiClass);
+    }
+
+    /** 편의 메서드: 공통 ApiService */
+    public static ApiService api(Context ctx) {
+        return getService(ctx, ApiService.class);
+    }
+
+    /** 편의 메서드: 로그인/회원 관련 AuthApi (있다면) */
+    public static com.moneybuddy.moneylog.login.network.AuthApi auth(Context ctx) {
+        return getService(ctx, com.moneybuddy.moneylog.login.network.AuthApi.class);
     }
 }

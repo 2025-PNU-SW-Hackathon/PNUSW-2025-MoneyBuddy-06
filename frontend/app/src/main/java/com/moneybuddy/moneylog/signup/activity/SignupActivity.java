@@ -43,8 +43,9 @@ public class SignupActivity extends AppCompatActivity {
         etPassword = findViewById(R.id.et_password);
         etPasswordConfirm = findViewById(R.id.et_password_confirm);
         btnSignup = findViewById(R.id.btn_signup);
-        
-        apiService = RetrofitClient.getApiService();
+
+        apiService = com.moneybuddy.moneylog.common.RetrofitClient.api(SignupActivity.this);
+
 
         // 뒤로가기 버튼 클릭
         ivBackArrow.setOnClickListener(v -> finish());

@@ -3,13 +3,21 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.moneybuddy.moneylog">
 
+    <!-- 하드웨어/권한 -->
     <uses-feature
         android:name="android.hardware.camera"
         android:required="false" />
-    <uses-permission android:name="android.permission.INTERNET"/>
-    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
-    <application
 
+    <uses-permission android:name="android.permission.INTERNET" />
+    <!-- Android 13+ 알림 권한 -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" tools:targetApi="33" />
+    <uses-permission android:name="android.permission.CAMERA" />
+    <!-- Android 13+ 이미지 읽기 -->
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
+    <!-- Android 12 이하 외부저장소 읽기 (경고 회피용 maxSdkVersion) -->
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" android:maxSdkVersion="32" />
+
+    <application
         android:name=".common.MoneyLogApp"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -22,18 +30,21 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
 
+        <!-- ✅ 항상 앱 시작 지점: IntroActivity (스플래시 테마 적용) -->
         <activity
-            android:name="com.moneybuddy.moneylog.main.activity.MainMenuActivity"
-            android:exported="true">
+            android:name=".intro.activity.IntroActivity"
+            android:exported="true"
+            android:theme="@style/Theme.Splash">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
 
+        <!-- 메인 메뉴: 런처 제거 (Intro에서 진입) -->
         <activity
-            android:name=".intro.activity.IntroActivity"
-            android:theme="@style/Theme.Splash"/>
+            android:name="com.moneybuddy.moneylog.main.activity.MainMenuActivity"
+            android:exported="false" />
 
         <activity android:name=".ledger.activity.LedgerWriteActivity" />
         <activity android:name=".ledger.activity.LedgerDetailActivity" />
@@ -42,7 +53,7 @@
             android:name=".ledger.activity.GraphActivity"
             android:parentActivityName=".ledger.activity.CalendarActivity" />
 
-        <!-- application 태그 안 (FileProvider) -->
+        <!-- FileProvider -->
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.fileprovider"
@@ -53,50 +64,35 @@
                 android:resource="@xml/file_paths" />
         </provider>
 
+        <!-- 카드/결제 알림 수집용 NotificationListenerService -->
         <service
             android:name=".ledger.service.CardNotificationListenerService"
             android:exported="true"
             android:label="MoneyLog Notification Listener"
             android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE">
             <intent-filter>
-                <action android:name="android.service.notification.NotificationListenerService"/>
+                <action android:name="android.service.notification.NotificationListenerService" />
             </intent-filter>
         </service>
 
+        <activity android:name=".signup.activity.SignupActivity" />
 
-        <activity android:name=".signup.activity.SignupActivity"/>
-
-
-
-<!--      login 브랜치에서 사용한 임시 activity -> 나중에 삭제-->
+        <!-- login 브랜치 임시 화면들 (후에 정리 가능) -->
         <activity android:name=".login.activity.HomeActivity" />
-        <activity android:name=".login.activity.SignupActivity"/>
+        <activity android:name=".login.activity.SignupActivity" />
 
+        <activity android:name=".challenge.activity.ChallengeCreateActivity" />
+        <activity android:name=".challenge.activity.ChallengeCategoryActivity" />
+        <activity android:name=".challenge.activity.ChallengeDetailActivity" />
 
-        <activity android:name=".challenge.activity.ChallengeCreateActivity"/>
-        <activity android:name=".challenge.activity.ChallengeCategoryActivity"/>
-        <activity android:name=".challenge.activity.ChallengeDetailActivity"/>
-
-        <activity android:name=".notification.activity.NotificationActivity"
+        <activity
+            android:name=".notification.activity.NotificationActivity"
             android:exported="false"
             android:label="@string/app_name" />
 
         <activity android:name=".mobti.activity.MobtiResultActivity" />
         <activity android:name=".mobti.activity.MobtiSurveyActivity" />
-        <!-- AndroidManifest.xml -->
         <activity android:name=".mobti.activity.MobtiActivity" />
 
     </application>
-    <!-- application 바깥 (권한) -->
-    <uses-permission android:name="android.permission.CAMERA" />
-    <!-- Android 13+ -->
-    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
-    <!-- Android 12 이하 -->
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-
-
-
-
-
-
 </manifest>
