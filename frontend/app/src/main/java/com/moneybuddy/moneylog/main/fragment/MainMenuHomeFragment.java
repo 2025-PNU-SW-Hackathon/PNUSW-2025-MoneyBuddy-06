@@ -17,6 +17,8 @@ import com.google.android.material.badge.ExperimentalBadgeUtils;
 import com.moneybuddy.moneylog.R;
 import com.moneybuddy.moneylog.notification.activity.NotificationActivity;
 import com.moneybuddy.moneylog.notification.network.NotificationRepository;
+import com.moneybuddy.moneylog.mypage.activity.MypageActivity;
+
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -45,6 +47,10 @@ public class MainMenuHomeFragment extends Fragment {
         bellBtn = view.findViewById(R.id.button2);
         bellBtn.setOnClickListener(v ->
                 startActivity(new Intent(requireContext(), NotificationActivity.class)));
+
+        bellBtn = view.findViewById(R.id.button3);
+        bellBtn.setOnClickListener(v ->
+                startActivity(new Intent(requireContext(), MypageActivity.class)));
 
         // 버튼 기본 최소크기/패딩 제거 → 배지 붙는 위치 정확히
         bellBtn.setMinWidth(0);

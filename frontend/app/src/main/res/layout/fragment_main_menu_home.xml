@@ -1,4 +1,5 @@
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main"
@@ -23,53 +24,44 @@
         app:layout_constraintTop_toTopOf="parent" />
 
 
-    <Button
-        android:id="@+id/button1"
-        android:layout_width="360dp"
-        android:layout_height="100dp"
-        android:layout_marginStart="25dp"
-        android:layout_marginTop="20dp"
-        android:layout_marginEnd="25dp"
-        android:background="@drawable/home_rounded_button"
-        android:contentDescription="toSavPlan"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/button5" />
 
+
+    <!-- 알림 버튼 -->
     <Button
         android:id="@+id/button2"
         android:contentDescription="toNotification"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
+        android:layout_width="@dimen/home_top_icon_size"
+        android:layout_height="@dimen/home_top_icon_size"
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
         android:background="@android:color/transparent"
         android:foreground="@drawable/home_notifications"
+        android:foregroundTint="@color/home_top_icon_tint"
         android:minWidth="0dp"
         android:minHeight="0dp"
         android:padding="0dp"
         app:layout_constraintBottom_toTopOf="@+id/button4"
         app:layout_constraintEnd_toStartOf="@+id/imageView3"
-        app:layout_constraintHorizontal_bias="0.089"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.0" />
+        app:layout_constraintTop_toTopOf="parent" />
 
+    <!-- 마이페이지 버튼 -->
     <Button
         android:id="@+id/button3"
         android:contentDescription="toSetting"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:layout_marginStart="48dp"
+        android:layout_width="@dimen/home_top_icon_size"
+        android:layout_height="@dimen/home_top_icon_size"
         android:layout_marginTop="16dp"
         android:background="@android:color/transparent"
-        android:foreground="@drawable/home_settings"
+        android:foreground="@drawable/icon_mypage"
+        android:foregroundTint="@color/home_top_icon_tint"
+        android:minWidth="0dp"
+        android:minHeight="0dp"
+        android:padding="0dp"
         app:layout_constraintBottom_toTopOf="@+id/button4"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.521"
         app:layout_constraintStart_toEndOf="@+id/imageView3"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.0" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <ImageView
         android:id="@+id/imageView3"
@@ -83,7 +75,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.333"
+        app:layout_constraintVertical_bias="0.571"
         app:srcCompat="@drawable/home_money_log_logo" />
 
     <Button
@@ -120,43 +112,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/button4" />
-
-    <ImageView
-        android:id="@+id/imageView"
-        android:layout_width="75dp"
-        android:layout_height="75dp"
-        app:layout_constraintBottom_toBottomOf="@+id/button1"
-        app:layout_constraintEnd_toEndOf="@+id/button1"
-        app:layout_constraintHorizontal_bias="0.078"
-        app:layout_constraintStart_toStartOf="@+id/button1"
-        app:layout_constraintTop_toTopOf="@+id/button1"
-        app:srcCompat="@drawable/home_ai_save_plan" />
-
-    <TextView
-        android:id="@+id/textView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="AI 저축 플랜"
-        android:textSize="30sp"
-        android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="@+id/button1"
-        app:layout_constraintEnd_toEndOf="@+id/button1"
-        app:layout_constraintHorizontal_bias="0.217"
-        app:layout_constraintStart_toEndOf="@+id/imageView"
-        app:layout_constraintTop_toTopOf="@+id/button1"
-        app:layout_constraintVertical_bias="0.508" />
-
-    <ImageView
-        android:id="@+id/imageView2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintBottom_toBottomOf="@+id/button1"
-        app:layout_constraintEnd_toEndOf="@+id/button1"
-        app:layout_constraintHorizontal_bias="0.152"
-        app:layout_constraintStart_toEndOf="@+id/textView"
-        app:layout_constraintTop_toTopOf="@+id/button1"
-        app:layout_constraintVertical_bias="0.3"
-        app:srcCompat="@drawable/home_twinkle" />
 
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -410,8 +365,10 @@
             app:indicatorColor="#B5CC68"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.0"
             app:trackColor="#C4C7AF" />
 
         <TextView

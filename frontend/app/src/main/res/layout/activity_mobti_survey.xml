@@ -38,10 +38,11 @@
 
         <TextView
             android:id="@+id/tvProgress"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="6dp"
             android:text="0 / 20 문항"
+            android:textAlignment="center"
             android:textColor="#666666"
             android:textSize="12sp" />
     </LinearLayout>

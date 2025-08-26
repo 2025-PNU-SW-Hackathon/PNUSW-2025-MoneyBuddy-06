@@ -14,7 +14,10 @@ import android.widget.Toast;
 import com.moneybuddy.moneylog.R;
 import com.moneybuddy.moneylog.login.dto.LoginResponse;
 import com.moneybuddy.moneylog.login.network.AuthRepository;
+import com.moneybuddy.moneylog.main.activity.MainMenuActivity;
 import com.moneybuddy.moneylog.util.AuthManager;
+
+import com.moneybuddy.moneylog.signup.activity.SignupActivity;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -65,7 +68,7 @@ public class LoginActivity extends AppCompatActivity {
                         Toast.LENGTH_SHORT).show();
 
                 // 로그인 성공 → 홈 화면
-                startActivity(new Intent(LoginActivity.this, HomeActivity.class));
+                startActivity(new Intent(LoginActivity.this, MainMenuActivity.class));
                 finish();
             }
 

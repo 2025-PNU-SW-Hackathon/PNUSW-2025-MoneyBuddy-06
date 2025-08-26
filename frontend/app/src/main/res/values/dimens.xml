@@ -4,4 +4,6 @@
     <dimen name="notif_list_first_item_top">42dp</dimen>
     <!-- 홈 종 아이콘 표시 크기 -->
     <dimen name="home_bell_icon_size">20dp</dimen>
+
+    <dimen name="home_top_icon_size">40dp</dimen>
 </resources>

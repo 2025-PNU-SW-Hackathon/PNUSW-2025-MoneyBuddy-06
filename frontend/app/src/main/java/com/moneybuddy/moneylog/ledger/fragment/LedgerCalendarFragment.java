@@ -63,7 +63,7 @@ public class LedgerCalendarFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inf, @Nullable ViewGroup parent, @Nullable Bundle s) {
-        return inf.inflate(R.layout.activity_calendar_ledger, parent, false);
+        return inf.inflate(R.layout.fragment_main_menu_ledger, parent, false);
     }
 
     @Override

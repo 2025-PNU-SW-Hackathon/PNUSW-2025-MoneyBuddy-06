@@ -50,7 +50,7 @@ public class CalendarActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_calendar_ledger);
+        setContentView(R.layout.fragment_main_menu_ledger);
 
         // 상단
         tvYearMonth      = findViewById(R.id.tv_year_month);

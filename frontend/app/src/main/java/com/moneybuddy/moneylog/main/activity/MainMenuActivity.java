@@ -13,7 +13,6 @@ import com.moneybuddy.moneylog.R;
 import com.moneybuddy.moneylog.main.fragment.MainMenuChallengeFragment;
 import com.moneybuddy.moneylog.main.fragment.MainMenuHomeFragment;
 import com.moneybuddy.moneylog.main.fragment.MainMenuLedgerFragment;
-import com.moneybuddy.moneylog.main.fragment.MainMenuMypageFragment;
 
 public class MainMenuActivity extends AppCompatActivity {
 
@@ -21,7 +20,6 @@ public class MainMenuActivity extends AppCompatActivity {
     private MainMenuHomeFragment fragmentHome = new MainMenuHomeFragment();
     private MainMenuChallengeFragment fragmentChallenge = new MainMenuChallengeFragment();
     private MainMenuLedgerFragment fragmentLedger = new MainMenuLedgerFragment();
-    private MainMenuMypageFragment fragmentMypage = new MainMenuMypageFragment();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

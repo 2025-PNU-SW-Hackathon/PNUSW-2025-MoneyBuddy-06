@@ -34,17 +34,20 @@
         <activity
             android:name=".intro.activity.IntroActivity"
             android:exported="true"
-            android:theme="@style/Theme.Splash">
+            android:theme="@style/Theme.Splash"/>
+        <activity android:name=".mypage.activity.ChangePasswordActivity"/>
+        <activity
+            android:name=".mypage.activity.MypageActivity"
+            android:exported="false" />
+        <activity
+            android:name=".main.activity.MainMenuActivity"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
 
-        <!-- 메인 메뉴: 런처 제거 (Intro에서 진입) -->
-        <activity
-            android:name="com.moneybuddy.moneylog.main.activity.MainMenuActivity"
-            android:exported="false" />
 
         <activity android:name=".ledger.activity.LedgerWriteActivity" />
         <activity android:name=".ledger.activity.LedgerDetailActivity" />
@@ -78,8 +81,6 @@
         <activity android:name=".signup.activity.SignupActivity" />
 
         <!-- login 브랜치 임시 화면들 (후에 정리 가능) -->
-        <activity android:name=".login.activity.HomeActivity" />
-        <activity android:name=".login.activity.SignupActivity" />
 
         <activity android:name=".challenge.activity.ChallengeCreateActivity" />
         <activity android:name=".challenge.activity.ChallengeCategoryActivity" />

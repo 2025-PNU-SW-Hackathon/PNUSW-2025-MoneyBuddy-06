@@ -50,8 +50,7 @@
                     android:layout_height="wrap_content"
                     android:text="는"
                     android:textAlignment="center"
-                    android:textSize="22sp"
-                    android:textStyle="bold"
+                    android:textSize="18sp"
                     android:textColor="#111111"
                     android:layout_marginTop="12dp"/>
 
@@ -73,15 +72,17 @@
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnStart"
                 android:layout_width="match_parent"
-                android:layout_height="52dp"
-                android:layout_marginStart="20dp"
-                android:layout_marginEnd="20dp"
-                android:layout_marginTop="40dp"
-                android:background="@drawable/rounded_button"
+                android:layout_height="56dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="12dp"
                 android:text="검사하러 가기"
                 android:textAllCaps="false"
-                android:textSize="16sp"
-                android:textColor="@android:color/black"/>
+                android:textSize="18sp"
+                android:textColor="#151515"
+                app:cornerRadius="14dp"
+                app:strokeWidth="1dp"
+                app:strokeColor="@color/sage_600"
+                app:backgroundTint="@color/button_light_green" />
         </LinearLayout>
     </ScrollView>
 </LinearLayout>
