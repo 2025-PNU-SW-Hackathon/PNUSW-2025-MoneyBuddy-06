@@ -12,7 +12,7 @@ public class AnalyticsRepository {
     private final LedgerApi api;
 
     public AnalyticsRepository(Context ctx, String token) {
-        api = RetrofitProvider.get(ctx, token).create(LedgerApi.class);
+        api = RetrofitProvider.get(ctx).create(LedgerApi.class);
     }
 
     public Call<CategoryRatioResponse> getCategoryRatio(String ym) {

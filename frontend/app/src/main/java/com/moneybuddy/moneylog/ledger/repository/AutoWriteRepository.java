@@ -13,7 +13,7 @@ public class AutoWriteRepository {
     private final LedgerApi api;
 
     public AutoWriteRepository(Context ctx, String token) {
-        api = RetrofitProvider.get(ctx, token).create(LedgerApi.class);
+        api = RetrofitProvider.get(ctx).create(LedgerApi.class);
     }
 
     public Call<AutoLedgerResponse> sendMessage(String message, String receivedAtIso) {

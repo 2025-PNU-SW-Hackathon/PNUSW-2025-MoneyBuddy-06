@@ -14,7 +14,7 @@ public class LedgerRepository {
     private final LedgerApi api;
 
     public LedgerRepository(Context ctx, String token) {
-        api = RetrofitProvider.get(ctx, token).create(LedgerApi.class);
+        api = RetrofitProvider.get(ctx).create(LedgerApi.class);
     }
 
     public Call<LedgerApi.WrappedEntry> create(LedgerCreateRequest req) {

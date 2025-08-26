@@ -70,4 +70,5 @@
     <string name="legend_shopping">쇼핑</string>
     <string name="legend_culture">문화</string>
 
+    <string name="login_message">This page is login screen</string>
 </resources>

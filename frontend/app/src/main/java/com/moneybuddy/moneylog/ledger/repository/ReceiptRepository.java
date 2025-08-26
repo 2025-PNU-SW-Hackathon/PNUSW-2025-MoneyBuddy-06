@@ -33,7 +33,7 @@ public class ReceiptRepository {
 
     public ReceiptRepository(Context ctx, String jwtToken) {
         this.appCtx = ctx.getApplicationContext();
-        this.api = RetrofitProvider.get(appCtx, jwtToken).create(ReceiptApi.class);
+        this.api = RetrofitProvider.get(appCtx).create(ReceiptApi.class);
     }
 
     /** ① Call 반환형: 호출부에서 enqueue 하기 위함 (ReceiptOcrLauncher에서 사용) */

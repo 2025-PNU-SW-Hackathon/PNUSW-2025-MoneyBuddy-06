@@ -29,6 +29,10 @@
             </intent-filter>
         </activity>
 
+        <activity
+            android:name=".intro.activity.IntroActivity"
+            android:theme="@style/Theme.Splash"/>
+
         <activity android:name=".ledger.activity.LedgerWriteActivity" />
         <activity android:name=".ledger.activity.LedgerDetailActivity" />
         <activity android:name=".ledger.activity.CalendarActivity" />
@@ -60,12 +64,7 @@
 
         <activity android:name=".signup.activity.SignupActivity"/>
 
-        <activity
-            android:name=".main.MainActivity"
-            android:exported="false">
-        </activity>
 
-<!--      Fragment 교체 activity-->
 
 <!--      login 브랜치에서 사용한 임시 activity -> 나중에 삭제-->
         <activity android:name=".login.activity.HomeActivity" />
@@ -84,7 +83,6 @@
         <activity android:name=".mobti.activity.MobtiSurveyActivity" />
         <!-- AndroidManifest.xml -->
         <activity android:name=".mobti.activity.MobtiActivity" />
-
 
     </application>
     <!-- application 바깥 (권한) -->

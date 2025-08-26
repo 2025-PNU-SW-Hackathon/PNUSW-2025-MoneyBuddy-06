@@ -87,7 +87,8 @@ public class LedgerCalendarFragment extends Fragment {
         rv.setAdapter(adapter);
 
         // ---- 레포 초기화 ----
-        String token = new TokenManager(requireContext()).get();
+        String token = TokenManager.getInstance(requireContext()).getToken(); // 또는 .get()
+        if (token == null) token = "";
         ledgerRepo   = new LedgerRepository(requireContext(), token);
         budgetRepo   = new BudgetRepository(requireContext(), token);
         analyticsRepo= new AnalyticsRepository(requireContext(), token);
