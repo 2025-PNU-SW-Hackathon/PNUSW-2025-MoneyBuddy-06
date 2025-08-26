@@ -9,7 +9,7 @@ import org.springframework.context.annotation.Configuration;
 import java.time.LocalDate;
 
 @Configuration
-public class FinancialKnowledgeInitializer {
+public class FinancialKnowledgeLoader {
 
     @Bean
     public CommandLineRunner initAugustCardNews(FinancialKnowledgeRepository repository) {
