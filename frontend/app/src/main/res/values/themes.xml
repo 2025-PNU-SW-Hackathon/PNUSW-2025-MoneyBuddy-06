@@ -4,10 +4,21 @@
     <!-- Base app theme -->
     <style name="Base.Theme.Moneylog" parent="Theme.Material3.Light.NoActionBar">
         <item name="colorPrimary">#F5F3DF</item>
+
+    <!-- 앱 공통 테마: Material3 사용 -->
+    <style name="Theme.Moneylog" parent="Theme.Material3.Light.NoActionBar">
+        <!-- 선택: 색상만 잡아줌 -->
+        <item name="colorPrimary">@color/sage_600</item>
+        <item name="colorSecondary">@color/sage_500</item>
+
+        <!-- 상태바 가독성 -->
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:windowLightStatusBar">true</item>
     </style>
 
     <style name="ShapeAppearanceOverlay.Material3.FloatingActionButton.Round">
         <item name="cornerSize">50%</item>
     </style>
 </resources>
+
 

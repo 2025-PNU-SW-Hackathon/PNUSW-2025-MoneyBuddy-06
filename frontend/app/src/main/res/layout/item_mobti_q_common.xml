@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="12dp"
+    android:background="@drawable/card_bg"
+    android:layout_marginBottom="12dp">
+
+    <TextView
+        android:id="@+id/tvQuestion"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="질문 텍스트 자리"
+        android:textColor="#222222"
+        android:textSize="15sp"
+        android:gravity="center"
+        android:textAlignment="center"
+        android:layout_gravity="center_horizontal" />
+
+    <com.google.android.material.chip.ChipGroup
+        android:id="@+id/chipGroup"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="8dp"
+        app:chipSpacingHorizontal="30dp"
+        app:singleSelection="true"
+        app:selectionRequired="false">
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/chipO"
+            android:layout_width="60dp"
+            android:layout_height="40dp"
+            android:text="O"
+            android:gravity="center"
+            android:textAlignment="center"
+            android:checkable="true"
+            android:clickable="true"
+            android:paddingHorizontal="0dp"
+            android:textColor="@color/chip_o_text"
+            app:checkedIconVisible="false"
+            app:chipMinHeight="40dp"
+            app:chipCornerRadius="999dp"
+            app:chipBackgroundColor="@color/chip_o_bg"
+            app:chipStrokeColor="@color/chip_o_stroke"
+            app:chipStrokeWidth="1dp" />
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/chipX"
+            android:layout_width="60dp"
+            android:layout_height="40dp"
+            android:text="X"
+            android:gravity="center"
+            android:textAlignment="center"
+            android:checkable="true"
+            android:clickable="true"
+            android:paddingHorizontal="0dp"
+            android:textColor="@color/chip_x_text"
+            app:checkedIconVisible="false"
+            app:chipMinHeight="40dp"
+            app:chipCornerRadius="999dp"
+            app:chipBackgroundColor="@color/chip_x_bg"
+            app:chipStrokeColor="@color/chip_x_stroke"
+            app:chipStrokeWidth="1dp" />
+    </com.google.android.material.chip.ChipGroup>
+</LinearLayout>

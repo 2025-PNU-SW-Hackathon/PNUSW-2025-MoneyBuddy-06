@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <color name="cream_050">#FFFDF6</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="green">#86935A</color>
@@ -24,4 +25,12 @@
     <color name="clothing_beauty">#A5B4FC</color> <!-- Indigo → Pastel Indigo -->
     <color name="other">#D8B4FE</color>
     <color name="bar_remainder">#FFE0E0E0</color>
+    <color name="sage_050">#F2F6EA</color>
+    <color name="sage_100">#E6EFCC</color>
+    <color name="sage_200">#DCE7C7</color>
+    <color name="sage_300">#C6D77E</color>
+    <color name="sage_500">#9FBE6A</color>
+    <color name="sage_600">#7FA84E</color>
+    <color name="sage_800">#4E6B2A</color>
+    <color name="button_light_green">#CFE4A2</color>
 </resources>
