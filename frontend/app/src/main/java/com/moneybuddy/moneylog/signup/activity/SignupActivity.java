@@ -25,7 +25,6 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-import com.moneybuddy.moneylog.activity.LoginActivity;
 
 public class SignupActivity extends AppCompatActivity {
     private ImageView ivBackArrow;
@@ -100,10 +99,10 @@ public class SignupActivity extends AppCompatActivity {
                     if ("success".equals(signupResponse.getStatus())) {
                         // 회원가입 성공
                         showToast(signupResponse.getMessage());
-                        // 로그인 화면으로 이동
-                        Intent intent = new Intent(SignupActivity.this, LoginActivity.class);
-                        startActivity(intent);
-                        finish(); // 현재 액티비티 종료
+//                        // 로그인 화면으로 이동
+//                        Intent intent = new Intent(SignupActivity.this, LoginActivity.class);
+//                        startActivity(intent);
+//                        finish(); // 현재 액티비티 종료
                     } else {
                         // 실패 메시지 띄움
                         showToast(signupResponse.getMessage());
