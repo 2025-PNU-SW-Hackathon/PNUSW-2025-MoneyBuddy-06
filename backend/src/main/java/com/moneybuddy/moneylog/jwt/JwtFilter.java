@@ -1,5 +1,6 @@
 package com.moneybuddy.moneylog.jwt;
 
+import com.moneybuddy.moneylog.domain.User;
 import com.moneybuddy.moneylog.repository.RevokedAccessTokenRepository;
 import com.moneybuddy.moneylog.repository.UserRepository;
 import com.moneybuddy.moneylog.security.CustomUserDetails;

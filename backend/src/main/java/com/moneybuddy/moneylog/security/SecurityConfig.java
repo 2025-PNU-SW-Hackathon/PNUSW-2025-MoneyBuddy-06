@@ -1,4 +1,4 @@
-ppackage com.moneybuddy.moneylog.security;
+package com.moneybuddy.moneylog.security;
 
 import com.moneybuddy.moneylog.jwt.JwtFilter;
 import com.moneybuddy.moneylog.jwt.JwtUtil;
