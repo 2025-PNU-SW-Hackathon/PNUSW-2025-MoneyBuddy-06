@@ -1,4 +1,4 @@
-package com.moneybuddy.moneylog.dto;
+package com.moneybuddy.moneylog.dto.request;
 
 import lombok.Data;
 import java.util.List;

@@ -1,7 +1,7 @@
 ppackage com.moneybuddy.moneylog.security;
 
 import com.moneybuddy.moneylog.jwt.JwtFilter;
-// import com.moneybuddy.moneylog.jwt.JwtUtil; // 이 클래스에서 미사용이면 제거
+import com.moneybuddy.moneylog.jwt.JwtUtil;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -15,13 +15,14 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import lombok.RequiredArgsConstructor;
+
 
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
-
-    // private final JwtUtil jwtUtil; // 필요 시 남겨둔다
+    private final JwtUtil jwtUtil;
     private final JwtFilter jwtFilter;
 
     @Bean
@@ -34,9 +35,10 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/v1/users/signup", "/api/v1/users/login").permitAll()
                         .requestMatchers("/api/v1/users/delete").authenticated()
+                        .requestMatchers("/api/v1/knowledge/**").permitAll()
+                        .requestMatchers("/api/v1/youth-policy/**").permitAll()
                         .anyRequest().authenticated()
                 )
-                // 메서드 호출이 아니라 주입된 인스턴스를 그대로 사용
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();

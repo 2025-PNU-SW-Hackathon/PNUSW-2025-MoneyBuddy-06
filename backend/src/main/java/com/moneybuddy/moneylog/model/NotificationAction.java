@@ -8,3 +8,4 @@ public enum NotificationAction {
     OPEN_FINANCE_ARTICLE,
     OPEN_PROFILE_LEVEL
 }
+

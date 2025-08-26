@@ -40,7 +40,9 @@ public class JwtFilter extends OncePerRequestFilter {
             String token = authHeader.substring(7);
 
             try {
-                // 서명/만료 등 1차 검증
+
+
+                // 토큰 유효성 검사
                 jwtUtil.validateToken(token);
 
                 // 로그아웃된 토큰인지(JTI) 확인
@@ -54,51 +56,53 @@ public class JwtFilter extends OncePerRequestFilter {
                 String email = jwtUtil.getEmail(token);
                 Date iat = jwtUtil.getIssuedAt(token); // 토큰 발급 시각
 
-                var userOpt = userRepository.findById(userId);
-                if (userOpt.isEmpty()) {
-                    unauthorized(response, "사용자를 찾을 수 없습니다.");
-                    return;
-                }
-                var user = userOpt.get();
+                // DB에서 유저 조회
+                User user = userRepository.findById(userId)
+                        .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
 
-                // 비밀번호 변경 요청인지 (해당 요청은 이전 토큰 차단 로직 제외)
+                // request attribute에 user 저장 (컨트롤러 등에서 바로 꺼내 쓸 수 있음)
+                request.setAttribute("user", user);
+
+                // 비밀번호 변경 요청 여부 확인
                 String path = request.getRequestURI();
                 boolean isPasswordChange =
-                        "PUT".equalsIgnoreCase(request.getMethod())
-                                && "/api/v1/users/password".equals(path);
+                        "PATCH".equalsIgnoreCase(request.getMethod()) &&
+                                "/api/v1/users/password".equals(path);
 
+                // 비밀번호 변경 요청이 아닐 때만 이전 토큰 차단
                 if (!isPasswordChange && user.getPasswordChangedAt() != null) {
                     // 시스템 타임존 기준으로 비교
                     var changedAtInstant = user.getPasswordChangedAt()
-                            .atZone(java.time.ZoneId.systemDefault())
+                            .atZone(ZoneOffset.UTC)
                             .toInstant();
 
                     if (iat == null || iat.toInstant().isBefore(changedAtInstant)) {
                         unauthorized(response, "로그인이 만료되었습니다. 다시 로그인해 주세요.");
                         return;
                     }
-                } // ← ★ 빠져 있던 닫는 중괄호 (이게 없어서 catch without try 오류가 뜸)
 
-                // UTC 기준으로 한 번 더 안전 비교(선택)
-                long tokenIssuedAt = Optional.ofNullable(iat)
-                        .map(d -> d.toInstant().toEpochMilli())
-                        .orElse(0L);
+                    // iat vs passwordChangedAt 비교
+                    long tokenIssuedAt = Optional.ofNullable(iat)
+                            .map(d -> d.toInstant().toEpochMilli())
+                            .orElse(0L);
 
-                long passwordChangedAt = Optional.ofNullable(user.getPasswordChangedAt())
-                        .map(dt -> dt.atZone(ZoneOffset.UTC).toInstant().toEpochMilli())
-                        .orElse(0L);
+                    long passwordChangedAt = Optional.ofNullable(user.getPasswordChangedAt())
+                            .map(dt -> dt.atZone(ZoneOffset.UTC).toInstant().toEpochMilli())
+                            .orElse(0L);
 
-                if (!isPasswordChange && passwordChangedAt > tokenIssuedAt) {
-                    unauthorized(response, "로그인이 만료되었습니다. 다시 로그인해 주세요.");
-                    return;
+                    if (passwordChangedAt > tokenIssuedAt) {
+                        unauthorized(response, "로그인이 만료되었습니다. 다시 로그인해 주세요.");
+                        return;
+                    }
                 }
 
-                // 인증 객체 생성 및 컨텍스트 설정
-                var authentication = new UsernamePasswordAuthenticationToken(
-                        new CustomUserDetails(userId, email),
-                        null,
-                        Collections.emptyList()
-                );
+                // 인증 객체 생성 및 SecurityContext 저장
+                UsernamePasswordAuthenticationToken authentication =
+                        new UsernamePasswordAuthenticationToken(
+                                new CustomUserDetails(userId, email),
+                                null,
+                                Collections.emptyList()
+                        );
                 authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(authentication);
 

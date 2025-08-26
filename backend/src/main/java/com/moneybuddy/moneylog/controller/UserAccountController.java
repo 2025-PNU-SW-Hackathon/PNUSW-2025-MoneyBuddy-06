@@ -1,14 +1,17 @@
 package com.moneybuddy.moneylog.controller;
 
-import com.moneybuddy.moneylog.dto.ChangePasswordRequest;
+import com.moneybuddy.moneylog.dto.request.ChangePasswordRequest;
 import com.moneybuddy.moneylog.security.CustomUserDetails;
+import com.moneybuddy.moneylog.security.SecurityUtils;
 import com.moneybuddy.moneylog.service.UserAccountService;
-import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
+
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping("/api/v1/users")
@@ -17,13 +20,11 @@ public class UserAccountController {
 
     private final UserAccountService userAccountService;
 
-    @PutMapping("/password")
-    public ResponseEntity<Void> changePassword(
-            @AuthenticationPrincipal CustomUserDetails user,
-            @RequestBody @Valid ChangePasswordRequest request
-    ) {
-        Long userId = user.getUserId();
-        userAccountService.changePassword(userId, request.currentPassword(), request.newPassword());
+    // 비밀번호 변경 (변경 직후 기존 토큰 전부 401 처리)
+    @PatchMapping("/password")
+    public ResponseEntity<Void> changePassword(@Valid @RequestBody ChangePasswordRequest req) {
+        Long userId = SecurityUtils.currentUserId();
+        userAccountService.changePassword(userId, req.currentPassword(), req.newPassword());
         return ResponseEntity.noContent().build();
     }
 

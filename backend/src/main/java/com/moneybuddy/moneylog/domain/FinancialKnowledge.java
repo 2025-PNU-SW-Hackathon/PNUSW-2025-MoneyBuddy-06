@@ -1,7 +1,10 @@
 package com.moneybuddy.moneylog.domain;
 
 import jakarta.persistence.*;
+
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDate;
@@ -9,6 +12,8 @@ import java.time.LocalDate;
 @Entity
 @Getter
 @Setter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+
 public class FinancialKnowledge {
 
     @Id
@@ -27,7 +32,7 @@ public class FinancialKnowledge {
         this.content = content;
         this.date = date;
     }
-
     public FinancialKnowledge() {
     }
+
 }

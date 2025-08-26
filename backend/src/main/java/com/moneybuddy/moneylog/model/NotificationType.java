@@ -9,3 +9,4 @@ public enum NotificationType {
     FINANCE_INFO,
     LEVEL_UP
 }
+

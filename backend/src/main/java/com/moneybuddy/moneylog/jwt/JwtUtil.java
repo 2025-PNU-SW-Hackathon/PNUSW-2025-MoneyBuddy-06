@@ -15,7 +15,7 @@ import java.util.UUID;
 public class JwtUtil {
 
     private final Key secretKey;
-    private final long expiration = 3600000L;
+    private final long expiration = 3600000L; // 1시간
 
     public JwtUtil(@Value("${spring.jwt.secret}") String secret) {
         this.secretKey = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
@@ -30,31 +30,30 @@ public class JwtUtil {
     }
 
     public String getEmail(String token) {
-        Claims claims = parseToken(token);
-        return claims.get("email", String.class);
+        return parseToken(token).get("email", String.class);
     }
 
     public Long getUserId(String token) {
-        Claims claims = parseToken(token);
-        return claims.get("userId", Long.class);
+        return parseToken(token).get("userId", Long.class);
     }
 
     public void validateToken(String token) throws JwtException {
         parseToken(token);
     }
 
-    public String createToken(Long userId,String email) {
+    public String createToken(Long userId, String email) {
         long now = System.currentTimeMillis();
         return Jwts.builder()
                 .claim("email", email)
                 .claim("userId", userId)
-                .setId(UUID.randomUUID().toString())   // jti 추가
-                .setIssuedAt(new Date(now))
-                .setExpiration(new Date(now + expiration))
+                .setId(UUID.randomUUID().toString())         // jti (로그아웃 토큰 차단용)
+                .setIssuedAt(new Date(now))                  // 발급 시간
+                .setExpiration(new Date(now + expiration))   // 만료 시간
                 .signWith(secretKey, SignatureAlgorithm.HS256)
                 .compact();
     }
 
+    // Authorization 헤더에서 토큰 추출
     public String resolveToken(HttpServletRequest request) {
         String bearer = request.getHeader("Authorization");
         if (bearer != null && bearer.startsWith("Bearer ")) {
@@ -63,24 +62,18 @@ public class JwtUtil {
         return null;
     }
 
-    public String getEmailFromToken(String token) {
-        Claims claims = parseToken(token);
-        return claims.get("email", String.class);
-    }
-
-    // 토큰 발급 시간: 비밀번호 변경 시 토큰 비교
+    // 토큰 발급 시각
     public Date getIssuedAt(String token) {
-        Claims claims = parseToken(token);
-        return claims.getIssuedAt();
+        return parseToken(token).getIssuedAt();
     }
 
-    // jti 반환
-    public String getJti(String token) {
-        return parseToken(token).getId();
-    }
-
-    // 만료시각
+    // 토큰 만료 시각
     public Date getExpiration(String token) {
         return parseToken(token).getExpiration();
+    }
+
+    // 토큰 고유 ID(jti)
+    public String getJti(String token) {
+        return parseToken(token).getId();
     }
 }

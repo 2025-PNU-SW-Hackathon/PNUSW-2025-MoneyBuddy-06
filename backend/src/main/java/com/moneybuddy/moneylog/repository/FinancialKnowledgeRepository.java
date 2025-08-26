@@ -1,5 +1,6 @@
 package com.moneybuddy.moneylog.repository;
 
+
 import com.moneybuddy.moneylog.domain.FinancialKeyword;
 import com.moneybuddy.moneylog.domain.FinancialKnowledge;
 import com.moneybuddy.moneylog.domain.FinancialTitleCache;
@@ -15,6 +16,4 @@ public interface FinancialKnowledgeRepository extends JpaRepository<FinancialKno
     boolean existsByDate(LocalDate date); // 오늘 날짜 데이터 있는지 확인용
     boolean existsByTitleAndDate(String title, LocalDate date);
 }
-
-
 

@@ -1,11 +1,13 @@
 package com.moneybuddy.moneylog.controller;
 
+import com.moneybuddy.moneylog.domain.User;
 import com.moneybuddy.moneylog.dto.UserProfileDto;
-import com.moneybuddy.moneylog.dto.UserLoginRequest;
-import com.moneybuddy.moneylog.dto.UserLoginResponse;
-import com.moneybuddy.moneylog.dto.UserSignupRequest;
-import com.moneybuddy.moneylog.dto.UserSignupResponse;
-import com.moneybuddy.moneylog.dto.UserDeleteRequest;
+import com.moneybuddy.moneylog.dto.request.UserLoginRequest;
+import com.moneybuddy.moneylog.dto.response.UserLoginResponse;
+import com.moneybuddy.moneylog.dto.request.UserSignupRequest;
+import com.moneybuddy.moneylog.dto.response.UserSignupResponse;
+import com.moneybuddy.moneylog.dto.request.UserDeleteRequest;
+import com.moneybuddy.moneylog.dto.response.ScoreResponse;
 import com.moneybuddy.moneylog.service.UserService;
 import com.moneybuddy.moneylog.security.CustomUserDetails;
 import com.moneybuddy.moneylog.service.MobtiService;
@@ -13,10 +15,7 @@ import com.moneybuddy.moneylog.service.MobtiService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.*;
 
-import lombok.RequiredArgsConstructor;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import jakarta.validation.Valid;
 import jakarta.servlet.http.HttpServletRequest;
@@ -70,5 +69,14 @@ public class UserController {
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body("회원 탈퇴 실패: " + e.getMessage());
         }
+    }
+  
+    @GetMapping("/score")
+    public ResponseEntity<ScoreResponse> getScore(@RequestAttribute("user") User user) {
+        return ResponseEntity.ok(
+                ScoreResponse.builder()
+                        .score(user.getScore())
+                        .build()
+        );
     }
 }

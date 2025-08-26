@@ -20,8 +20,17 @@ spring:
     properties:
       hibernate:
         format_sql: true
-        jdbc:
-          time_zone: Asia/Seoul
+        
+  jwt:
+    secret: "qM6bK3z9PxVtY7uJr1FgNcT4sA0HdXeZ"
+    expiration: 3600000
+    jdbc:
+      time_zone: Asia/Seoul
+
+  sql:
+    init:
+      mode: always
+      encoding: UTF-8
 
   sql:
     init:
@@ -33,9 +42,15 @@ spring:
     serialization:
       write-dates-as-timestamps: false
 
-  jwt:
-    secret: "qM6bK3z9PxVtY7uJr1FgNcT4sA0HdXeZ"
-    expiration: 3600000
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 10MB
+      max-request-size: 10MB
+
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.autoconfigure.security.servlet.UserDetailsServiceAutoConfiguration
 
   task:
     scheduling:
@@ -49,7 +64,14 @@ server:
   address: 0.0.0.0
   port: 8080
 
+
+clova:
+  ocr:
+    url: https://gdbjtc0gwz.apigw.ntruss.com/custom/v1/45221/34ee005010756fc54dbef3500d9cd6102f8676c91a737099b2fde189db9bb3c5/document/receipt
+    secret: UG9sa3ZTZk1OZWN5eGFEQnBHbUtHV1pOYUlMeGFaYmk=
+
 logging:
   level:
     org.hibernate.SQL: debug
     org.hibernate.type.descriptor.sql.BasicBinder: trace
+

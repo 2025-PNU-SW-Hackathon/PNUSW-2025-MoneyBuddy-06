@@ -1,4 +1,4 @@
-package com.moneybuddy.moneylog.configuration;
+package com.moneybuddy.moneylog.config;
 
 import com.moneybuddy.moneylog.domain.MobtiInfo;
 import com.moneybuddy.moneylog.repository.MobtiInfoRepository;
