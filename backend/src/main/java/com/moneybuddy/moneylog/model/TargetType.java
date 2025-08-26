@@ -7,4 +7,5 @@ public enum TargetType {
     QUIZ,
     ARTICLE,
     PROFILE
-  }
+}
+

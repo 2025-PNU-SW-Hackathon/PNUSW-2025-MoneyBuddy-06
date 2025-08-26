@@ -32,6 +32,11 @@ spring:
       mode: always
       encoding: UTF-8
 
+  sql:
+    init:
+      mode: always
+      encoding: UTF-8
+
   jackson:
     time-zone: Asia/Seoul
     serialization:
@@ -59,6 +64,7 @@ server:
   address: 0.0.0.0
   port: 8080
 
+
 clova:
   ocr:
     url: https://gdbjtc0gwz.apigw.ntruss.com/custom/v1/45221/34ee005010756fc54dbef3500d9cd6102f8676c91a737099b2fde189db9bb3c5/document/receipt
@@ -68,3 +74,4 @@ logging:
   level:
     org.hibernate.SQL: debug
     org.hibernate.type.descriptor.sql.BasicBinder: trace
+

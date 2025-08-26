@@ -14,7 +14,6 @@ public class FinancialKnowledgeController {
 
     private final FinancialKnowledgeService service;
 
-    // GET /api/v1/knowledge/cardnews
     // 오늘 날짜의 카드뉴스 여러 개 조회
     @GetMapping("/cardnews")
     public List<KnowledgeResponse> getTodayKnowledgeList() {

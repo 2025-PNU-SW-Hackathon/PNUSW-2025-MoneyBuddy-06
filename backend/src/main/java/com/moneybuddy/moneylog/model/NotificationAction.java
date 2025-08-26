@@ -7,4 +7,5 @@ public enum NotificationAction {
     OPEN_QUIZ_TODAY,
     OPEN_FINANCE_ARTICLE,
     OPEN_PROFILE_LEVEL
-  }
+}
+

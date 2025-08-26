@@ -30,7 +30,8 @@ public class FinancialKnowledgeService {
 
         // 각 카드뉴스를 DTO로 변환하여 리스트로 반환
         return list.stream()
-                .map(k -> new KnowledgeResponse(k.getTitle(), k.getContent()))
+                .map(k -> new KnowledgeResponse(k.getTitle(), k.getContent(), k.getDate()))
+
                 .toList();
     }
 }
