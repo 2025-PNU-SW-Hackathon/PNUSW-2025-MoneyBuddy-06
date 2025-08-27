@@ -20,8 +20,8 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.moneybuddy.moneylog.R;
-import com.moneybuddy.moneylog.ledger.activity.GraphActivity;            // ✅ import 추가
-import com.moneybuddy.moneylog.ledger.activity.LedgerWriteActivity;    // ✅ import 추가
+import com.moneybuddy.moneylog.ledger.activity.GraphActivity;
+import com.moneybuddy.moneylog.ledger.activity.LedgerWriteActivity;
 import com.moneybuddy.moneylog.ledger.adapter.CalendarAdapter;
 import com.moneybuddy.moneylog.ledger.domain.CalendarGridBuilder;
 import com.moneybuddy.moneylog.ledger.model.LedgerDayData;
@@ -47,8 +47,10 @@ public class MainMenuLedgerFragment extends Fragment {
     private LinearLayout goalBarTrack;           // id: goal_bar_track
     private TextView tvGoalSpent;                // id: tv_goal_spent
     private TextView tvGoalTarget;               // id: tv_goal_target
-    private long monthGoal = 500_000L;           // TODO: 실제 목표 금액으로 교체
-    private int[] previewSegments;               // 파이그래프 분할 값(예시)
+    private long monthGoal = 0L;
+    private int[] previewSegments;
+
+
 
     // 그래프 화면으로 전달할 캐시
     private long lastMonthSpentCached = 0L;
@@ -58,7 +60,6 @@ public class MainMenuLedgerFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater,
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        // 기존 activity 레이아웃을 그대로 사용해도 OK
         return inflater.inflate(R.layout.fragment_main_menu_ledger, container, false);
     }
 
@@ -92,7 +93,7 @@ public class MainMenuLedgerFragment extends Fragment {
         btnPrev.setOnClickListener(v2 -> { currentCalendar.add(Calendar.MONTH, -1); updateCalendar(); });
         btnNext.setOnClickListener(v2 -> { currentCalendar.add(Calendar.MONTH,  1); updateCalendar(); });
 
-        // 년·월만 선택하는 픽커
+        // 년·월 선택
         tvYearMonth.setOnClickListener(v2 -> showYearMonthPicker());
 
         // 작성 화면 이동(+ 버튼)
@@ -104,45 +105,38 @@ public class MainMenuLedgerFragment extends Fragment {
         View cardGoalBar = v.findViewById(R.id.card_goal_bar);
         if (cardGoalBar != null) {
             cardGoalBar.setOnClickListener(v2 -> {
-                long monthSpent = lastMonthSpentCached;
-                Intent i = new Intent(requireContext(), GraphActivity.class);
-                i.putExtra("goal", monthGoal);
-                i.putExtra("spent", monthSpent);
-                i.putExtra("segments", previewSegments);
-                startActivity(i);
+                int y = currentCalendar.get(Calendar.YEAR);
+                int m = currentCalendar.get(Calendar.MONTH) + 1;
+                Intent it = new Intent(requireContext(), GraphActivity.class);
+                it.putExtra("year", y);
+                it.putExtra("month", m);
+                startActivity(it);
             });
         }
     }
 
-    /** 화면의 연/월 텍스트와 달력 그리드를 현재 currentCalendar 기준으로 갱신 + 요약/미니막대 갱신 */
+
     private void updateCalendar() {
         int year  = currentCalendar.get(Calendar.YEAR);
-        int month = currentCalendar.get(Calendar.MONTH) + 1; // 1~12
+        int month = currentCalendar.get(Calendar.MONTH) + 1;
         String ym = String.format(Locale.KOREAN, "%04d-%02d", year, month);
 
         tvYearMonth.setText(year + "년 " + month + "월");
 
-        // 달력 셀 데이터(빈칸 포함 42칸)
         List<LedgerDayData> days = CalendarGridBuilder.generateCalendar(year, month);
         adapter = new CalendarAdapter(requireContext(), days, ym);
         rvCalendar.setAdapter(adapter);
 
-        // ── 월 합계 계산(달력 셀과 동일 소스: days)
         MonthTotals totals = calcMonthlyTotals(days);
 
-        // 중간 요약 숫자 세팅
         if (tvMonthIncome != null)  tvMonthIncome.setText(KoreanMoney.format(totals.income));
         if (tvMonthExpense != null) tvMonthExpense.setText(KoreanMoney.format(totals.expense));
         if (tvMonthNet != null) {
-            long net = totals.income - totals.expense; // 수입 - 지출
-            tvMonthNet.setText(net < 0
-                    ? "-" + KoreanMoney.format(Math.abs(net))
-                    : KoreanMoney.format(net));
-            tvMonthNet.setTextColor(net >= 0 ? Color.parseColor("#2A86FF")
-                    : Color.parseColor("#C5463F"));
+            long net = totals.income - totals.expense;
+            tvMonthNet.setText(net < 0 ? "-" + KoreanMoney.format(Math.abs(net)) : KoreanMoney.format(net));
+            tvMonthNet.setTextColor(net >= 0 ? Color.parseColor("#2A86FF") : Color.parseColor("#C5463F"));
         }
 
-        // ── 소비목표 미니 막대(지출 합계 사용)
         long monthSpent = totals.expense;
         lastMonthSpentCached = monthSpent;
 
@@ -151,6 +145,7 @@ public class MainMenuLedgerFragment extends Fragment {
         if (tvGoalTarget != null) tvGoalTarget.setText(KoreanMoney.format(monthGoal));
         if (goalBarTrack != null) renderStackedGoalBar(monthGoal, monthSpent, previewSegments);
     }
+
 
     /** 달력에서 년·월만 선택 */
     private void showYearMonthPicker() {
@@ -193,7 +188,6 @@ public class MainMenuLedgerFragment extends Fragment {
                 .show();
     }
 
-    // ────────────── 합계 계산 & 미니 막대 유틸 ──────────────
 
     private MonthTotals calcMonthlyTotals(List<LedgerDayData> list) {
         long income = 0, expense = 0;

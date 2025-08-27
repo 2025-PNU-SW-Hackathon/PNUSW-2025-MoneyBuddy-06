@@ -32,6 +32,7 @@ public class MobtiResultActivity extends AppCompatActivity {
 
         tvEmoji  = findViewById(R.id.tvMascotEmoji);
         tvCode   = findViewById(R.id.tvTypeCode);
+        //tvCodeName   = findViewById(R.id.tvTypeCodeKrname);
         tvTitle  = findViewById(R.id.tvSection1Title);
         sec1Body = findViewById(R.id.section1Body);
         sec2Body = findViewById(R.id.section2Body);
@@ -51,6 +52,7 @@ public class MobtiResultActivity extends AppCompatActivity {
                     MobtiBriefDto d = res.body();
                     String nickAnimal = MobtiMascot.nicknameWithAnimal(d.getNickname(), d.getCode());
                     tvTitle.setText(nickAnimal.isEmpty() ? "당신은" : (nickAnimal + "인 당신은"));
+
                 } else {
                     String ani = MobtiMascot.animal(code); // ← 필드 사용
                     tvTitle.setText(ani.equals("?") ? "당신은" : (ani + "인 당신은"));

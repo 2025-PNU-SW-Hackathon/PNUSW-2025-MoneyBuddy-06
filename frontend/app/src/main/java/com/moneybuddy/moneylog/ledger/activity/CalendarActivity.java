@@ -9,7 +9,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.NumberPicker;
 import android.widget.TextView;
-import android.widget.Toast; // ✅ 빠져있던 import
+import android.widget.Toast; //  빠져있던 import
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
@@ -41,10 +41,10 @@ public class CalendarActivity extends AppCompatActivity {
     private LinearLayout goalBarTrack;           // id: goal_bar_track
     private TextView tvGoalSpent;                // id: tv_goal_spent
     private TextView tvGoalTarget;               // id: tv_goal_target
-    private long monthGoal = 500_000L;           // TODO: 실제 목표 금액으로 교체
-    private int[] previewSegments;               // 파이그래프 분할 값(예시)
+    private long monthGoal = 0L;
+    private int[] previewSegments;
 
-    // 그래프 화면으로 전달할 캐시
+
     private long lastMonthSpentCached = 0L;
 
     @Override
@@ -100,7 +100,7 @@ public class CalendarActivity extends AppCompatActivity {
         }
     }
 
-    /** 화면의 연/월 텍스트와 달력 그리드를 현재 currentCalendar 기준으로 갱신 + 요약/미니막대 갱신 */
+    //화면의 연/월 텍스트와 달력 그리드를 현재 currentCalendar 기준으로 갱신 + 요약/미니막대 갱신
     private void updateCalendar() {
         int year  = currentCalendar.get(Calendar.YEAR);
         int month = currentCalendar.get(Calendar.MONTH) + 1; // 1~12
@@ -128,17 +128,17 @@ public class CalendarActivity extends AppCompatActivity {
                     : Color.parseColor("#C5463F"));
         }
 
-        // ── 소비목표 미니 막대(지출 합계 사용)
+        //소비목표 미니 막대(지출 합계 사용)
         long monthSpent = totals.expense;
         lastMonthSpentCached = monthSpent;
 
-        previewSegments = buildSegmentsForPreview(monthSpent); // ✅ 유틸 메서드
+        previewSegments = buildSegmentsForPreview(monthSpent); //  유틸 메서드
         if (tvGoalSpent != null)  tvGoalSpent.setText(KoreanMoney.format(monthSpent));
         if (tvGoalTarget != null) tvGoalTarget.setText(KoreanMoney.format(monthGoal));
-        if (goalBarTrack != null) renderStackedGoalBar(monthGoal, monthSpent, previewSegments); // ✅ 유틸 메서드
+        if (goalBarTrack != null) renderStackedGoalBar(monthGoal, monthSpent, previewSegments); //  유틸 메서드
     }
 
-    /** 달력에서 년·월만 선택 */
+    //달력에서 년·월만 선택
     private void showYearMonthPicker() {
         final int curYear  = currentCalendar.get(Calendar.YEAR);
         final int curMonth = currentCalendar.get(Calendar.MONTH) + 1;
@@ -174,14 +174,14 @@ public class CalendarActivity extends AppCompatActivity {
                     currentCalendar.set(Calendar.MONTH, monthPicker.getValue() - 1); // 0-based
                     currentCalendar.set(Calendar.DAY_OF_MONTH, 1);
                     updateCalendar();
-                    Toast.makeText(this, "달을 변경했어요", Toast.LENGTH_SHORT).show(); // ✅ Toast 사용
+                    Toast.makeText(this, "달을 변경했어요", Toast.LENGTH_SHORT).show(); //  Toast 사용
                 })
                 .show();
     }
 
-    // ────────────── 합계 계산 & 미니 막대 유틸 ──────────────
+    //합계 계산 & 미니 막대 유틸
 
-    /** 달력 셀 리스트에서 월 합계(수입/지출)를 계산. 빈칸은 제외 */
+    //달력 셀 리스트에서 월 합계(수입/지출)를 계산. 빈칸은 제외
     private MonthTotals calcMonthlyTotals(List<LedgerDayData> list) {
         long income = 0, expense = 0;
         if (list != null) {
@@ -200,7 +200,7 @@ public class CalendarActivity extends AppCompatActivity {
         MonthTotals(long i, long e) { income = i; expense = e; }
     }
 
-    /** ✅ 카테고리 분할(예시). 실제 카테고리별 합 배열로 교체 가능 */
+    //카테고리 분할(예시). 실제 카테고리별 합 배열로 교체 가능
     private int[] buildSegmentsForPreview(long spent) {
         if (spent <= 0) return new int[]{0};
         long a = Math.round(spent * 0.40f);
@@ -209,7 +209,7 @@ public class CalendarActivity extends AppCompatActivity {
         return new int[]{(int) a, (int) b, (int) c};
     }
 
-    /** ✅ 목표 대비 지출 스택 막대 렌더링 */
+    //목표 대비 지출 스택 막대 렌더링
     private void renderStackedGoalBar(long goal, long spent, int[] seg) {
         if (goalBarTrack == null) return;
 
@@ -227,7 +227,6 @@ public class CalendarActivity extends AppCompatActivity {
         goalBarTrack.addView(spentBar);
         goalBarTrack.addView(remainSpacer);
 
-        // 파스텔 팔레트(식비~기타)
         int[] colors = new int[]{
                 0xFFFCA5A5, 0xFFFDBA74, 0xFFFDE047,
                 0xFF86EFAC, 0xFF93C5FD, 0xFFA5B4FC, 0xFFD8B4FE

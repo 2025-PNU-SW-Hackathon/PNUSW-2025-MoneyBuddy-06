@@ -16,4 +16,11 @@ public class MobtiFullDto {
     public List<String> getDetailTraits() { return detailTraits; }
     public List<String> getSpendingTendency() { return spendingTendency; }
     public List<String> getSocialStyle() { return socialStyle; }
+
+    public void setCode(String code) { this.code = code; }
+    public void setNickname(String nickname) { this.nickname = nickname; }
+    public void setDetailTraits(List<String> detailTraits) { this.detailTraits = detailTraits; }
+    public void setSpendingTendency(List<String> spendingTendency) { this.spendingTendency = spendingTendency; }
+    public void setSocialStyle(List<String> socialStyle) { this.socialStyle = socialStyle; }
+
 }

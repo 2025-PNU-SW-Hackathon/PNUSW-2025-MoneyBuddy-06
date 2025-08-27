@@ -15,16 +15,20 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-/**
- * 카드/결제 알림 텍스트를 수집해서 서버로 전송.
- * - 앱 설정에서 알림 접근 권한 필요.
- * - AndroidManifest.xml 에 서비스 등록 필요.
- */
+
 public class CardNotificationListenerService extends NotificationListenerService {
 
     private String token() {
-        // TODO: 앱의 토큰 보관소에서 JWT를 가져오세요.
-        return "YOUR_JWT_TOKEN";
+        String t = com.moneybuddy.moneylog.common.TokenManager
+                .getInstance(getApplicationContext())
+                .getToken();
+
+        if (t == null || t.isEmpty()) {
+            android.content.SharedPreferences sp = getSharedPreferences("auth", MODE_PRIVATE);
+            t = sp.getString("token", null);
+            if (t == null) t = sp.getString("jwt", "");
+        }
+        return t == null ? "" : t;
     }
 
     @Override
@@ -36,7 +40,7 @@ public class CardNotificationListenerService extends NotificationListenerService
         String title = csTitle == null ? "" : csTitle.toString();
         String text  = csBig != null ? csBig.toString() : (csText == null ? "" : csText.toString());
 
-        // 카드/결제성 알림일 때만 필터링(필요시 패키지명/키워드 조건 강화)
+        // 카드/결제성 알림일 때만
         if (TextUtils.isEmpty(text)) return;
         if (!looksLikeCardNotice(title, text)) return;
 
@@ -47,14 +51,44 @@ public class CardNotificationListenerService extends NotificationListenerService
         repo.sendMessage(formatMessage(title, text), receivedAt)
                 .enqueue(new Callback<AutoLedgerResponse>() {
                     @Override public void onResponse(Call<AutoLedgerResponse> call, Response<AutoLedgerResponse> res) {
-                        if (res.isSuccessful() && res.body() != null) {
-                            // TODO: 로컬 캐시/화면 반영 (LiveData/Room/Bus 등으로 브로드캐스트)
+                        if (!res.isSuccessful() || res.body() == null) {
+                            android.os.Handler h = new android.os.Handler(android.os.Looper.getMainLooper());
+                            h.post(() -> android.widget.Toast.makeText(getApplicationContext(),
+                                    "자동 가계부 저장 실패 (" + res.code() + ")", android.widget.Toast.LENGTH_SHORT).show());
+                            android.util.Log.e("AutoWrite", "HTTP " + res.code());
+                            return;
                         }
+
+                        AutoLedgerResponse body = res.body();
+
+                        getSharedPreferences("auto_write", MODE_PRIVATE)
+                                .edit().putLong("last_synced_at", System.currentTimeMillis()).apply();
+
+                        android.content.Intent intent =
+                                new android.content.Intent("com.moneybuddy.moneylog.ACTION_AUTO_LEDGER_CREATED");
+                        intent.putExtra("payload_json", new com.google.gson.Gson().toJson(body));
+
+                        try {
+                            androidx.localbroadcastmanager.content.LocalBroadcastManager
+                                    .getInstance(getApplicationContext()).sendBroadcast(intent);
+                        } catch (Throwable ignore) {
+                            sendBroadcast(intent);
+                        }
+
+
+                        android.os.Handler h = new android.os.Handler(android.os.Looper.getMainLooper());
+                        h.post(() -> android.widget.Toast.makeText(getApplicationContext(),
+                                "자동 가계부 1건이 추가되었어요", android.widget.Toast.LENGTH_SHORT).show());
                     }
+
                     @Override public void onFailure(Call<AutoLedgerResponse> call, Throwable t) {
-                        // TODO: 실패 로깅
+                        android.util.Log.e("AutoWrite", "sendMessage failed", t);
+                        android.os.Handler h = new android.os.Handler(android.os.Looper.getMainLooper());
+                        h.post(() -> android.widget.Toast.makeText(getApplicationContext(),
+                                "서버와 통신하지 못했어요", android.widget.Toast.LENGTH_SHORT).show());
                     }
                 });
+
     }
 
     private boolean looksLikeCardNotice(String title, String text) {

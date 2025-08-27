@@ -10,30 +10,26 @@ import androidx.core.splashscreen.SplashScreen;
 
 import com.moneybuddy.moneylog.common.TokenManager;
 import com.moneybuddy.moneylog.login.activity.LoginActivity;
-import com.moneybuddy.moneylog.main.fragment.MainMenuHomeFragment;
+import com.moneybuddy.moneylog.main.activity.MainMenuActivity;
 
 public class IntroActivity extends AppCompatActivity {
+
+    private static final long SPLASH_DELAY_MS = 800L;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         SplashScreen.installSplashScreen(this);
         super.onCreate(savedInstanceState);
 
-        TokenManager tokenManager = TokenManager.getInstance(this);
+        final TokenManager tokenManager = TokenManager.getInstance(getApplicationContext());
 
         new Handler(Looper.getMainLooper()).postDelayed(() -> {
-            String userToken = tokenManager.getToken(); // 또는 getToken()
+            String userToken = (tokenManager != null) ? tokenManager.getToken() : null;
+            boolean loggedIn = userToken != null && !userToken.trim().isEmpty();
 
-            if (userToken == null || userToken.isEmpty()) {
-                moveToActivity(LoginActivity.class);
-            } else {
-                moveToActivity(MainMenuHomeFragment.class); // 또는 MainMenuActivity.class
-            }
-        }, 1500);
-    }
-
-    private void moveToActivity(Class<?> activityClass) {
-        startActivity(new Intent(IntroActivity.this, activityClass));
-        finish();
+            Class<?> dest = loggedIn ? MainMenuActivity.class : LoginActivity.class;
+            startActivity(new Intent(IntroActivity.this, dest));
+            finish(); // 인트로로 뒤로가기 방지
+        }, SPLASH_DELAY_MS);
     }
 }

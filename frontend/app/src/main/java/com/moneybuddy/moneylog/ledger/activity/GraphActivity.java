@@ -16,8 +16,9 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.moneybuddy.moneylog.R;
-import com.moneybuddy.moneylog.ledger.dto.response.CategoryRatioResponse;
+import com.moneybuddy.moneylog.common.TokenManager;
 import com.moneybuddy.moneylog.ledger.dto.response.BudgetGoalDto;
+import com.moneybuddy.moneylog.ledger.dto.response.CategoryRatioResponse;
 import com.moneybuddy.moneylog.ledger.repository.AnalyticsRepository;
 import com.moneybuddy.moneylog.ledger.repository.BudgetRepository;
 import com.moneybuddy.moneylog.ledger.ui.CategoryColors;
@@ -35,88 +36,94 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-/**
- * - 상단 날짜(tvv_date) 클릭 → 년/월 NumberPicker → 해당 월 데이터 로드
- * - 목표 설정 버튼(tv_set_goal) → 서버 PUT /budget-goal
- * - /analytics/category-ratio?ym=YYYY-MM 한 번으로 목표/실사용/카테고리 비율 갱신
- */
+/** 월별 카테고리 비율/목표를 불러 파이차트+범례를 표시 */
 public class GraphActivity extends AppCompatActivity {
 
-    // ----- Views -----
+    // Views
     private TextView tvDate, tvMonthGoal, tvMonthNet, tvTitle, tvUserName, tvBetween;
     private PieChartView pie;
     private LinearLayout legend;
 
-    // ----- Repositories -----
+    // Repos
     private AnalyticsRepository analyticsRepo;
     private BudgetRepository budgetRepo;
 
-    // ----- State -----
-    private final Calendar currentMonth = Calendar.getInstance(); // 선택 중인 연/월
+    // State
+    private final Calendar currentMonth = Calendar.getInstance();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_graph);
 
-        // ----- View binding -----
+        // bind
         ImageView btnBack = findViewById(R.id.btn_back);
         tvTitle      = findViewById(R.id.tv_title);
-        tvDate       = findViewById(R.id.tv_date);          // "YYYY-MM"
-        tvUserName   = findViewById(R.id.user_name);        // MoBTI 별명
-        tvMonthGoal  = findViewById(R.id.user_month_goal);  // 목표 금액 표시
-        tvMonthNet   = findViewById(R.id.tv_month_net);     // 소비 합계 표시
-        tvBetween    = safeFindTv(R.id.tv_between_of);      // " 원 중 " (있으면 제어)
+        tvDate       = findViewById(R.id.tv_date);
+        tvUserName   = findViewById(R.id.user_name);
+        tvMonthGoal  = findViewById(R.id.user_month_goal);
+        tvMonthNet   = findViewById(R.id.tv_month_net);
+        tvBetween    = safeFindTv(R.id.tv_between_of);
         pie          = findViewById(R.id.pie);
         legend       = findViewById(R.id.legend_container);
-
         if (btnBack != null) btnBack.setOnClickListener(v -> getOnBackPressedDispatcher().onBackPressed());
 
-        // ----- Repos -----
-        analyticsRepo = new AnalyticsRepository(this, token());
-        budgetRepo    = new BudgetRepository(this, token());
+        // repos (토큰 파라미터는 내부에서 인터셉터가 쓰면 무시되어도 OK)
+        String tk = token();
+        analyticsRepo = new AnalyticsRepository(this, tk);
+        budgetRepo    = new BudgetRepository(this, tk);
 
-        // ----- User nickname (MoBTI) -----
+        // 상단 닉네임
         if (tvUserName != null) tvUserName.setText(loadMobtiNickname());
 
-        // ----- Init current month (from intent or now) -----
-        int year  = getIntent().getIntExtra("year",  -1);
-        int month = getIntent().getIntExtra("month", -1);
-        if (year <= 0 || month < 1 || month > 12) {
-            Calendar now = Calendar.getInstance();
-            year  = now.get(Calendar.YEAR);
-            month = now.get(Calendar.MONTH) + 1;
+        // ym 인텐트 우선 → 없으면 year/month → 없으면 오늘
+        boolean loaded = false;
+        String ymArg = getIntent().getStringExtra("ym");
+        if (ymArg != null && ymArg.matches("\\d{4}-\\d{2}")) {
+            int y = Integer.parseInt(ymArg.substring(0, 4));
+            int m = Integer.parseInt(ymArg.substring(5, 7));
+            setMonth(y, m);
+            loadMonth(ymArg);
+            loaded = true;
         }
+        if (!loaded) {
+            int y = getIntent().getIntExtra("year", -1);
+            int m = getIntent().getIntExtra("month", -1);
+            if (y <= 0 || m < 1 || m > 12) {
+                Calendar now = Calendar.getInstance();
+                y = now.get(Calendar.YEAR);
+                m = now.get(Calendar.MONTH) + 1;
+            }
+            setMonth(y, m);
+            loadMonth(y, m);
+        }
+
+        // UI actions
+        if (tvDate != null) tvDate.setOnClickListener(v -> showYearMonthPicker());
+        View btnSetGoal = findViewById(R.id.tv_set_goal);
+        if (btnSetGoal != null) btnSetGoal.setOnClickListener(v -> showSetGoalDialog());
+    }
+
+    private String token() {
+        return TokenManager.getInstance(this).getToken();
+    }
+
+    private void setMonth(int year, int month) {
         currentMonth.set(Calendar.YEAR, year);
         currentMonth.set(Calendar.MONTH, month - 1);
         currentMonth.set(Calendar.DAY_OF_MONTH, 1);
         updateYmText();
-
-        // ----- Listeners -----
-        tvDate.setOnClickListener(v -> showYearMonthPicker());
-        View btnSetGoal = findViewById(R.id.tv_set_goal);
-        if (btnSetGoal != null) btnSetGoal.setOnClickListener(v -> showSetGoalDialog());
-
-        // ----- First load -----
-        loadMonth(year, month);
     }
 
-    /** 실제 앱의 저장소에서 JWT를 가져오도록 교체 */
-    private String token() {
-        // 예시: SharedPreferences "auth"에서 jwt 읽기 (없으면 빈 문자열)
-        return getSharedPreferences("auth", MODE_PRIVATE).getString("jwt", "");
-    }
-
-    /** YYYY-MM 텍스트 갱신 */
     private void updateYmText() {
-        int y  = currentMonth.get(Calendar.YEAR);
-        int m  = currentMonth.get(Calendar.MONTH) + 1;
+        if (tvDate == null) return;
+        int y = currentMonth.get(Calendar.YEAR);
+        int m = currentMonth.get(Calendar.MONTH) + 1;
         tvDate.setText(String.format(Locale.KOREAN, "%04d-%02d", y, m));
     }
 
-    /** 년·월만 고르는 다이얼로그 */
     private void showYearMonthPicker() {
-        final int curYear  = currentMonth.get(Calendar.YEAR);
+        final int curYear = currentMonth.get(Calendar.YEAR);
         final int curMonth = currentMonth.get(Calendar.MONTH) + 1;
 
         LinearLayout container = new LinearLayout(this);
@@ -128,13 +135,11 @@ public class GraphActivity extends AppCompatActivity {
         yearPicker.setMinValue(curYear - 50);
         yearPicker.setMaxValue(curYear + 50);
         yearPicker.setValue(curYear);
-        yearPicker.setWrapSelectorWheel(true);
 
         NumberPicker monthPicker = new NumberPicker(this);
         monthPicker.setMinValue(1);
         monthPicker.setMaxValue(12);
         monthPicker.setValue(curMonth);
-        monthPicker.setWrapSelectorWheel(true);
 
         LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f);
         container.addView(yearPicker, lp);
@@ -145,19 +150,18 @@ public class GraphActivity extends AppCompatActivity {
                 .setView(container)
                 .setNegativeButton("취소", null)
                 .setPositiveButton("확인", (d, w) -> {
-                    currentMonth.set(Calendar.YEAR, yearPicker.getValue());
-                    currentMonth.set(Calendar.MONTH, monthPicker.getValue() - 1);
-                    currentMonth.set(Calendar.DAY_OF_MONTH, 1);
-                    updateYmText();
+                    setMonth(yearPicker.getValue(), monthPicker.getValue());
                     loadMonth(currentMonth.get(Calendar.YEAR), currentMonth.get(Calendar.MONTH) + 1);
                 })
                 .show();
     }
 
-    /** 선택 월 데이터 로드 → 상단 문장/목표/파이/범례 갱신 */
+    // --- Load (overloads) ---
     private void loadMonth(int year, int month) {
-        String ym = String.format(Locale.KOREAN, "%04d-%02d", year, month);
+        loadMonth(String.format(Locale.KOREAN, "%04d-%02d", year, month));
+    }
 
+    private void loadMonth(String ym) {
         analyticsRepo.getCategoryRatio(ym).enqueue(new Callback<CategoryRatioResponse>() {
             @Override public void onResponse(Call<CategoryRatioResponse> call, Response<CategoryRatioResponse> res) {
                 if (!res.isSuccessful() || res.body() == null) {
@@ -166,13 +170,11 @@ public class GraphActivity extends AppCompatActivity {
                 }
                 CategoryRatioResponse dto = res.body();
 
-                // (1) 상단 목표/실사용 문장
-                long spent = dto.spent;
-                Long goal  = dto.goalAmount; // null 가능
+                long spent = Math.max(0L, dto.spent);
+                Long goal = dto.goalAmount == null ? null : Math.max(0L, dto.goalAmount);
 
                 if (tvMonthNet != null)  tvMonthNet.setText(KoreanMoney.format(spent));
                 if (goal == null) {
-                    // 목표가 없으면 "원 중" 문구/목표 값을 가림
                     if (tvBetween != null) tvBetween.setVisibility(View.GONE);
                     if (tvMonthGoal != null) tvMonthGoal.setVisibility(View.GONE);
                 } else {
@@ -183,31 +185,29 @@ public class GraphActivity extends AppCompatActivity {
                     }
                 }
 
-                // (2) 파이차트 데이터 (금액 내림차순)
                 LinkedHashMap<String, Long> sorted = new LinkedHashMap<>();
                 if (dto.items != null) {
                     List<CategoryRatioResponse.Item> items = new ArrayList<>(dto.items);
                     items.sort((a, b) -> Long.compare(b.expense, a.expense));
-                    for (CategoryRatioResponse.Item it : items) sorted.put(it.category, it.expense);
+                    for (CategoryRatioResponse.Item it : items) sorted.put(it.category, Math.max(0L, it.expense));
                 }
                 if (pie != null) pie.setData(sorted);
                 if (legend != null) renderLegend(sorted, spent);
             }
-
             @Override public void onFailure(Call<CategoryRatioResponse> call, Throwable t) {
                 Toast.makeText(GraphActivity.this, "그래프 데이터 실패: " + t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
     }
 
-    /** 목표 설정 다이얼로그 */
+    // --- Goal ---
     private void showSetGoalDialog() {
         final int y = currentMonth.get(Calendar.YEAR);
         final int m = currentMonth.get(Calendar.MONTH) + 1;
 
         EditText input = new EditText(this);
         input.setInputType(InputType.TYPE_CLASS_NUMBER);
-        input.setFilters(new InputFilter[]{ new InputFilter.LengthFilter(12) });
+        input.setFilters(new InputFilter[]{new InputFilter.LengthFilter(12)});
         input.setHint("예: 500000");
         int pad = Math.round(getResources().getDisplayMetrics().density * 16);
         input.setPadding(pad, pad, pad, pad);
@@ -229,8 +229,7 @@ public class GraphActivity extends AppCompatActivity {
 
     private void saveGoalToServer(int y, int m, long goal) {
         String ym = String.format(Locale.KOREAN, "%04d-%02d", y, m);
-        Call<BudgetGoalDto> c = budgetRepo.putGoal(ym, goal);
-        c.enqueue(new Callback<BudgetGoalDto>() {
+        budgetRepo.putGoal(ym, goal).enqueue(new Callback<BudgetGoalDto>() {
             @Override public void onResponse(Call<BudgetGoalDto> call, Response<BudgetGoalDto> res) {
                 if (!res.isSuccessful() || res.body() == null) {
                     Toast.makeText(GraphActivity.this, "목표 저장 실패", Toast.LENGTH_SHORT).show();
@@ -243,9 +242,7 @@ public class GraphActivity extends AppCompatActivity {
                 }
                 if (tvBetween != null) tvBetween.setVisibility(View.VISIBLE);
                 Toast.makeText(GraphActivity.this, "목표가 저장되었습니다.", Toast.LENGTH_SHORT).show();
-
-                // 저장 후 해당 월 데이터 재로딩 (spent/파이도 갱신)
-                loadMonth(y, m);
+                loadMonth(ym);
             }
             @Override public void onFailure(Call<BudgetGoalDto> call, Throwable t) {
                 Toast.makeText(GraphActivity.this, "목표 저장 실패", Toast.LENGTH_SHORT).show();
@@ -253,13 +250,13 @@ public class GraphActivity extends AppCompatActivity {
         });
     }
 
-    /** 카테고리별 합계 목록 → 리스트 UI */
+    // --- Legend ---
     private void renderLegend(Map<String, Long> data, long all) {
         legend.removeAllViews();
         for (Map.Entry<String, Long> e : data.entrySet()) {
             String label = e.getKey();
-            long amount  = e.getValue() == null ? 0 : e.getValue();
-            int percent  = all > 0 ? Math.round(100f * amount / all) : 0;
+            long amount = e.getValue() == null ? 0 : e.getValue();
+            int percent = all > 0 ? Math.round(100f * amount / all) : 0;
 
             View row = getLayoutInflater().inflate(R.layout.item_category_breakdown, legend, false);
 
@@ -281,19 +278,14 @@ public class GraphActivity extends AppCompatActivity {
         }
     }
 
-    // ----- Utils -----
+    // Utils
     private float dp(float v) { return v * getResources().getDisplayMetrics().density; }
-
-    private TextView safeFindTv(int id) {
-        try { return findViewById(id); } catch (Exception ignore) { return null; }
-    }
+    private TextView safeFindTv(int id) { try { return findViewById(id); } catch (Exception ignore) { return null; } }
 
     private String loadMobtiNickname() {
-        // 예시: SharedPreferences에서 mobti 별명을 읽음 (없으면 기본 "실속꾼")
         SharedPreferences sp = getSharedPreferences("profile", MODE_PRIVATE);
         String nick = sp.getString("mobtiNickname", null);
         if (nick != null && !nick.isEmpty()) return nick;
-
         String mobti = sp.getString("mobtiType", "S1");
         switch (mobti) {
             case "S1": return "실속꾼";

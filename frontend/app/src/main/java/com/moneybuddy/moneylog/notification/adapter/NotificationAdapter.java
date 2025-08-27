@@ -53,7 +53,7 @@ public class NotificationAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         LayoutInflater inf = LayoutInflater.from(parent.getContext());
         if (viewType == VT_NOTICE) {
             View v = inf.inflate(R.layout.item_notification_card, parent, false);
-            // ✅ 수정: 뷰홀더를 View 하나로만 생성
+            //  수정: 뷰홀더를 View 하나로만 생성
             return new NoticeViewHolder(v);
         } else {
             View v = inf.inflate(R.layout.item_footer_recent, parent, false);
@@ -66,7 +66,7 @@ public class NotificationAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         if (holder instanceof NoticeViewHolder && o instanceof Notice) {
             Notice n = (Notice) o;
             ((NoticeViewHolder) holder).bind(n);
-            // ✅ 수정: 클릭 리스너는 여기서 바인딩
+            //  수정: 클릭 리스너는 여기서 바인딩
             holder.itemView.setOnClickListener(v -> listener.onNotificationClick(n));
         }
         // Footer는 바인딩 로직 없음(정적 문구)

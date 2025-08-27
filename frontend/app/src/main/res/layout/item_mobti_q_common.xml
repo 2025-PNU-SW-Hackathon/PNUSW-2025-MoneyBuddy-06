@@ -5,7 +5,6 @@
     android:layout_height="wrap_content"
     android:orientation="vertical"
     android:padding="12dp"
-    android:background="@drawable/card_bg"
     android:layout_marginBottom="12dp">
 
     <TextView
@@ -65,4 +64,8 @@
             app:chipStrokeColor="@color/chip_x_stroke"
             app:chipStrokeWidth="1dp" />
     </com.google.android.material.chip.ChipGroup>
+
+
 </LinearLayout>
+
+

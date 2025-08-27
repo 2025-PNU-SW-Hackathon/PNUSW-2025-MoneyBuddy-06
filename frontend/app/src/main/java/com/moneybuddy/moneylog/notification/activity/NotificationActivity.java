@@ -75,7 +75,7 @@ public class NotificationActivity extends AppCompatActivity
     }
 
     private void loadFirstPage() {
-        repo.getNotifications(null, 20, new Callback<ListResponse>() { // ✅ 메서드명 수정
+        repo.getNotifications(null, 20, new Callback<ListResponse>() { //  메서드명 수정
             @Override
             public void onResponse(Call<ListResponse> call, Response<ListResponse> res) {
                 if (!res.isSuccessful() || res.body() == null || res.body().items == null) {
@@ -103,8 +103,7 @@ public class NotificationActivity extends AppCompatActivity
         // 메뉴 XML을 건드리지 않고 텍스트만 여기서 통일
         if (markAllItem != null) {
             markAllItem.setTitle("모두 읽음");
-            // 최초엔 기본 색 유지 (필요 시 아래 한 줄로 강제 가능)
-            // setMenuItemTextColor(markAllItem, getAttrColor(com.google.android.material.R.attr.colorOnSurface));
+
         }
         return true;
     }
@@ -151,21 +150,21 @@ public class NotificationActivity extends AppCompatActivity
         return super.onOptionsItemSelected(item);
     }
 
-    // ===== 클릭 시 라우팅 =====
+    //  클릭 시 라우팅
     @Override
     public void onNotificationClick(Notice item) {
         // 1) 이동
         DeepLinkResolver.resolve(this, item.deeplink);
 
         // 2) 읽음 처리 (fire-and-forget)
-        repo.markAsRead(item.id); // ✅ 토큰 인자 제거 (인터셉터가 자동 첨부)
+        repo.markAsRead(item.id); //  토큰 인자 제거 (인터셉터가 자동 첨부)
         // 또는: repo.markRead(item.id, null);
 
         item.isRead = true;
         adapter.notifyDataSetChanged();
     }
 
-    /** 메뉴 아이템 텍스트 색 바꾸기 */
+    // 메뉴 아이템 텍스트 색 바꾸기
     private void setMenuItemTextColor(MenuItem item, int color) {
         if (item == null) return;
         CharSequence t = item.getTitle();
@@ -175,7 +174,7 @@ public class NotificationActivity extends AppCompatActivity
         item.setTitle(span);
     }
 
-    /** 테마 속성 색 가져오기 (없으면 회색) */
+    // 테마 속성 색 가져오기 (없으면 회색)
     private int getAttrColor(int attr) {
         TypedValue tv = new TypedValue();
         if (getTheme().resolveAttribute(attr, tv, true)) {
@@ -188,14 +187,14 @@ public class NotificationActivity extends AppCompatActivity
         return Color.GRAY;
     }
 
-    /** alpha 적용한 색 만들기 (예: 38% = 비활성 텍스트) */
+    // alpha 적용한 색 만들기 (예: 38% = 비활성 텍스트)
     private int withAlpha(int color, float alpha) {
         int a = Math.round(255 * alpha);
         int rgb = color & 0x00FFFFFF;
         return (a << 24) | rgb;
     }
 
-    /** 성공 후 “모두 읽음” 텍스트를 옅은 색으로 */
+    // 성공 후 “모두 읽음” 텍스트를 옅은 색으로
     private void tintMarkAllAsDisabled() {
         int onSurface = getAttrColor(com.google.android.material.R.attr.colorOnSurface);
         int disabled = withAlpha(onSurface, 0.38f); // 머터리얼 Disabled 톤
@@ -204,7 +203,7 @@ public class NotificationActivity extends AppCompatActivity
 
     private void toast(String m) { Toast.makeText(this, m, Toast.LENGTH_SHORT).show(); }
 
-    // ...클래스 하단 어딘가에 추가 (tintMarkAllAsDisabled 위/아래 아무데나 OK)
+
     private void setMarkAllTitle(String title) {
         if (markAllItem != null) markAllItem.setTitle(title);
     }

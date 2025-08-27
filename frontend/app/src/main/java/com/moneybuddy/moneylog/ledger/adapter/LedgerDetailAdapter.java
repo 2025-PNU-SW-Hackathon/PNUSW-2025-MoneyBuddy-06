@@ -1,6 +1,6 @@
 package com.moneybuddy.moneylog.ledger.adapter;
 
-// ✅ 거래 내역 상세 리스트용 어댑터
+// 거래 내역 상세 리스트용 어댑터
 
 import android.content.Intent;
 import android.graphics.Color;

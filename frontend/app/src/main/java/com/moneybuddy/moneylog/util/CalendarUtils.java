@@ -1,4 +1,4 @@
-// ✅ minSdk 24 대응 Calendar 유틸리티
+
 package com.moneybuddy.moneylog.util;
 
 import java.text.SimpleDateFormat;
@@ -38,7 +38,7 @@ public class CalendarUtils {
         return copy;
     }
 
-    // Calendar 날짜 +일 수 추가
+    // Calendar 날짜 +일 수
     public static Calendar addDays(Calendar base, int offset) {
         Calendar copy = (Calendar) base.clone();
         copy.add(Calendar.DAY_OF_MONTH, offset);

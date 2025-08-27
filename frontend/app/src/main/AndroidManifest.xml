@@ -3,19 +3,23 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.moneybuddy.moneylog">
 
-    <!-- 하드웨어/권한 -->
+    <!-- Features & Permissions -->
     <uses-feature
         android:name="android.hardware.camera"
         android:required="false" />
 
     <uses-permission android:name="android.permission.INTERNET" />
     <!-- Android 13+ 알림 권한 -->
-    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" tools:targetApi="33" />
+    <uses-permission
+        android:name="android.permission.POST_NOTIFICATIONS"
+        tools:targetApi="33" />
     <uses-permission android:name="android.permission.CAMERA" />
     <!-- Android 13+ 이미지 읽기 -->
     <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
-    <!-- Android 12 이하 외부저장소 읽기 (경고 회피용 maxSdkVersion) -->
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" android:maxSdkVersion="32" />
+    <!-- Android 12 이하 외부저장소 읽기 -->
+    <uses-permission
+        android:name="android.permission.READ_EXTERNAL_STORAGE"
+        android:maxSdkVersion="32" />
 
     <application
         android:name=".common.MoneyLogApp"
@@ -30,33 +34,58 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
 
-        <!-- ✅ 항상 앱 시작 지점: IntroActivity (스플래시 테마 적용) -->
+        <!--Entry / Splash-->
         <activity
             android:name=".intro.activity.IntroActivity"
             android:exported="true"
-            android:theme="@style/Theme.Splash"/>
-        <activity android:name=".mypage.activity.ChangePasswordActivity"/>
-        <activity
-            android:name=".mypage.activity.MypageActivity"
-            android:exported="false" />
-        <activity
-            android:name=".main.activity.MainMenuActivity"
-            android:exported="true">
+            android:theme="@style/Theme.Splash">
+            <!-- 앱 시작 시 항상 여기서 시작 -->
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
 
+        <!-- Auth -->
+        <activity android:name=".login.activity.LoginActivity" />
+        <activity android:name=".signup.activity.SignupActivity" />
 
+        <!--Main / Host -->
+        <activity
+            android:name=".main.activity.MainMenuActivity"
+            android:exported="true" />
+
+        <!--Ledger-->
         <activity android:name=".ledger.activity.LedgerWriteActivity" />
         <activity android:name=".ledger.activity.LedgerDetailActivity" />
-        <activity android:name=".ledger.activity.CalendarActivity" />
         <activity
             android:name=".ledger.activity.GraphActivity"
-            android:parentActivityName=".ledger.activity.CalendarActivity" />
+            android:parentActivityName=".main.activity.MainMenuActivity" />
 
-        <!-- FileProvider -->
+        <!--Challenge-->
+        <activity android:name=".challenge.activity.ChallengeCreateActivity" />
+        <activity android:name=".challenge.activity.ChallengeCategoryActivity" />
+        <activity android:name=".challenge.activity.ChallengeDetailActivity" />
+
+        <!--Mobti-->
+        <activity android:name=".mobti.activity.MobtiIntroActivity" />
+        <activity android:name=".mobti.activity.MobtiSurveyActivity" />
+        <activity android:name=".mobti.activity.MobtiResultActivity" />
+        <activity android:name=".mobti.activity.MobtiActivity" />
+
+        <!--My Page-->
+        <activity
+            android:name=".mypage.activity.MypageActivity"
+            android:exported="false" />
+        <activity android:name=".mypage.activity.ChangePasswordActivity" />
+
+        <!--Notification (Activity)-->
+        <activity
+            android:name=".notification.activity.NotificationActivity"
+            android:exported="false"
+            android:label="@string/app_name" />
+
+        <!--Provider-->
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.fileprovider"
@@ -67,7 +96,8 @@
                 android:resource="@xml/file_paths" />
         </provider>
 
-        <!-- 카드/결제 알림 수집용 NotificationListenerService -->
+        <!--Services-->
+        <!-- 카드/결제 알림 수집용 -->
         <service
             android:name=".ledger.service.CardNotificationListenerService"
             android:exported="true"
@@ -77,23 +107,6 @@
                 <action android:name="android.service.notification.NotificationListenerService" />
             </intent-filter>
         </service>
-
-        <activity android:name=".signup.activity.SignupActivity" />
-
-        <!-- login 브랜치 임시 화면들 (후에 정리 가능) -->
-
-        <activity android:name=".challenge.activity.ChallengeCreateActivity" />
-        <activity android:name=".challenge.activity.ChallengeCategoryActivity" />
-        <activity android:name=".challenge.activity.ChallengeDetailActivity" />
-
-        <activity
-            android:name=".notification.activity.NotificationActivity"
-            android:exported="false"
-            android:label="@string/app_name" />
-
-        <activity android:name=".mobti.activity.MobtiResultActivity" />
-        <activity android:name=".mobti.activity.MobtiSurveyActivity" />
-        <activity android:name=".mobti.activity.MobtiActivity" />
 
     </application>
 </manifest>
