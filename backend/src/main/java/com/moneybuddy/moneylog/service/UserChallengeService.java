@@ -49,6 +49,7 @@ public class UserChallengeService {
                 .challenge(challenge)
                 .joinedAt(LocalDateTime.now())
                 .completed(false)
+                .success(false)
                 .rewarded(false)
                 .build();
         userChallenge.setUserId(userId);
