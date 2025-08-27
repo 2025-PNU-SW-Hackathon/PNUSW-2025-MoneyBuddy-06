@@ -26,21 +26,20 @@ public class ChallengeService {
     private final UserChallengeRepository userChallengeRepository;
 
     /**
-     *  사용자의 MoBTI 값을 기반으로 추천 챌린지 목록 조회
+     * 사용자의 MoBTI 값을 기반으로 추천 챌린지 목록 조회
      */
     public List<RecommendedChallengeResponse> getRecommendedChallenges(Long userId) {
         String mobti = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("유저를 찾을 수 없습니다."))
                 .getMobti();
 
-        //  MoBTI를 한 글자씩 나눔
+        // MoBTI를 한 글자씩 나눔
         List<String> mobtiList = Arrays.asList(mobti.split(""));
 
-        //  시스템에서 생성된 챌린지 중 해당 mobti가 포함된 것만 조회
+        // 시스템 생성 + mobti 포함 챌린지 조회
         List<Challenge> challenges = challengeRepository
                 .findByIsSystemGeneratedTrueAndMobtiTypeIn(mobtiList);
 
-        //  Challenge → RecommendedChallengeResponse 변환
         return challenges.stream()
                 .map(challenge -> RecommendedChallengeResponse.builder()
                         .id(challenge.getId())
@@ -52,7 +51,7 @@ public class ChallengeService {
                         .goalType(challenge.getGoalType())
                         .goalValue(challenge.getGoalValue())
                         .isSystemGenerated(true)
-                        .isAccountLinked((challenge.getIsAccountLinked()))
+                        .isAccountLinked(challenge.isAccountLinked())
                         .build())
                 .toList();
     }
@@ -70,15 +69,15 @@ public class ChallengeService {
                 .goalType(request.getGoalType())
                 .goalValue(request.getGoalValue())
                 .isSystemGenerated(false)
-                .isShared(request.getIsShared())
+                .isShared(request.getIsShared() != null && request.getIsShared())
                 .createdBy(userId)
-                .isAccountLinked(false)
+                .isAccountLinked(false) // 항상 false
                 .build();
 
-        // 먼저 Challenge 저장
+        // Challenge 저장
         Challenge savedChallenge = challengeRepository.save(challenge);
 
-        // 생성한 챌린지에 자동 참여 등록 (UserChallenge)
+        // UserChallenge 자동 생성
         UserChallenge userChallenge = UserChallenge.builder()
                 .userId(userId)
                 .challenge(savedChallenge)
@@ -87,6 +86,7 @@ public class ChallengeService {
                 .rewarded(false)
                 .success(false)
                 .build();
+
         userChallengeRepository.save(userChallenge);
     }
 
@@ -130,7 +130,7 @@ public class ChallengeService {
     }
 
     /**
-     *  MoBTI 기반 추천 챌린지 필터링
+     * MoBTI 기반 추천 챌린지 필터링
      */
     public List<ChallengeCardResponse> filterMobtiRecommendedChallenges(Long userId, ChallengeFilterRequest request) {
         String mobti = userRepository.findById(userId)
@@ -139,11 +139,10 @@ public class ChallengeService {
 
         List<String> mobtiList = Arrays.asList(mobti.split(""));
 
-        // 먼저 mobti 기준으로 챌린지 가져오기
+        // mobti 기반 챌린지 가져오기
         List<Challenge> challenges = challengeRepository
                 .findByIsSystemGeneratedTrueAndMobtiTypeIn(mobtiList);
 
-        // type / category / isAccountLinked 필터링
         String type = request.getType();
         String category = request.getCategory();
         Boolean isAccountLinked = request.getIsAccountLinked();
@@ -155,7 +154,7 @@ public class ChallengeService {
                         return "저축".equals(c.getCategory());
                     } else if ("지출".equals(type)) {
                         boolean categoryMatch = category == null || c.getCategory().equals(category);
-                        boolean linkedMatch = isAccountLinked == null || isAccountLinked.equals(c.getIsAccountLinked());
+                        boolean linkedMatch = isAccountLinked == null || isAccountLinked.equals(c.isAccountLinked());
                         return categoryMatch && linkedMatch;
                     }
                     return true;
@@ -165,7 +164,7 @@ public class ChallengeService {
     }
 
     /**
-     *  추천 챌린지 필터링 결과에 사용
+     * 추천 챌린지 → 카드 응답 변환
      */
     public ChallengeCardResponse toRecommendedChallengeCardResponse(Challenge c) {
         return ChallengeCardResponse.builder()
@@ -176,7 +175,7 @@ public class ChallengeService {
                 .goalType(c.getGoalType())
                 .goalPeriod(c.getGoalPeriod())
                 .goalValue(c.getGoalValue())
-                .isAccountLinked(c.getIsAccountLinked())
+                .isAccountLinked(c.isAccountLinked())
                 .isMine(false)
                 .completed(false)
                 .success(false)
@@ -210,7 +209,7 @@ public class ChallengeService {
     }
 
     /**
-     *  공유 챌린지 필터링 결과에 사용
+     * 공유 챌린지 → 카드 응답 변환
      */
     private ChallengeCardResponse toSharedChallengeResponse(Challenge challenge) {
         return ChallengeCardResponse.builder()
@@ -221,10 +220,8 @@ public class ChallengeService {
                 .goalType(challenge.getGoalType())
                 .goalPeriod(challenge.getGoalPeriod())
                 .goalValue(challenge.getGoalValue())
-                .isAccountLinked(challenge.getIsAccountLinked())
+                .isAccountLinked(challenge.isAccountLinked())
                 .isMine(false)
                 .build();
     }
-
-
 }

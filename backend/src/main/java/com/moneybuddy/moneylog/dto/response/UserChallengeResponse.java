@@ -16,11 +16,11 @@ public class UserChallengeResponse {
     private String category;
     private String goalPeriod;
     private String goalType;
-    private Integer goalValue;
-    private Boolean isAccountLinked;
-    private Boolean isShared;
+    private int goalValue;
+    private boolean isAccountLinked;
+    private boolean isShared;
 
     private LocalDateTime joinedAt;
-    private Boolean completed;
-    private Boolean rewarded;
+    private boolean completed;
+    private boolean rewarded;
 }
