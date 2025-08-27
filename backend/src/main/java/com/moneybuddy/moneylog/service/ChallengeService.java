@@ -9,10 +9,12 @@ import com.moneybuddy.moneylog.dto.request.UserChallengeRequest;
 import com.moneybuddy.moneylog.dto.response.ChallengeCardResponse;
 import com.moneybuddy.moneylog.repository.ChallengeRepository;
 import com.moneybuddy.moneylog.repository.UserChallengeRepository;
+import com.moneybuddy.moneylog.repository.UserChallengeSuccessRepository;
 import com.moneybuddy.moneylog.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -24,6 +26,7 @@ public class ChallengeService {
     private final ChallengeRepository challengeRepository;
     private final UserRepository userRepository;
     private final UserChallengeRepository userChallengeRepository;
+    private final UserChallengeSuccessRepository userChallengeSuccessRepository;
 
     /**
      * 사용자의 MoBTI 값을 기반으로 추천 챌린지 목록 조회
@@ -114,18 +117,57 @@ public class ChallengeService {
         Challenge challenge = challengeRepository.findById(challengeId)
                 .orElseThrow(() -> new IllegalArgumentException("챌린지를 찾을 수 없습니다."));
 
-        boolean isJoined = userChallengeRepository.existsByUserIdAndChallengeId(userId, challengeId);
+        Optional<UserChallenge> userChallengeOpt =
+                userChallengeRepository.findByUserIdAndChallengeId(userId, challengeId);
+
         int participantCount = userChallengeRepository.countByChallengeId(challengeId);
+
+        boolean isJoined = userChallengeOpt.isPresent();
+        boolean completed = false;
+        boolean success = false;
+        boolean rewarded = false;
+        LocalDateTime joinedAt = null;
+
+        if (userChallengeOpt.isPresent()) {
+            UserChallenge uc = userChallengeOpt.get();
+            completed = uc.isCompleted();
+            rewarded = uc.isRewarded();
+            joinedAt = uc.getJoinedAt();
+
+            if (completed) {
+                LocalDate start = uc.getJoinedAt().toLocalDate();
+                LocalDate end = start.plusDays(parseGoalPeriod(challenge.getGoalPeriod()));
+
+                long successCount = userChallengeSuccessRepository
+                        .countByUserIdAndChallengeIdAndSuccessDateBetween(
+                                userId, challengeId, start, end.minusDays(1)
+                        );
+
+                success = successCount >= challenge.getGoalValue();
+            }
+        }
 
         return ChallengeDetailResponse.builder()
                 .challengeId(challenge.getId())
                 .title(challenge.getTitle())
                 .description(challenge.getDescription())
+                .type(challenge.getType())
+                .category(challenge.getCategory())
                 .goalPeriod(challenge.getGoalPeriod())
                 .goalType(challenge.getGoalType())
                 .goalValue(challenge.getGoalValue())
+                .mobtiType(challenge.getMobtiType())
+                .isSystemGenerated(challenge.isSystemGenerated())
+                .isAccountLinked(challenge.isAccountLinked())
+                .createdBy(challenge.getCreatedBy())
                 .currentParticipants(participantCount)
+
                 .isJoined(isJoined)
+                .joinedAt(joinedAt)
+                .completed(completed)
+                .success(success)
+                .rewarded(rewarded)
+                .mine(challenge.getCreatedBy() != null && challenge.getCreatedBy().equals(userId))
                 .build();
     }
 
@@ -223,5 +265,24 @@ public class ChallengeService {
                 .isAccountLinked(challenge.isAccountLinked())
                 .isMine(false)
                 .build();
+    }
+
+    /**
+     * 챌린지 기간을 일(day) 단위로 환산
+     */
+    private int parseGoalPeriod(String periodStr) {
+        if (periodStr == null || periodStr.isEmpty()) {
+            throw new IllegalArgumentException("goalPeriod 값이 없습니다.");
+        }
+
+        if (periodStr.endsWith("일")) {
+            return Integer.parseInt(periodStr.replace("일", "").trim());
+        } else if (periodStr.endsWith("주")) {
+            return Integer.parseInt(periodStr.replace("주", "").trim()) * 7;
+        } else if (periodStr.endsWith("개월") || periodStr.endsWith("달")) {
+            return Integer.parseInt(periodStr.replaceAll("개월|달", "").trim()) * 30;
+        } else {
+            throw new IllegalArgumentException("goalPeriod 형식이 잘못되었습니다: " + periodStr);
+        }
     }
 }

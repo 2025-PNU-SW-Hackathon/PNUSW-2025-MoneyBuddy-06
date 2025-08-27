@@ -24,5 +24,8 @@ public interface UserChallengeRepository extends JpaRepository<UserChallenge, Lo
     List<UserChallenge> findAllIncomplete();
 
     @Query("SELECT uc FROM UserChallenge uc JOIN FETCH uc.challenge WHERE uc.userId = :userId AND uc.completed = false")
-    List<UserChallenge> findOngoingWithChallenge(@Param("userId") Long userId);
+    List<UserChallenge> findByUserIdAndCompletedFalseWithChallenge(@Param("userId") Long userId);
+
+    @Query("SELECT uc FROM UserChallenge uc JOIN FETCH uc.challenge WHERE uc.userId = :userId AND uc.completed = true")
+    List<UserChallenge> findByUserIdAndCompletedTrueWithChallenge(@Param("userId") Long userId);
 }

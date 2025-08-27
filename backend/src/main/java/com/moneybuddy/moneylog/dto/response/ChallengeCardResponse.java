@@ -25,6 +25,9 @@ public class ChallengeCardResponse {
     private boolean isMine;
 
     private boolean isJoined;
+    private boolean isShared;
+    private boolean mine;
+
     private LocalDateTime joinedAt;
     private int currentParticipants;
     private boolean completed;

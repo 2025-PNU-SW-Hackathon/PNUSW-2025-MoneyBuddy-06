@@ -87,13 +87,13 @@ public class UserChallengeService {
      *  진행 중인 챌린지 조회
      */
     public List<ChallengeCardResponse> getOngoingChallenges(Long userId) {
-        return userChallengeRepository.findOngoingWithChallenge(userId).stream()
+        return userChallengeRepository.findByUserIdAndCompletedFalseWithChallenge(userId).stream()
                 .map(this::toOngoingChallengeCardResponse)
-                .toList();
+                .collect(Collectors.toList());
     }
 
     /**
-     *  진행 중 챌린지 정보 응답
+     * 진행 중 챌린지 응답 변환
      */
     private ChallengeCardResponse toOngoingChallengeCardResponse(UserChallenge uc) {
         Challenge c = uc.getChallenge();
@@ -101,10 +101,21 @@ public class UserChallengeService {
         return ChallengeCardResponse.builder()
                 .challengeId(c.getId())
                 .title(c.getTitle())
+                .description(c.getDescription())
+                .type(c.getType())
+                .category(c.getCategory())
                 .goalPeriod(c.getGoalPeriod())
+                .goalType(c.getGoalType())
                 .goalValue(c.getGoalValue())
-                .completed(false)
-                .success(false)
+                .mobtiType(c.getMobtiType())
+                .isSystemGenerated(c.isSystemGenerated())
+                .isAccountLinked(c.isAccountLinked())
+                .isShared(c.isShared())
+                .joinedAt(uc.getJoinedAt())
+                .completed(uc.isCompleted())
+                .success(uc.isSuccess())
+                .rewarded(uc.isRewarded())
+                .mine(c.getCreatedBy() != null && c.getCreatedBy().equals(uc.getUserId()))
                 .build();
     }
 
@@ -112,13 +123,13 @@ public class UserChallengeService {
      *  완료된 챌린지 조회
      */
     public List<ChallengeCardResponse> getCompletedChallenges(Long userId) {
-        return userChallengeRepository.findByUserIdAndCompletedTrue(userId).stream()
+        return userChallengeRepository.findByUserIdAndCompletedTrueWithChallenge(userId).stream()
                 .map(this::toCompletedChallengeCardResponse)
                 .collect(Collectors.toList());
     }
 
     /**
-     *  완료된 챌린지 정보 응답
+     * 완료된 챌린지 응답 변환
      */
     private ChallengeCardResponse toCompletedChallengeCardResponse(UserChallenge uc) {
         Challenge c = uc.getChallenge();
@@ -136,12 +147,24 @@ public class UserChallengeService {
         return ChallengeCardResponse.builder()
                 .challengeId(c.getId())
                 .title(c.getTitle())
+                .description(c.getDescription())
+                .type(c.getType())
+                .category(c.getCategory())
                 .goalPeriod(c.getGoalPeriod())
+                .goalType(c.getGoalType())
                 .goalValue(c.getGoalValue())
+                .mobtiType(c.getMobtiType())
+                .isSystemGenerated(c.isSystemGenerated())
+                .isAccountLinked(c.isAccountLinked())
+                .isShared(c.isShared())
+                .joinedAt(uc.getJoinedAt())
                 .completed(true)
                 .success(isSuccess)
+                .rewarded(uc.isRewarded())
+                .mine(c.getCreatedBy() != null && c.getCreatedBy().equals(uc.getUserId()))
                 .build();
     }
+
 
     /**
      *  진행 중인 챌린지 필터링
