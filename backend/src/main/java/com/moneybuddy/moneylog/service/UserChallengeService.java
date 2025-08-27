@@ -49,6 +49,7 @@ public class UserChallengeService {
                 .challenge(challenge)
                 .joinedAt(LocalDateTime.now())
                 .completed(false)
+                .success(false)
                 .rewarded(false)
                 .build();
         userChallenge.setUserId(userId);
@@ -86,9 +87,9 @@ public class UserChallengeService {
      *  진행 중인 챌린지 조회
      */
     public List<ChallengeCardResponse> getOngoingChallenges(Long userId) {
-        return userChallengeRepository.findByUserIdAndCompletedFalse(userId).stream()
+        return userChallengeRepository.findOngoingWithChallenge(userId).stream()
                 .map(this::toOngoingChallengeCardResponse)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     /**

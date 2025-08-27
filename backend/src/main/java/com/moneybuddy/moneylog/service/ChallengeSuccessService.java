@@ -22,6 +22,7 @@ public class ChallengeSuccessService {
     private final ChallengeRepository challengeRepository;
     private final UserChallengeSuccessRepository successRepository;
     private final UserExpRepository userExpRepository;
+    private final UserRepository userRepository;
     private final Notifier notifier;
 
     // 경험치 상수 정의
@@ -58,6 +59,24 @@ public class ChallengeSuccessService {
                     .successDate(today)
                     .build());
 
+            // 경험치 지급 (없으면 생성)
+            User user = userRepository.findById(userId)
+                    .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+
+            UserExp userExp = userExpRepository.findById(userId)
+                    .orElseGet(() -> {
+                        UserExp newExp = UserExp.builder()
+                                .user(user)        // @MapsId 때문에 반드시 User 넣어야 함
+                                .experience(0)
+                                .level(1)
+                                .build();
+                        return userExpRepository.save(newExp);
+                    });
+
+            // 경험치 추가
+            boolean leveledUp = userExp.addExperience(25, 100);
+            userExpRepository.save(userExp);
+
             // 챌린지 시작일 ~ 종료일 계산
             LocalDate start = userChallenge.getJoinedAt().toLocalDate();
             LocalDate end = start.plusDays(parseGoalPeriod(challenge.getGoalPeriod()));
@@ -73,11 +92,6 @@ public class ChallengeSuccessService {
                 userChallenge.setRewarded(true);
                 userChallengeRepository.save(userChallenge);
 
-                // 경험치 지급
-                UserExp userExp = userExpRepository.findById(userId)
-                        .orElseThrow(() -> new IllegalArgumentException("사용자의 경험치 정보를 찾을 수 없습니다."));
-                boolean leveledUp = userExp.addExperience(EXP_PER_SUCCESS, EXP_PER_LEVEL);
-                userExpRepository.save(userExp);
 
                 // 챌린지 성공 알림
                 notifier.send(
