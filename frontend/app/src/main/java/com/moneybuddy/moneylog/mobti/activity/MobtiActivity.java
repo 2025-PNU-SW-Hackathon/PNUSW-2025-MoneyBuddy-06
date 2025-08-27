@@ -22,7 +22,7 @@ import retrofit2.Response;
 
 public class MobtiActivity extends AppCompatActivity {
 
-    private TextView tvEmoji, tvCode, tvTitle, sec1, sec2, sec3;
+    private TextView tvEmoji, tvCode, tvCodeKr, tvTitle, sec1, sec2, sec3;
 
     @Override
     protected void onCreate(Bundle b) {
@@ -32,17 +32,18 @@ public class MobtiActivity extends AppCompatActivity {
         MaterialToolbar tb = findViewById(R.id.toolbar);
         tb.setNavigationOnClickListener(v -> finish());
 
-        tvEmoji = findViewById(R.id.tvMascotEmoji);  // TextView(이모지)
-        tvCode  = findViewById(R.id.tvTypeCode);
-        tvTitle = findViewById(R.id.tvSection1Title); // "닉네임 동물 인 당신은"
-        sec1    = findViewById(R.id.section1Body);
-        sec2    = findViewById(R.id.section2Body);
-        sec3    = findViewById(R.id.section3Body);
+        tvEmoji  = findViewById(R.id.tvMascotEmoji);
+        tvCode   = findViewById(R.id.tvTypeCode);
+        tvCodeKr = findViewById(R.id.tvTypeCodeKrname);    // ← 레이아웃에 있음
+        tvTitle  = findViewById(R.id.tvSection1Title);
+        sec1     = findViewById(R.id.section1Body);
+        sec2     = findViewById(R.id.section2Body);
+        sec3     = findViewById(R.id.section3Body);
 
-        // 재검사하기 → 바로 인트로로 이동
         MaterialButton btn = findViewById(R.id.btnRetakeMobti);
         btn.setOnClickListener(v -> {
             Intent i = new Intent(MobtiActivity.this, MobtiIntroActivity.class);
+            i.putExtra("retake", true);
             startActivity(i);
             finish();
         });
@@ -51,30 +52,34 @@ public class MobtiActivity extends AppCompatActivity {
     }
 
     private void loadDetails() {
-        MobtiRepository repo = new MobtiRepository(this);
-        repo.myDetails().enqueue(new Callback<MobtiFullDto>() {
+        new MobtiRepository(this).myDetails().enqueue(new Callback<MobtiFullDto>() {
             @Override public void onResponse(Call<MobtiFullDto> call, Response<MobtiFullDto> res) {
                 if (!res.isSuccessful() || res.body() == null) {
-                    Toast.makeText(MobtiActivity.this, "불러오기 실패", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MobtiActivity.this, "MOBTI 정보를 불러오지 못했어요.", Toast.LENGTH_SHORT).show();
                     return;
                 }
                 MobtiFullDto d = res.body();
-                final String code = d.getCode();
+                String code = d.getCode();
 
+                // 상단 배지
                 tvCode.setText(code);
                 tvEmoji.setText(MobtiMascot.emoji(code));
 
-                // "닉네임(동물) 인 당신은"
+                // 코드 한글명(닉네임+동물명)
                 String nickAnimal = MobtiMascot.nicknameWithAnimal(d.getNickname(), code);
-                tvTitle.setText((nickAnimal == null || nickAnimal.isEmpty()) ? "당신은" : (nickAnimal + " 인 당신은"));
+                tvCodeKr.setText(nickAnimal.isEmpty() ? "" : nickAnimal);
 
+                // 카드 타이틀
+                tvTitle.setText(nickAnimal.isEmpty() ? "당신은" : (nickAnimal + "인 당신은"));
+
+                // 본문
                 sec1.setText(joinBullets(d.getDetailTraits()));
                 sec2.setText(joinBullets(d.getSpendingTendency()));
                 sec3.setText(joinBullets(d.getSocialStyle()));
             }
 
             @Override public void onFailure(Call<MobtiFullDto> call, Throwable t) {
-                Toast.makeText(MobtiActivity.this, "네트워크 오류", Toast.LENGTH_SHORT).show();
+                Toast.makeText(MobtiActivity.this, "네트워크 오류가 발생했어요.", Toast.LENGTH_SHORT).show();
             }
         });
     }

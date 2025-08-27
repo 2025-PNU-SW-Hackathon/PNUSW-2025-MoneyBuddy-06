@@ -17,6 +17,11 @@ import com.moneybuddy.moneylog.mypage.dto.UserExpResponse;
 import com.moneybuddy.moneylog.mypage.dto.PushSettingRequest;
 import com.moneybuddy.moneylog.mypage.dto.PushSettingResponse;
 
+
+import com.moneybuddy.moneylog.mobti.dto.response.MobtiFullDto;
+import com.moneybuddy.moneylog.mypage.dto.MobtiBriefDto;
+
+
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.Header;
@@ -33,6 +38,10 @@ public interface ApiService {
     // 내 MoBTI 요약 정보 조회
     @GET("mobti/me/summary")
     Call<MobtiBriefDto> getMyMobtiSummary();
+
+    //MOBTI 상세
+    @GET("/api/v1/mobti/me/details")
+    Call<MobtiFullDto> getMyMobtiDetails();
 
     // 카드뉴스 (오늘의 카드뉴스 목록)
     @GET("api/v1/knowledge/cardnews")
