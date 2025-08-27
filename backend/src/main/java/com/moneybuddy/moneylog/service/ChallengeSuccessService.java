@@ -87,7 +87,7 @@ public class ChallengeSuccessService {
             );
 
             // 목표 달성 시 챌린지 완료 및 보상 지급
-            if (!userChallenge.getCompleted() && successCount >= challenge.getGoalValue()) {
+            if (!userChallenge.isCompleted() && successCount >= challenge.getGoalValue()) {
                 userChallenge.setCompleted(true);
                 userChallenge.setRewarded(true);
                 userChallengeRepository.save(userChallenge);
