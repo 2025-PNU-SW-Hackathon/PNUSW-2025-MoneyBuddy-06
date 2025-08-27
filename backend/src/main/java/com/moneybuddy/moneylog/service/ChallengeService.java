@@ -72,7 +72,7 @@ public class ChallengeService {
                 .isSystemGenerated(false)
                 .isShared(request.getIsShared())
                 .createdBy(userId)
-                .isAccountLinked((request.getIsAccountLinked()))
+                .isAccountLinked(false)
                 .build();
 
         // 먼저 Challenge 저장
@@ -85,8 +85,8 @@ public class ChallengeService {
                 .joinedAt(LocalDateTime.now())
                 .completed(false)
                 .rewarded(false)
+                .success(false)
                 .build();
-
         userChallengeRepository.save(userChallenge);
     }
 
@@ -102,7 +102,7 @@ public class ChallengeService {
                         .title(challenge.getTitle())
                         .goalPeriod(challenge.getGoalPeriod())
                         .goalValue(challenge.getGoalValue())
-                        .isMine(challenge.getCreatedBy().equals(userId))
+                        .isMine(challenge.getCreatedBy() != null && challenge.getCreatedBy().equals(userId))
                         .build())
                 .toList();
     }

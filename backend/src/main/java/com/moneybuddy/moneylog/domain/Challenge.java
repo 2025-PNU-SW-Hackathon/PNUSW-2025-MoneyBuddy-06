@@ -24,7 +24,10 @@ public class Challenge {
 
     private Boolean isSystemGenerated;
     private Boolean isShared;
-    private Boolean isAccountLinked;
+
+    @Builder.Default
+    @Column(nullable = false)
+    private Boolean isAccountLinked = false;
     private Long createdBy;
 
     private String mobtiType;
