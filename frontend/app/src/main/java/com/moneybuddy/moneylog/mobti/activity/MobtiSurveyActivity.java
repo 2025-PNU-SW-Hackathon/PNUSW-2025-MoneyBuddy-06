@@ -148,7 +148,7 @@ public class MobtiSurveyActivity extends AppCompatActivity {
                     }
                     String code = resp.body().getMobti();
                     Intent it = new Intent(MobtiSurveyActivity.this, MobtiResultActivity.class);
-                    it.putExtra("code", code);
+                    it.putExtra("fromFirstLogin", getIntent().getBooleanExtra("fromFirstLogin", false));
                     startActivity(it);
                     finish();
                 }

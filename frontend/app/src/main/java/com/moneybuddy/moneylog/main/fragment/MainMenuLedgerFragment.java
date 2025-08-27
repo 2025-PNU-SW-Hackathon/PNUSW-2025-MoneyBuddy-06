@@ -1,9 +1,11 @@
 package com.moneybuddy.moneylog.main.fragment;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +15,8 @@ import android.widget.NumberPicker;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -20,16 +24,23 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.moneybuddy.moneylog.R;
+import com.moneybuddy.moneylog.common.TokenManager;
 import com.moneybuddy.moneylog.ledger.activity.GraphActivity;
 import com.moneybuddy.moneylog.ledger.activity.LedgerWriteActivity;
 import com.moneybuddy.moneylog.ledger.adapter.CalendarAdapter;
 import com.moneybuddy.moneylog.ledger.domain.CalendarGridBuilder;
+import com.moneybuddy.moneylog.ledger.dto.response.CategoryRatioResponse;
 import com.moneybuddy.moneylog.ledger.model.LedgerDayData;
+import com.moneybuddy.moneylog.ledger.repository.AnalyticsRepository;
 import com.moneybuddy.moneylog.util.KoreanMoney;
 
 import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class MainMenuLedgerFragment extends Fragment {
 
@@ -38,22 +49,26 @@ public class MainMenuLedgerFragment extends Fragment {
     private CalendarAdapter adapter;
     private Calendar currentCalendar;
 
-    // ── 월 합계(중간 요약줄)
-    private TextView tvMonthIncome;   // id: tv_month_income
-    private TextView tvMonthExpense;  // id: tv_month_expense
-    private TextView tvMonthNet;      // id: tv_month_net
+    // 서버 API
+    private AnalyticsRepository analyticsRepo;
 
-    // ── 소비목표 미니 막대 영역
-    private LinearLayout goalBarTrack;           // id: goal_bar_track
-    private TextView tvGoalSpent;                // id: tv_goal_spent
-    private TextView tvGoalTarget;               // id: tv_goal_target
+    // 월 합계(중간 요약)
+    private TextView tvMonthIncome;
+    private TextView tvMonthExpense;
+    private TextView tvMonthNet;
+
+    // 목표 미니 막대
+    private LinearLayout goalBarTrack;
+    private TextView tvGoalSpent;
+    private TextView tvGoalTarget;
     private long monthGoal = 0L;
     private int[] previewSegments;
 
-
-
-    // 그래프 화면으로 전달할 캐시
+    // 최근 지출 합계(미니 막대 갱신용)
     private long lastMonthSpentCached = 0L;
+
+    // 작성 화면 런처(저장 성공 시 달력 새로고침)
+    private ActivityResultLauncher<Intent> writeLauncher;
 
     @Nullable
     @Override
@@ -64,12 +79,23 @@ public class MainMenuLedgerFragment extends Fragment {
     }
 
     @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        analyticsRepo = new AnalyticsRepository(requireContext(), token());
+
+        writeLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                result -> { if (result.getResultCode() == Activity.RESULT_OK) updateCalendar(); }
+        );
+    }
+
+    @Override
     public void onViewCreated(@NonNull View v, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(v, savedInstanceState);
 
         // 상단
-        tvYearMonth      = v.findViewById(R.id.tv_year_month);
-        rvCalendar       = v.findViewById(R.id.rv_calendar);
+        tvYearMonth = v.findViewById(R.id.tv_year_month);
+        rvCalendar = v.findViewById(R.id.rv_calendar);
         ImageView btnPrev = v.findViewById(R.id.btn_prev_month);
         ImageView btnNext = v.findViewById(R.id.btn_next_month);
         ImageView btnAdd  = v.findViewById(R.id.btn_add_calendar);
@@ -87,7 +113,7 @@ public class MainMenuLedgerFragment extends Fragment {
         currentCalendar = Calendar.getInstance();
 
         rvCalendar.setLayoutManager(new GridLayoutManager(requireContext(), 7));
-        updateCalendar(); // 최초 표시 (달력 + 요약 + 막대)
+        updateCalendar();
 
         // 이전/다음 달
         btnPrev.setOnClickListener(v2 -> { currentCalendar.add(Calendar.MONTH, -1); updateCalendar(); });
@@ -96,12 +122,13 @@ public class MainMenuLedgerFragment extends Fragment {
         // 년·월 선택
         tvYearMonth.setOnClickListener(v2 -> showYearMonthPicker());
 
-        // 작성 화면 이동(+ 버튼)
-        btnAdd.setOnClickListener(v2 ->
-                startActivity(new Intent(requireContext(), LedgerWriteActivity.class))
-        );
+        // 작성 화면 이동(+ 버튼) — 저장 성공 시 갱신
+        btnAdd.setOnClickListener(v2 -> {
+            Intent it = new Intent(requireContext(), LedgerWriteActivity.class);
+            writeLauncher.launch(it);
+        });
 
-        // 카드 탭 시 원그래프 화면으로 이동(같은 데이터 전달)
+        // 목표 카드 → 그래프 화면
         View cardGoalBar = v.findViewById(R.id.card_goal_bar);
         if (cardGoalBar != null) {
             cardGoalBar.setOnClickListener(v2 -> {
@@ -115,6 +142,12 @@ public class MainMenuLedgerFragment extends Fragment {
         }
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        // 상세 화면 뒤로가기 등 모든 복귀 지점에서 최신화
+        updateCalendar();
+    }
 
     private void updateCalendar() {
         int year  = currentCalendar.get(Calendar.YEAR);
@@ -123,31 +156,53 @@ public class MainMenuLedgerFragment extends Fragment {
 
         tvYearMonth.setText(year + "년 " + month + "월");
 
+        // 달력 셀 & 어댑터
         List<LedgerDayData> days = CalendarGridBuilder.generateCalendar(year, month);
         adapter = new CalendarAdapter(requireContext(), days, ym);
         rvCalendar.setAdapter(adapter);
 
+        // 월 합계
         MonthTotals totals = calcMonthlyTotals(days);
 
         if (tvMonthIncome != null)  tvMonthIncome.setText(KoreanMoney.format(totals.income));
         if (tvMonthExpense != null) tvMonthExpense.setText(KoreanMoney.format(totals.expense));
         if (tvMonthNet != null) {
             long net = totals.income - totals.expense;
-            tvMonthNet.setText(net < 0 ? "-" + KoreanMoney.format(Math.abs(net)) : KoreanMoney.format(net));
-            tvMonthNet.setTextColor(net >= 0 ? Color.parseColor("#2A86FF") : Color.parseColor("#C5463F"));
+            tvMonthNet.setText(net < 0 ? "-" + KoreanMoney.format(Math.abs(net))
+                    : KoreanMoney.format(net));
+            tvMonthNet.setTextColor(net >= 0 ? Color.parseColor("#2A86FF")
+                    : Color.parseColor("#C5463F"));
         }
 
+        // 미니 막대: 지출 합계 + 서버 목표 동기화
         long monthSpent = totals.expense;
         lastMonthSpentCached = monthSpent;
 
+        if (tvGoalSpent != null) tvGoalSpent.setText(KoreanMoney.format(monthSpent));
         previewSegments = buildSegmentsForPreview(monthSpent);
-        if (tvGoalSpent != null)  tvGoalSpent.setText(KoreanMoney.format(monthSpent));
-        if (tvGoalTarget != null) tvGoalTarget.setText(KoreanMoney.format(monthGoal));
-        if (goalBarTrack != null) renderStackedGoalBar(monthGoal, monthSpent, previewSegments);
+
+        // ✅ 그래프와 동일 API에서 goalAmount 읽어와 적용
+        fetchGoalAndApply(ym);
     }
 
+    /** 서버에서 goalAmount 받아와 목표/미니막대 반영 */
+    private void fetchGoalAndApply(String ym) {
+        analyticsRepo.getCategoryRatio(ym).enqueue(new Callback<CategoryRatioResponse>() {
+            @Override public void onResponse(Call<CategoryRatioResponse> call, Response<CategoryRatioResponse> res) {
+                if (!res.isSuccessful() || res.body() == null) return;
+                Long goal = res.body().goalAmount;
+                monthGoal = (goal == null) ? 0L : goal;
 
-    /** 달력에서 년·월만 선택 */
+                if (tvGoalTarget != null) tvGoalTarget.setText(KoreanMoney.format(monthGoal));
+                if (goalBarTrack != null) renderStackedGoalBar(monthGoal, lastMonthSpentCached, previewSegments);
+            }
+            @Override public void onFailure(Call<CategoryRatioResponse> call, Throwable t) {
+                // 필요 시 로그/토스트
+            }
+        });
+    }
+
+    /** 년·월 선택 다이얼로그 */
     private void showYearMonthPicker() {
         final int curYear  = currentCalendar.get(Calendar.YEAR);
         final int curMonth = currentCalendar.get(Calendar.MONTH) + 1;
@@ -169,8 +224,7 @@ public class MainMenuLedgerFragment extends Fragment {
         monthPicker.setValue(curMonth);
         monthPicker.setWrapSelectorWheel(true);
 
-        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
-                0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f);
+        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f);
         container.addView(yearPicker, lp);
         container.addView(monthPicker, lp);
 
@@ -180,14 +234,13 @@ public class MainMenuLedgerFragment extends Fragment {
                 .setNegativeButton("취소", null)
                 .setPositiveButton("확인", (d, w) -> {
                     currentCalendar.set(Calendar.YEAR, yearPicker.getValue());
-                    currentCalendar.set(Calendar.MONTH, monthPicker.getValue() - 1); // 0-based
+                    currentCalendar.set(Calendar.MONTH, monthPicker.getValue() - 1);
                     currentCalendar.set(Calendar.DAY_OF_MONTH, 1);
                     updateCalendar();
                     Toast.makeText(requireContext(), "달을 변경했어요", Toast.LENGTH_SHORT).show();
                 })
                 .show();
     }
-
 
     private MonthTotals calcMonthlyTotals(List<LedgerDayData> list) {
         long income = 0, expense = 0;
@@ -270,5 +323,14 @@ public class MainMenuLedgerFragment extends Fragment {
         gd.setColor(color);
         gd.setCornerRadii(new float[]{tl, tl, tr, tr, br, br, bl, bl});
         return gd;
+    }
+
+    private String token() {
+        try {
+            String t = TokenManager.getInstance(requireContext()).getToken();
+            return TextUtils.isEmpty(t) ? "" : t;
+        } catch (Exception e) {
+            return "";
+        }
     }
 }

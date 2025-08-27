@@ -36,25 +36,25 @@ import retrofit2.http.POST;
  */
 public interface ApiService {
     // 내 MoBTI 요약 정보 조회
-    @GET("mobti/me/summary")
+    @GET("/api/v1/mobti/me/summary")
     Call<MobtiBriefDto> getMyMobtiSummary();
 
     //MOBTI 상세
-    @GET("/api/v1/mobti/me/details")
+    @GET("api/v1/mobti/me/details")
     Call<MobtiFullDto> getMyMobtiDetails();
 
     // 카드뉴스 (오늘의 카드뉴스 목록)
     @GET("api/v1/knowledge/cardnews")
     Call<List<KnowledgeResponse>> getTodayCardNews();
     // 나의 레벨 및 경험치 조회
-    @GET("challenges/exp")
+    @GET("api/v1/challenges/exp")
     Call<UserExpResponse> getMyExp();
 
     // 오늘의 퀴즈 조회
     @GET("api/v1/quiz/today")
     Call<QuizResponse> getTodayQuiz();
     // 비밀번호 변경
-    @PATCH("users/password")
+    @PATCH("api/v1/users/password")
     Call<Void> changePassword(
             @Header("Authorization") String token,
             @Body ChangePasswordRequest request
@@ -64,14 +64,14 @@ public interface ApiService {
     @POST("api/v1/quiz/answer")
     Call<QuizResultResponse> submitAnswer(@Body QuizAnswerRequest request);
     // 현재 알림 설정 상태를 서버에서 가져옴
-    @GET("users/notifications/push")
+    @GET("api/v1/users/notifications/push")
     Call<PushSettingResponse> getPushSetting(@Header("Authorization") String token);
 
     // 회원가입
     @POST("api/v1/users/signup")
     Call<UserSignupResponse> signup(@Body UserSignupRequest request);
     // 변경된 알림 설정 상태를 서버에 전송
-    @PATCH("users/notifications/push")
+    @PATCH("api/v1/users/notifications/push")
     Call<Void> updatePushSetting(@Header("Authorization") String token, @Body PushSettingRequest request);
 
     // 청년 정책 전체 조회
@@ -79,11 +79,11 @@ public interface ApiService {
     Call<List<YouthPolicyResponse>> getAllYouthPolicies();
 
     // 로그아웃 (서버 토큰 무효화)
-    @POST("auth/logout")
+    @POST("api/v1/auth/logout")
     Call<Void> logout(@Header("Authorization") String token);
 
     // 회원 탈퇴
-    @HTTP(method = "DELETE", path = "users/delete", hasBody = true)
+    @HTTP(method = "DELETE", path = "api/v1/users/delete", hasBody = true)
     Call<Void> deleteUser(
             @Header("Authorization") String token,
             @Body UserDeleteRequest request

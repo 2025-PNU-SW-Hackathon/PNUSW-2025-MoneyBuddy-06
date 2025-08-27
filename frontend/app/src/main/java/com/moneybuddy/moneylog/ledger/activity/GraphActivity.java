@@ -73,6 +73,7 @@ public class GraphActivity extends AppCompatActivity {
         analyticsRepo = new AnalyticsRepository(this, tk);
         budgetRepo    = new BudgetRepository(this, tk);
 
+
         // 상단 닉네임
         if (tvUserName != null) tvUserName.setText(loadMobtiNickname());
 
