@@ -32,7 +32,6 @@ public class ChallengeCardResponse implements Serializable {
     private String mobtiType;
 
     public ChallengeCardResponse(RecommendedChallengeResponse recommended) {
-        // 공통 필드 매핑
         this.challengeId = recommended.getId();
         this.title = recommended.getTitle();
         this.description = recommended.getDescription();

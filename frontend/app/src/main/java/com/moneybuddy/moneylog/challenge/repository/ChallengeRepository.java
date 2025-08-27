@@ -1,7 +1,10 @@
 package com.moneybuddy.moneylog.challenge.repository;
 
+import android.content.SharedPreferences;
+
 import com.moneybuddy.moneylog.challenge.dto.ChallengeCardResponse;
 import com.moneybuddy.moneylog.challenge.dto.ChallengeCreateRequest;
+import com.moneybuddy.moneylog.challenge.dto.ChallengeDetailResponse;
 import com.moneybuddy.moneylog.challenge.dto.ChallengeFilterRequest;
 import com.moneybuddy.moneylog.challenge.dto.UserChallengeRequest;
 import com.moneybuddy.moneylog.challenge.dto.UserChallengeResponse;
@@ -64,5 +67,9 @@ public class ChallengeRepository {
 
     public void joinChallenge(UserChallengeRequest request, Callback<UserChallengeResponse> callback) {
         apiService.joinChallenge(request).enqueue(callback);
+    }
+
+    public void getChallengeDetail(Long challengeId, Callback<ChallengeDetailResponse> callback) {
+        apiService.getChallengeDetail(challengeId).enqueue(callback);
     }
 }
