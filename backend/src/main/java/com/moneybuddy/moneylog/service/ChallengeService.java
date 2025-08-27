@@ -74,7 +74,7 @@ public class ChallengeService {
                 .isSystemGenerated(false)
                 .isShared(request.getIsShared() != null && request.getIsShared())
                 .createdBy(userId)
-                .isAccountLinked(false) // 항상 false
+                .isAccountLinked(false)
                 .build();
 
         // Challenge 저장
@@ -89,7 +89,6 @@ public class ChallengeService {
                 .rewarded(false)
                 .success(false)
                 .build();
-
         userChallengeRepository.save(userChallenge);
     }
 
