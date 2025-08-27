@@ -2,26 +2,25 @@ package com.moneybuddy.moneylog.common;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-
 import androidx.annotation.Nullable;
 
 public final class TokenManager {
 
-    private static final String PREFS = "auth_prefs";            // 신규 저장소
-    private static final String LEGACY_PREFS = "moneybuddy_prefs"; // 레거시 저장소(자동 마이그레이션)
+    private static final String PREFS_NAME = "auth_prefs";
     private static final String KEY_ACCESS_TOKEN = "access_token";
+    // ▼▼▼ AuthManager에서 사용하던 키 추가 ▼▼▼
+    private static final String KEY_USER_ID = "user_id";
+    private static final String KEY_EMAIL = "user_email";
 
     private static volatile TokenManager INSTANCE;
     private final SharedPreferences prefs;
 
-    // 외부 new 금지
-    private TokenManager(Context ctx) {
-        Context app = ctx.getApplicationContext();
-        this.prefs = app.getSharedPreferences(PREFS, Context.MODE_PRIVATE);
-        migrateFromLegacy(app);
+    public TokenManager(Context ctx) {
+        // SharedPreferences 인스턴스 생성
+        this.prefs = ctx.getApplicationContext().getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
     }
 
-    // 싱글턴 접근자
+    // 싱글턴 인스턴스를 가져오는 메서드
     public static TokenManager getInstance(Context ctx) {
         if (INSTANCE == null) {
             synchronized (TokenManager.class) {
@@ -33,33 +32,48 @@ public final class TokenManager {
         return INSTANCE;
     }
 
-    // ---- 마이그레이션: 예전 PREF에 토큰이 있으면 옮기기 ----
-    private void migrateFromLegacy(Context appCtx) {
-        if (prefs.getString(KEY_ACCESS_TOKEN, null) != null) return;
-        SharedPreferences legacy = appCtx.getSharedPreferences(LEGACY_PREFS, Context.MODE_PRIVATE);
-        String old = legacy.getString(KEY_ACCESS_TOKEN, null);
-        if (old != null) {
-            prefs.edit().putString(KEY_ACCESS_TOKEN, old).apply();
-            legacy.edit().remove(KEY_ACCESS_TOKEN).apply();
+    // ▼▼▼ AuthManager의 saveLogin 기능을 대체하는 메서드 ▼▼▼
+    public void saveLoginSession(String token, Long userId, String email) {
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putString(KEY_ACCESS_TOKEN, token);
+        if (userId != null) {
+            editor.putLong(KEY_USER_ID, userId);
         }
+        if (email != null) {
+            editor.putString(KEY_EMAIL, email);
+        }
+        editor.apply();
     }
 
-    // ---- 기본 API ----
+    // ▼▼▼ AuthManager의 clear 기능을 대체하는 메서드 (모든 정보 삭제) ▼▼▼
+    public void clearSession() {
+        prefs.edit().clear().apply();
+    }
+
+    // ---- 토큰 관련 메서드 ----
     @Nullable
-    public String getToken() { return prefs.getString(KEY_ACCESS_TOKEN, null); }
+    public String getToken() {
+        return prefs.getString(KEY_ACCESS_TOKEN, null);
+    }
 
     public void setToken(@Nullable String token) {
-        if (token == null) prefs.edit().remove(KEY_ACCESS_TOKEN).apply();
-        else prefs.edit().putString(KEY_ACCESS_TOKEN, token).apply();
+        prefs.edit().putString(KEY_ACCESS_TOKEN, token).apply();
     }
 
-    public void clear() { prefs.edit().remove(KEY_ACCESS_TOKEN).apply(); }
+    // ---- 사용자 정보 관련 메서드 ----
+    @Nullable
+    public Long getUserId() {
+        long id = prefs.getLong(KEY_USER_ID, -1L);
+        return id == -1L ? null : id;
+    }
 
-    public boolean isLoggedIn() { return getToken() != null && !getToken().isEmpty(); }
+    @Nullable
+    public String getEmail() {
+        return prefs.getString(KEY_EMAIL, null);
+    }
 
-    // ---- 호환용 별칭(기존 코드와 병행 사용 가능) ----
-    public String get() { return getToken(); }
-    public String getAccessToken() { return getToken(); }
-    public void saveAccessToken(String token) { setToken(token); }
-    public void clearAccessToken() { clear(); }
+    // ---- 로그인 상태 확인 메서드 ----
+    public boolean isLoggedIn() {
+        return getToken() != null && !getToken().isEmpty();
+    }
 }

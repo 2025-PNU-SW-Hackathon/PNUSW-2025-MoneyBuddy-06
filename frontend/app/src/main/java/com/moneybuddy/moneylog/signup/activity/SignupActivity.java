@@ -15,6 +15,7 @@ import android.widget.Toast;
 import com.moneybuddy.moneylog.R;
 import com.moneybuddy.moneylog.common.ApiService;
 import com.moneybuddy.moneylog.common.RetrofitClient;
+import com.moneybuddy.moneylog.login.activity.LoginActivity;
 import com.moneybuddy.moneylog.signup.dto.UserSignupRequest;
 import com.moneybuddy.moneylog.signup.dto.UserSignupResponse;
 import com.google.gson.Gson;
@@ -100,10 +101,10 @@ public class SignupActivity extends AppCompatActivity {
                     if ("success".equals(signupResponse.getStatus())) {
                         // 회원가입 성공
                         showToast(signupResponse.getMessage());
-//                        // 로그인 화면으로 이동
-//                        Intent intent = new Intent(SignupActivity.this, LoginActivity.class);
-//                        startActivity(intent);
-//                        finish(); // 현재 액티비티 종료
+                        // 로그인 화면으로 이동
+                        Intent intent = new Intent(SignupActivity.this, LoginActivity.class);
+                        startActivity(intent);
+                        finish(); // 현재 액티비티 종료
                     } else {
                         // 실패 메시지 띄움
                         showToast(signupResponse.getMessage());

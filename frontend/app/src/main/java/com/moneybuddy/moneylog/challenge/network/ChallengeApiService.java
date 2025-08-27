@@ -21,38 +21,38 @@ import retrofit2.http.POST;
 import retrofit2.http.Path;
 
 public interface ChallengeApiService {
-    @GET("challenge/view/ongoing")
+    @GET("challenges/view/ongoing")
     Call<List<ChallengeCardResponse>> getOngoingChallenges();
 
-    @GET("challenge/view/completed")
+    @GET("challenges/view/completed")
     Call<List<ChallengeCardResponse>> getCompletedChallenges();
 
-    @GET("challenge/shared")
+    @GET("challenges/shared")
     Call<List<ChallengeCardResponse>> getSharedChallenges();
 
-    @GET("challenge/recommended/mobti")
+    @GET("challenges/recommended/mobti")
     Call<List<RecommendedChallengeResponse>> getRecommendedChallenges();
 
 
-    @POST("challenge/ongoing/filter")
+    @POST("challenges/ongoing/filter")
     Call<List<ChallengeCardResponse>> filterOngoingChallenges(@Body ChallengeFilterRequest request);
 
-    @POST("challenge/completed/filter")
+    @POST("challenges/completed/filter")
     Call<List<ChallengeCardResponse>> filterCompletedChallenges(@Body ChallengeFilterRequest request);
 
-    @POST("challenge/shared/filter")
+    @POST("challenges/shared/filter")
     Call<List<ChallengeCardResponse>> filterSharedChallenges(@Body ChallengeFilterRequest request);
 
-    @POST("challenge/recommended/mobti/filter")
+    @POST("challenges/recommended/mobti/filter")
     Call<List<ChallengeCardResponse>> filterRecommendedChallenges(@Body ChallengeFilterRequest request);
 
-    @POST("challenge/create")
+    @POST("challenges/create")
     Call<ResponseBody> createChallenge(@Body ChallengeCreateRequest request);
 
-    @POST("challenge/join")
+    @POST("challenges/join")
     Call<UserChallengeResponse> joinChallenge(@Body UserChallengeRequest request);
 
-    @POST("challenge/status")
+    @POST("challenges/status")
     Call<ChallengeStatusResponse> updateChallengeStatus(
             @Body ChallengeStatusRequest request
     );

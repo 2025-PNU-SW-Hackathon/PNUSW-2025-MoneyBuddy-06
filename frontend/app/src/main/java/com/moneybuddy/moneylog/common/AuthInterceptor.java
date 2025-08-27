@@ -14,7 +14,7 @@ public class AuthInterceptor implements Interceptor {
 
     @Override public Response intercept(Chain chain) throws IOException {
         Request req = chain.request();
-        String token = tokenManager == null ? null : tokenManager.get();
+        String token = tokenManager == null ? null : tokenManager.getToken();
         if (token != null && !token.isEmpty()) {
             req = req.newBuilder()
                     .addHeader("Authorization", "Bearer " + token)

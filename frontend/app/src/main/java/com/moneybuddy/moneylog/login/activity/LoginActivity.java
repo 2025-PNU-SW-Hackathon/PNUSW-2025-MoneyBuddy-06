@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.media.session.MediaSession;
 import android.os.Bundle;
 import android.text.Html;
 import android.widget.Button;
@@ -15,7 +16,7 @@ import com.moneybuddy.moneylog.R;
 import com.moneybuddy.moneylog.login.dto.LoginResponse;
 import com.moneybuddy.moneylog.login.network.AuthRepository;
 import com.moneybuddy.moneylog.main.activity.MainMenuActivity;
-import com.moneybuddy.moneylog.util.AuthManager;
+import com.moneybuddy.moneylog.common.TokenManager;
 
 import com.moneybuddy.moneylog.signup.activity.SignupActivity;
 
@@ -23,7 +24,7 @@ public class LoginActivity extends AppCompatActivity {
 
     private EditText emailInput, passwordInput;
     private Button loginButton;
-    private AuthManager auth;
+    private TokenManager auth;
     private final AuthRepository repo = new AuthRepository();
     private ProgressDialog progress;
 
@@ -41,7 +42,7 @@ public class LoginActivity extends AppCompatActivity {
         });
 
         // ---- 로그인 UI ----
-        auth = new AuthManager(this);
+        auth = new TokenManager(this);
         emailInput = findViewById(R.id.emailInput);
         passwordInput = findViewById(R.id.passwordInput);
         loginButton = findViewById(R.id.loginButton);
@@ -62,7 +63,7 @@ public class LoginActivity extends AppCompatActivity {
             @Override public void onSuccess(LoginResponse data) {
                 showLoading(false);
 
-                auth.saveLogin(data.token, data.userId, data.email);
+                TokenManager.getInstance(getApplicationContext()).saveLoginSession(data.token, data.userId, data.email);
                 Toast.makeText(LoginActivity.this,
                         data.message != null ? data.message : "로그인 성공",
                         Toast.LENGTH_SHORT).show();

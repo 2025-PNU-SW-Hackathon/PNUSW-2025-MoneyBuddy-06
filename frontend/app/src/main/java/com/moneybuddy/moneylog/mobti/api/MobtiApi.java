@@ -12,12 +12,12 @@ import retrofit2.http.POST;
 
 public interface MobtiApi {
 
-    @POST("/api/v1/mobti/submit")
+    @POST("api/v1/mobti/submit")
     Call<MobtiResultDto> submit(@Body MobtiSubmitRequest body);
 
-    @GET("/api/v1/mobti/me/summary")
+    @GET("api/v1/mobti/me/summary")
     Call<MobtiBriefDto> mySummary();
 
-    @GET("/api/v1/mobti/me/details")
+    @GET("api/v1/mobti/me/details")
     Call<MobtiFullDto> myDetails();
 }

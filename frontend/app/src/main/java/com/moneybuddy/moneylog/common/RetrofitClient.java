@@ -20,8 +20,8 @@ public final class RetrofitClient {
     private static volatile Retrofit instance;
 
     // 필요 시 교체
-    private static final String BASE_URL_DEBUG   = "http://10.0.2.2:8080/";
-    private static final String BASE_URL_RELEASE = "https://api.moneylog.app/";
+    private static final String BASE_URL_DEBUG   = "http://172.21.170.228:8080/";
+    private static final String BASE_URL_RELEASE = "http://172.21.170.228:8080/";
 
     private RetrofitClient() {}
 
@@ -39,21 +39,12 @@ public final class RetrofitClient {
                             ? HttpLoggingInterceptor.Level.BODY
                             : HttpLoggingInterceptor.Level.NONE);
 
-                    // 토큰 자동 첨부
-                    Interceptor auth = chain -> {
-                        Request req = chain.request();
-                        String token = TokenManager.getInstance(app).getToken();
-                        if (token != null && !token.isEmpty()) {
-                            req = req.newBuilder()
-                                    .header("Authorization", "Bearer " + token)
-                                    .build();
-                        }
-                        return chain.proceed(req);
-                    };
+                    TokenManager tokenManager = TokenManager.getInstance(app);
+                    AuthInterceptor authInterceptor = new AuthInterceptor(tokenManager);
 
                     OkHttpClient client = new OkHttpClient.Builder()
                             .addInterceptor(log)
-                            .addInterceptor(auth)
+                            .addInterceptor(authInterceptor)
                             .connectTimeout(15, TimeUnit.SECONDS)
                             .readTimeout(20, TimeUnit.SECONDS)
                             .writeTimeout(20, TimeUnit.SECONDS)

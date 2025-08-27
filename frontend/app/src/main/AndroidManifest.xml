@@ -9,7 +9,7 @@
         android:required="false" />
 
     <uses-permission android:name="android.permission.INTERNET" />
-    <!-- Android 13+ 알림 권한 -->
+
     <uses-permission
         android:name="android.permission.POST_NOTIFICATIONS"
         tools:targetApi="33" />
