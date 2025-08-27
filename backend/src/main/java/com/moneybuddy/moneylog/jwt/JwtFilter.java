@@ -16,6 +16,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.util.Collections;
 import java.util.Date;
@@ -78,20 +79,6 @@ public class JwtFilter extends OncePerRequestFilter {
                             .toInstant();
 
                     if (iat == null || iat.toInstant().isBefore(changedAtInstant)) {
-                        unauthorized(response, "로그인이 만료되었습니다. 다시 로그인해 주세요.");
-                        return;
-                    }
-
-                    // iat vs passwordChangedAt 비교
-                    long tokenIssuedAt = Optional.ofNullable(iat)
-                            .map(d -> d.toInstant().toEpochMilli())
-                            .orElse(0L);
-
-                    long passwordChangedAt = Optional.ofNullable(user.getPasswordChangedAt())
-                            .map(dt -> dt.atZone(ZoneOffset.UTC).toInstant().toEpochMilli())
-                            .orElse(0L);
-
-                    if (passwordChangedAt > tokenIssuedAt) {
                         unauthorized(response, "로그인이 만료되었습니다. 다시 로그인해 주세요.");
                         return;
                     }

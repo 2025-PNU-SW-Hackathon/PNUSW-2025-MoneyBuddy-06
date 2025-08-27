@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.ZoneOffset;
 
 @Service
 @RequiredArgsConstructor
@@ -34,18 +35,12 @@ public class UserAccountService {
         }
 
         user.setPassword(passwordEncoder.encode(newPassword));
-        user.setPasswordChangedAt(LocalDateTime.now(ZoneId.of("Asia/Seoul")));
+        user.setPasswordChangedAt(LocalDateTime.now(ZoneOffset.UTC));
 
         // 모든 디바이스 재인증 필요 (다시 로그인하기 전까지 일반 푸시 차단)
         for (UserDeviceToken t : userDeviceTokenRepository.findByUserId(userId)) {
             t.setReauthRequired(true);
         }
-
-        // 비밀번호 변경 시각 기록
-        try {
-            user.getClass().getDeclaredField("passwordChangedAt");
-            user.setPasswordChangedAt(LocalDateTime.now());
-        } catch (NoSuchFieldException ignored) {}
 
         userRepository.save(user);
     }
