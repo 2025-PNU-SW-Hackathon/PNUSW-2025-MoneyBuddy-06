@@ -11,6 +11,8 @@ import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.RadioGroup;
 import android.widget.Toast;
+import android.content.Context;
+import android.content.SharedPreferences;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
@@ -45,7 +47,7 @@ import retrofit2.Response;
 import com.google.android.material.badge.BadgeDrawable;
 import com.google.android.material.badge.BadgeUtils;
 
-public class MainMenuChallengeFragment extends Fragment {
+public class MainMenuChallengeFragment extends Fragment implements ChallengeAdapter.OnRepresentativeChallengeClickListener {
     private ChallengeViewModel viewModel;
     private ChallengeAdapter adapter;
     private SwipeRefreshLayout swipeRefresh;
@@ -116,7 +118,11 @@ public class MainMenuChallengeFragment extends Fragment {
 
         adapter = new ChallengeAdapter(getContext(), (challengeId, isChecked) -> {
             updateStatusToServer(challengeId, isChecked);
-        });
+        }, this);
+
+        SharedPreferences prefs = requireActivity().getSharedPreferences("app_prefs", Context.MODE_PRIVATE);
+        long currentRepId = prefs.getLong("representative_challenge_id", -1L);
+        adapter.setRepresentativeChallengeId(currentRepId);
 
         // 화면 로딩 직후 ongoing이 checked상태이므로 상단에 todolist 표시
         adapter.setShowHeader(true);
@@ -143,7 +149,7 @@ public class MainMenuChallengeFragment extends Fragment {
             } else if (id == R.id.radioButton12) {
                 filter = ChallengeFilter.ONGOING;
                 adapter.setShowHeader(true);
-            } else { // R.id.radioButton13 (완료)
+            } else { // R.id.radioButton13
                 filter = ChallengeFilter.COMPLETED;
                 adapter.setShowHeader(false);
             }
@@ -164,6 +170,19 @@ public class MainMenuChallengeFragment extends Fragment {
         viewModel.isCategoryFilterActive().observe(getViewLifecycleOwner(), isActive -> {
             badge.setVisible(isActive);
         });
+    }
+
+    @Override
+    public void onRepresentativeChallengeClick(Long challengeId) {
+        SharedPreferences prefs = requireActivity().getSharedPreferences("app_prefs", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putLong("representative_challenge_id", challengeId);
+        editor.apply();
+
+        Toast.makeText(getContext(), "대표 챌린지로 설정되었습니다.", Toast.LENGTH_SHORT).show();
+
+        adapter.setRepresentativeChallengeId(challengeId);
+        adapter.notifyDataSetChanged();
     }
 
     private void updateStatusToServer(Long challengeId, boolean isCompleted) {

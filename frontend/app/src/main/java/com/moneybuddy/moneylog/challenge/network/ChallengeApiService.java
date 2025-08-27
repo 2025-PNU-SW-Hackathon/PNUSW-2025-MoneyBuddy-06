@@ -2,6 +2,7 @@ package com.moneybuddy.moneylog.challenge.network;
 
 import com.moneybuddy.moneylog.challenge.dto.ChallengeCardResponse;
 import com.moneybuddy.moneylog.challenge.dto.ChallengeCreateRequest;
+import com.moneybuddy.moneylog.challenge.dto.ChallengeDetailResponse;
 import com.moneybuddy.moneylog.challenge.dto.ChallengeFilterRequest;
 import com.moneybuddy.moneylog.challenge.dto.ChallengeStatusRequest;
 import com.moneybuddy.moneylog.challenge.dto.ChallengeStatusResponse;
@@ -15,42 +16,47 @@ import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
+import retrofit2.http.Header;
 import retrofit2.http.POST;
+import retrofit2.http.Path;
 
 public interface ChallengeApiService {
-    @GET("/view/ongoing")
+    @GET("challenge/view/ongoing")
     Call<List<ChallengeCardResponse>> getOngoingChallenges();
 
-    @GET("/view/completed")
+    @GET("challenge/view/completed")
     Call<List<ChallengeCardResponse>> getCompletedChallenges();
 
-    @GET("/shared")
+    @GET("challenge/shared")
     Call<List<ChallengeCardResponse>> getSharedChallenges();
 
-    @GET("/recommended/mobti")
+    @GET("challenge/recommended/mobti")
     Call<List<RecommendedChallengeResponse>> getRecommendedChallenges();
 
 
-    @POST("/ongoing/filter")
+    @POST("challenge/ongoing/filter")
     Call<List<ChallengeCardResponse>> filterOngoingChallenges(@Body ChallengeFilterRequest request);
 
-    @POST("/completed/filter")
+    @POST("challenge/completed/filter")
     Call<List<ChallengeCardResponse>> filterCompletedChallenges(@Body ChallengeFilterRequest request);
 
-    @POST("/shared/filter")
+    @POST("challenge/shared/filter")
     Call<List<ChallengeCardResponse>> filterSharedChallenges(@Body ChallengeFilterRequest request);
 
-    @POST("/recommended/mobti/filter")
+    @POST("challenge/recommended/mobti/filter")
     Call<List<ChallengeCardResponse>> filterRecommendedChallenges(@Body ChallengeFilterRequest request);
 
-    @POST("/create")
+    @POST("challenge/create")
     Call<ResponseBody> createChallenge(@Body ChallengeCreateRequest request);
 
-    @POST("/join")
+    @POST("challenge/join")
     Call<UserChallengeResponse> joinChallenge(@Body UserChallengeRequest request);
 
-    @POST("/status")
+    @POST("challenge/status")
     Call<ChallengeStatusResponse> updateChallengeStatus(
             @Body ChallengeStatusRequest request
     );
+
+    @GET("/challenges/{challengeId}")
+    Call<ChallengeDetailResponse> getChallengeDetail(@Path("challengeId") Long challengeId);
 }

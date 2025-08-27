@@ -8,6 +8,7 @@ import androidx.lifecycle.MutableLiveData;
 
 import com.moneybuddy.moneylog.challenge.dto.ChallengeCardResponse;
 import com.moneybuddy.moneylog.challenge.dto.ChallengeCreateRequest;
+import com.moneybuddy.moneylog.challenge.dto.ChallengeDetailResponse;
 import com.moneybuddy.moneylog.challenge.dto.RecommendedChallengeResponse;
 import com.moneybuddy.moneylog.challenge.dto.UserChallengeRequest;
 import com.moneybuddy.moneylog.challenge.dto.UserChallengeResponse;
@@ -29,6 +30,7 @@ public class ChallengeViewModel extends AndroidViewModel {
     private final MutableLiveData<List<ChallengeCardResponse>> todoList = new MutableLiveData<>();
     private final MutableLiveData<String> createResult = new MutableLiveData<>();
     private final MutableLiveData<String> joinResult = new MutableLiveData<>();
+    private final MutableLiveData<ChallengeDetailResponse> representativeChallenge = new MutableLiveData<>();
     private ChallengeFilter currentFilter = ChallengeFilter.ONGOING;
 
     private final MutableLiveData<Boolean> _isCategoryFilterActive = new MutableLiveData<>(false);
@@ -46,6 +48,7 @@ public class ChallengeViewModel extends AndroidViewModel {
     public LiveData<Boolean> getIsLoading() { return isLoading; }
     public LiveData<List<ChallengeCardResponse>> getTodoList() { return todoList; }
     public LiveData<String> getCreateResult() { return createResult; }
+    public LiveData<ChallengeDetailResponse> getRepresentativeChallenge() { return representativeChallenge; }
     public LiveData<String> getJoinResult() { return joinResult; }
     public ChallengeFilter getCurrentFilter() { return currentFilter; }
 
@@ -70,6 +73,24 @@ public class ChallengeViewModel extends AndroidViewModel {
             public void onFailure(Call<List<ChallengeCardResponse>> call, Throwable t) {
                 errorMessage.postValue("네트워크 오류: " + t.getMessage());
                 isLoading.postValue(false);
+            }
+        });
+    }
+
+    public void loadRepresentativeChallenge(Long challengeId) {
+        repository.getChallengeDetail(challengeId, new Callback<ChallengeDetailResponse>() {
+            @Override
+            public void onResponse(Call<ChallengeDetailResponse> call, Response<ChallengeDetailResponse> response) {
+                if (response.isSuccessful()) {
+                    representativeChallenge.postValue(response.body());
+                } else {
+                    errorMessage.postValue("대표 챌린지 로드 실패: " + response.code());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ChallengeDetailResponse> call, Throwable t) {
+                errorMessage.postValue("네트워크 오류: " + t.getMessage());
             }
         });
     }

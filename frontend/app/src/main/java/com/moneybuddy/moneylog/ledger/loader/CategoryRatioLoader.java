@@ -16,8 +16,8 @@ public class CategoryRatioLoader {
         void onError(Throwable t);
     }
 
-    public static void load(Context ctx, String token, String ym, OnLoaded cb) {
-        new AnalyticsRepository(ctx, token).getCategoryRatio(ym)
+    public static void load(Context ctx, String ym, OnLoaded cb) {
+        new AnalyticsRepository(ctx).getCategoryRatio(ym)
                 .enqueue(new Callback<CategoryRatioResponse>() {
                     @Override public void onResponse(Call<CategoryRatioResponse> call, Response<CategoryRatioResponse> r) {
                         if (r.isSuccessful() && r.body() != null) cb.onLoaded(r.body());

@@ -130,5 +130,8 @@ dependencies {
     implementation(libs.splashscreen)
     implementation(libs.glide)
     annotationProcessor(libs.glide.compiler)
+
+    implementation("androidx.lifecycle:lifecycle-viewmodel:2.8.2")
+    implementation("androidx.lifecycle:lifecycle-livedata:2.8.2")
 }
 

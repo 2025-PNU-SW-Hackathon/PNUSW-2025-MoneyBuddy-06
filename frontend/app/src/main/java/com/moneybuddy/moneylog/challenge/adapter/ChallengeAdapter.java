@@ -5,8 +5,11 @@ import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.content.res.ColorStateList;
 
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
@@ -32,13 +35,27 @@ public class ChallengeAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 
     private final Context context;
     private final BiConsumer<Long, Boolean> onTodoCheckedListener;
+    private final OnRepresentativeChallengeClickListener repChallengeClickListener;
+
+    // 대표 챌린지 challengeId를 저장할 변수
+    private Long representativeChallengeId = -1L;
+
     private List<Object> items = new ArrayList<>();
     private List<ChallengeCardResponse> todoList = new ArrayList<>();
     private boolean showHeader = false;
 
-    public ChallengeAdapter(Context context, BiConsumer<Long, Boolean> listener) {
+    public ChallengeAdapter(Context context, BiConsumer<Long, Boolean> listener, OnRepresentativeChallengeClickListener repClickListener) {
         this.context = context;
         this.onTodoCheckedListener = listener;
+        this.repChallengeClickListener = repClickListener;
+    }
+
+    public void setRepresentativeChallengeId(Long challengeId) {
+        this.representativeChallengeId = challengeId;
+    }
+
+    public interface OnRepresentativeChallengeClickListener {
+        void onRepresentativeChallengeClick(Long challengeId);
     }
 
 
@@ -63,10 +80,8 @@ public class ChallengeAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             return VIEW_TYPE_TODO_HEADER;
         }
         Object item = items.get(showHeader ? position - 1 : position);
-        if (item instanceof ChallengeCardResponse) {
-            if (((ChallengeCardResponse) item).isJoined()) {
-                return VIEW_TYPE_ONGOING_CHALLENGE;
-            }
+        if (item instanceof ChallengeCardResponse && ((ChallengeCardResponse) item).isJoined()) {
+            return VIEW_TYPE_ONGOING_CHALLENGE;
         }
         return VIEW_TYPE_DEFAULT_CHALLENGE;
     }
@@ -93,7 +108,8 @@ public class ChallengeAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             default:
                 View defaultView = LayoutInflater.from(context).inflate(R.layout.item_challenge, parent, false);
                 return new ChallengeViewHolder(defaultView);
-        }    }
+        }
+    }
 
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
@@ -112,6 +128,7 @@ public class ChallengeAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     class OngoingChallengeViewHolder extends RecyclerView.ViewHolder {
         TextView tvTitle, tvPeriod, tvValue;
         CircularProgressIndicator progressBar;
+        ImageButton btnRepChallenge;
 
         OngoingChallengeViewHolder(@NonNull View v) {
             super(v);
@@ -119,16 +136,16 @@ public class ChallengeAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             tvPeriod = v.findViewById(R.id.tv_challenge_period);
             tvValue = v.findViewById(R.id.tv_challenge_value);
             progressBar = v.findViewById(R.id.progressBar);
+            btnRepChallenge = v.findViewById(R.id.btn_rep_challenge);
         }
 
         void bind(ChallengeCardResponse c) {
             tvTitle.setText(c.getTitle());
             tvPeriod.setText("목표 기간: " + c.getGoalPeriod());
-            tvValue.setText("목표 금액: " + c.getGoalValue() + "원");
+            if (c.getGoalType().equals("금액")) tvValue.setText("목표 금액: " + c.getGoalValue() + "원");
+            else tvValue.setText("목표 횟수: " + c.getGoalValue() + "회"); // 횟수
 
-            // 프로그레스 바 설정
             try {
-                // "7일" 같은 문자열에서 숫자만 추출
                 Pattern pattern = Pattern.compile("\\d+");
                 Matcher matcher = pattern.matcher(c.getGoalPeriod());
                 if (matcher.find()) {
@@ -145,20 +162,34 @@ public class ChallengeAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
                 i.putExtra("challenge", c);
                 context.startActivity(i);
             });
+
+            btnRepChallenge.setOnClickListener(v -> {
+                if (repChallengeClickListener != null) {
+                    repChallengeClickListener.onRepresentativeChallengeClick(c.getChallengeId());
+                }
+            });
+
+            if (c.getChallengeId().equals(representativeChallengeId)) {
+                btnRepChallenge.setForegroundTintList(ColorStateList.valueOf(ContextCompat.getColor(context, R.color.black)));
+            } else {
+                btnRepChallenge.setForegroundTintList(null);
+            }
         }
     }
 
     class ChallengeViewHolder extends RecyclerView.ViewHolder {
-        TextView tvTitle, tvPeriod;
+        TextView tvTitle, tvPeriod, tvValue;
+        ImageView ivCategory;
         LinearLayout layout;
 
         ChallengeViewHolder(@NonNull View v) {
             super(v);
             tvTitle = v.findViewById(R.id.tv_challenge_title);
             tvPeriod = v.findViewById(R.id.tv_challenge_period);
+            tvValue = v.findViewById(R.id.tv_challenge_value);
+            ivCategory = v.findViewById(R.id.iv_category);
             layout = v.findViewById(R.id.challenge_item_layout);
         }
-
         void bind(Object item) {
             if (item instanceof ChallengeCardResponse) {
                 ChallengeCardResponse c = (ChallengeCardResponse) item;
