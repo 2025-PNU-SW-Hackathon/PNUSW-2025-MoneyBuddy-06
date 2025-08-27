@@ -1,0 +1,4 @@
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:state_checked="true" android:color="#2F5FEA"/>  <!-- 선택: 파란 글자 -->
+    <item android:color="#4E6B2A"/>                               <!-- 기본: 진녹 글자 -->
+</selector>

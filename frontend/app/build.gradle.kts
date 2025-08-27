@@ -12,8 +12,23 @@ android {
         targetSdk = 35
         versionCode = 1
         versionName = "1.0"
-
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        //VectorDrawable 설정
+        vectorDrawables { useSupportLibrary = true }
+
+        // 로컬/CI에서 주입할 Firebase 옵션 (없으면 빈 문자열)
+        val fbApiKey    = (project.findProperty("FB_API_KEY")    as? String) ?: ""
+        val fbAppId     = (project.findProperty("FB_APP_ID")     as? String) ?: ""
+        val fbProjectId = (project.findProperty("FB_PROJECT_ID") as? String) ?: ""
+        val fbSenderId  = (project.findProperty("FB_SENDER_ID")  as? String) ?: ""
+        val fbStorage   = (project.findProperty("FB_STORAGE")    as? String) ?: ""
+
+        buildConfigField("String", "FB_API_KEY",    "\"$fbApiKey\"")
+        buildConfigField("String", "FB_APP_ID",     "\"$fbAppId\"")
+        buildConfigField("String", "FB_PROJECT_ID", "\"$fbProjectId\"")
+        buildConfigField("String", "FB_SENDER_ID",  "\"$fbSenderId\"")
+        buildConfigField("String", "FB_STORAGE",    "\"$fbStorage\"")
     }
 
     buildTypes {
@@ -25,6 +40,12 @@ android {
             )
         }
     }
+
+    buildFeatures {
+        buildConfig = true
+    }
+
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
@@ -32,12 +53,85 @@ android {
 }
 
 dependencies {
-
     implementation(libs.appcompat)
     implementation(libs.material)
     implementation(libs.activity)
     implementation(libs.constraintlayout)
+    implementation("androidx.recyclerview:recyclerview:1.3.2")
+    implementation("androidx.coordinatorlayout:coordinatorlayout:1.2.0")
+
+    implementation("androidx.appcompat:appcompat:1.7.1")
+    implementation("androidx.activity:activity:1.10.1")
+    implementation("androidx.constraintlayout:constraintlayout:2.2.1")
+    implementation("androidx.appcompat:appcompat:1.7.1")
+    implementation("com.google.android.material:material:1.12.0")
+    implementation("androidx.activity:activity:1.10.1")
+    implementation("androidx.constraintlayout:constraintlayout:2.2.1")
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
+
+    implementation("androidx.recyclerview:recyclerview:1.4.0")
+
+
+    // Retrofit, okhttp
+    // Retrofit/OkHttp (중복 제거해서 최신만 사용)
+    implementation("com.squareup.retrofit2:retrofit:2.11.0")
+    implementation("com.squareup.retrofit2:converter-gson:2.11.0")
+    implementation("com.squareup.okhttp3:okhttp:4.12.0")
+    implementation("com.squareup.okhttp3:logging-interceptor:4.12.0")
+
+    //  Firebase Cloud Messaging (google-services 플러그인 없이 사용)
+    implementation(platform("com.google.firebase:firebase-bom:32.7.4"))
+    implementation("com.google.firebase:firebase-messaging")
+
+// ⚠ google-services 플러그인은 사용하지 않습니다 (파일 없이 코드 초기화하므로).
+    implementation("androidx.viewpager2:viewpager2:1.1.0")
+
+    // Retrofit
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
+    implementation(libs.retrofit)
+    implementation(libs.retrofit.converter.gson)
+
+    implementation(libs.material)
+
+    // swiprefreshlayout (fragment_main_menu_challenge.xml에서 사용)
+    implementation ("androidx.swiperefreshlayout:swiperefreshlayout:1.1.0")
+
+    // paging
+    implementation("androidx.paging:paging-runtime:3.2.1")
+    implementation("androidx.paging:paging-rxjava3:3.2.1")
+
+    implementation("androidx.lifecycle:lifecycle-reactivestreams:2.6.2")
+
+    compileOnly("org.projectlombok:lombok:1.18.32")
+    annotationProcessor("org.projectlombok:lombok:1.18.32")
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
+
+    implementation("com.squareup.okhttp3:okhttp:4.12.0")
+    implementation("com.squareup.okhttp3:logging-interceptor:4.12.0")
+
+    testImplementation("junit:junit:4.13.2")
+    testImplementation("com.squareup.okhttp3:mockwebserver:4.12.0")
+    testImplementation("com.google.truth:truth:1.4.2")
+    testImplementation("com.squareup.retrofit2:converter-gson:2.11.0")
+    testImplementation("com.squareup.retrofit2:retrofit:2.11.0")
+    testImplementation("org.robolectric:robolectric:4.12.2")
+
+
+    implementation("androidx.appcompat:appcompat:1.7.0")
+    implementation("com.google.android.material:material:1.12.0")
+
+    implementation("com.squareup.retrofit2:retrofit:2.11.0")
+    implementation("com.squareup.retrofit2:converter-gson:2.11.0")
+    implementation("com.squareup.okhttp3:okhttp:4.12.0")
+    implementation(libs.splashscreen)
+    implementation(libs.glide)
+    annotationProcessor(libs.glide.compiler)
+
+    implementation("androidx.lifecycle:lifecycle-viewmodel:2.8.2")
+    implementation("androidx.lifecycle:lifecycle-livedata:2.8.2")
 }
+

@@ -1,9 +1,40 @@
-<resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Base application theme. -->
-    <style name="Base.Theme.Moneylog" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Customize your light theme here. -->
-        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+<resources xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Base app theme -->
+    <style name="Base.Theme.Moneylog" parent="Theme.Material3.Light.NoActionBar">
     </style>
 
-    <style name="Theme.Moneylog" parent="Base.Theme.Moneylog" />
+    <!-- 앱 공통 테마: Material3 사용 -->
+    <style name="Theme.Moneylog" parent="Theme.Material3.Light.NoActionBar">
+
+        <item name="colorPrimary">@color/sage_600</item>
+        <item name="colorSecondary">@color/sage_500</item>
+
+        <!-- 상태바 가독성 -->
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:windowLightStatusBar">true</item>
+    </style>
+
+
+
+    <style name="ShapeAppearanceOverlay.Material3.FloatingActionButton.Round">
+        <item name="cornerSize">50%</item>
+    </style>
+
+
+    <style name="Theme.MoneyBuddy" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+    </style>
+
+    <style name="Theme.Splash" parent="Theme.AppCompat.NoActionBar">
+        <item name="android:windowBackground">@drawable/splash_background</item>
+    </style>
+
+    <style name="Theme.App.Starting" parent="Theme.Splash">
+        <item name="windowSplashScreenBackground">@color/background</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/splash_logo</item>
+        <item name="postSplashScreenTheme">@style/Theme.Moneylog</item>
+    </style>
 </resources>
+
+

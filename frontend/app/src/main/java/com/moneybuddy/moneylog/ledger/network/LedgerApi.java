@@ -1,0 +1,59 @@
+package com.moneybuddy.moneylog.ledger.network;
+
+import com.moneybuddy.moneylog.ledger.dto.response.CategoryRatioResponse;
+import com.moneybuddy.moneylog.ledger.dto.request.AutoLedgerRequest;
+import com.moneybuddy.moneylog.ledger.dto.response.AutoLedgerResponse;
+import com.moneybuddy.moneylog.ledger.dto.response.BudgetGoalDto;
+import com.moneybuddy.moneylog.ledger.dto.request.LedgerCreateRequest;
+import com.moneybuddy.moneylog.ledger.dto.response.LedgerDayResponse;
+import com.moneybuddy.moneylog.ledger.dto.response.LedgerEntryDto;
+import com.moneybuddy.moneylog.ledger.dto.response.LedgerMonthResponse;
+import com.moneybuddy.moneylog.ledger.dto.response.OcrResultDto;
+
+import okhttp3.MultipartBody;
+import retrofit2.Call;
+import retrofit2.http.*;
+
+public interface LedgerApi {
+
+    // 수동 작성/수정/삭제 (이미 존재한다고 하셔서 유지)
+    @POST("/api/ledger")
+    Call<WrappedEntry> create(@Body LedgerCreateRequest body);
+
+    @PUT("/api/ledger/{id}")
+    Call<WrappedEntry> update(@Path("id") long id, @Body LedgerCreateRequest body);
+
+    @DELETE("/api/ledger/{id}")
+    Call<Void> delete(@Path("id") long id);
+    class WrappedEntry {
+        public String status;
+        public LedgerEntryDto entry;
+    }
+
+    // 월/일 요약
+    @GET("/api/ledger/month")
+    Call<LedgerMonthResponse> getMonth(@Query("ym") String yearMonth); // "YYYY-MM"
+
+    @GET("/api/ledger/day")
+    Call<LedgerDayResponse> getDay(@Query("date") String date); // "YYYY-MM-DD"
+
+    // 자동 작성: 인앱 알림 텍스트 파싱
+    @POST("/api/ledger/auto")
+    Call<AutoLedgerResponse> postAuto(@Body AutoLedgerRequest body);
+
+    // 영수증 OCR 업로드 (Multipart)
+    @Multipart
+    @POST("/api/receipt/ocr")
+    Call<OcrResultDto> uploadReceipt(@Part MultipartBody.Part file);
+
+    // 예산 목표 업서트/조회
+    @PUT("/budget-goal")
+    Call<BudgetGoalDto> putBudgetGoal(@Query("ym") String yearMonth, @Body BudgetGoalDto body);
+
+    @GET("/budget-goal")
+    Call<BudgetGoalDto> getBudgetGoal(@Query("ym") String yearMonth);
+
+    // 카테고리 비율
+    @GET("/analytics/category-ratio")
+    Call<CategoryRatioResponse> getCategoryRatio(@Query("ym") String yearMonth);
+}

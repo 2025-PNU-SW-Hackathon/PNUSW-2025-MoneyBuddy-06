@@ -1,5 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <color name="cream_050">#FFFDF6</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="green">#86935A</color>
+    <color name="pink">#F5DFDF</color>
+    <color name="gray">#D9D9D9</color>
+    <color name="darker_gray">#757575</color>
+
+    <color name="radio_unchecked_button">#F5F3DF</color>
+    <color name="radio_checked_button">#C4C9B3</color>
+
+    <color name="my_challenge_color">#C1D194</color>
+    <color name="other_challenge_color">#F5F3DF</color>
+    <color name="red">#FF0000</color>
+
+    // signup-ui
+    <color name="text_input_box_stroke">#86935A</color>
+    <color name="food">#FCA5A5</color>            <!-- Red  → Pastel Red -->
+    <color name="cafe_bakery">#FDBA74</color>     <!-- Orange → Pastel Orange -->
+    <color name="transport">#FDE047</color>       <!-- Yellow → Pastel Yellow -->
+    <color name="culture_leisure">#86EFAC</color> <!-- Green  → Pastel Green -->
+    <color name="healthcare">#93C5FD</color>      <!-- Blue   → Pastel Blue -->
+    <color name="clothing_beauty">#A5B4FC</color> <!-- Indigo → Pastel Indigo -->
+    <color name="other">#D8B4FE</color>
+    <color name="bar_remainder">#FFE0E0E0</color>
+    <color name="sage_050">#F2F6EA</color>
+    <color name="sage_100">#E6EFCC</color>
+    <color name="sage_200">#DCE7C7</color>
+    <color name="sage_300">#C6D77E</color>
+    <color name="sage_500">#9FBE6A</color>
+    <color name="sage_600">#7FA84E</color>
+    <color name="sage_800">#4E6B2A</color>
+    <color name="button_light_green">#CFE4A2</color>
+    <color name="background">#FFFEF7</color>
+    <color name="switch_green_color">#86935A</color>
+    <color name="my_button_green">#4CAF50</color>
+    <color name="light_green_background">#E6F1DE</color>
+    <color name="home_top_icon_tint">#2F2F2F</color>
+    <color name="line_soft">#33000000</color> <!-- 20% 투명 블랙: 아주 은은한 선 -->
+
 </resources>
