@@ -19,11 +19,9 @@ public class Notice {
     // 이동 정보
     public String action;
 
-    // ✅ 추가: 서버가 내려주는 경로 조립용 파라미터 (없을 수 있음)
     @Nullable
     public Map<String, Object> params;
 
-    // 서버가 직접 내려주는 딥링크 (있으면 이걸 우선 사용)
     @Nullable
     public String deeplink;
 }

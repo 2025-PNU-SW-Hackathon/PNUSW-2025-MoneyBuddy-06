@@ -20,8 +20,8 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.moneybuddy.moneylog.R;
-import com.moneybuddy.moneylog.ledger.activity.GraphActivity;            // ✅ import 추가
-import com.moneybuddy.moneylog.ledger.activity.LedgerWriteActivity;    // ✅ import 추가
+import com.moneybuddy.moneylog.ledger.activity.GraphActivity;
+import com.moneybuddy.moneylog.ledger.activity.LedgerWriteActivity;
 import com.moneybuddy.moneylog.ledger.adapter.CalendarAdapter;
 import com.moneybuddy.moneylog.ledger.domain.CalendarGridBuilder;
 import com.moneybuddy.moneylog.ledger.model.LedgerDayData;

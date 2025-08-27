@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.moneybuddy.moneylog">
 
-    <!-- ───── Features & Permissions ───── -->
+    <!-- Features & Permissions -->
     <uses-feature
         android:name="android.hardware.camera"
         android:required="false" />
@@ -34,7 +34,7 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
 
-        <!-- ───── Entry / Splash ───── -->
+        <!--Entry / Splash-->
         <activity
             android:name=".intro.activity.IntroActivity"
             android:exported="true"
@@ -46,46 +46,46 @@
             </intent-filter>
         </activity>
 
-        <!-- ───── Auth ───── -->
+        <!-- Auth -->
         <activity android:name=".login.activity.LoginActivity" />
         <activity android:name=".signup.activity.SignupActivity" />
 
-        <!-- ───── Main / Host ───── -->
+        <!--Main / Host -->
         <activity
             android:name=".main.activity.MainMenuActivity"
             android:exported="true" />
 
-        <!-- ───── Ledger ───── -->
+        <!--Ledger-->
         <activity android:name=".ledger.activity.LedgerWriteActivity" />
         <activity android:name=".ledger.activity.LedgerDetailActivity" />
         <activity
             android:name=".ledger.activity.GraphActivity"
             android:parentActivityName=".main.activity.MainMenuActivity" />
 
-        <!-- ───── Challenge ───── -->
+        <!--Challenge-->
         <activity android:name=".challenge.activity.ChallengeCreateActivity" />
         <activity android:name=".challenge.activity.ChallengeCategoryActivity" />
         <activity android:name=".challenge.activity.ChallengeDetailActivity" />
 
-        <!-- ───── Mobti ───── -->
+        <!--Mobti-->
         <activity android:name=".mobti.activity.MobtiIntroActivity" />
         <activity android:name=".mobti.activity.MobtiSurveyActivity" />
         <activity android:name=".mobti.activity.MobtiResultActivity" />
         <activity android:name=".mobti.activity.MobtiActivity" />
 
-        <!-- ───── My Page ───── -->
+        <!--My Page-->
         <activity
             android:name=".mypage.activity.MypageActivity"
             android:exported="false" />
         <activity android:name=".mypage.activity.ChangePasswordActivity" />
 
-        <!-- ───── Notification (Activity) ───── -->
+        <!--Notification (Activity)-->
         <activity
             android:name=".notification.activity.NotificationActivity"
             android:exported="false"
             android:label="@string/app_name" />
 
-        <!-- ───── Provider ───── -->
+        <!--Provider-->
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.fileprovider"
@@ -96,7 +96,7 @@
                 android:resource="@xml/file_paths" />
         </provider>
 
-        <!-- ───── Services ───── -->
+        <!--Services-->
         <!-- 카드/결제 알림 수집용 -->
         <service
             android:name=".ledger.service.CardNotificationListenerService"

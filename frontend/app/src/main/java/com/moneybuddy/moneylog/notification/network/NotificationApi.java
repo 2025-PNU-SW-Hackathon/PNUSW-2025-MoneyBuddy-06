@@ -11,7 +11,7 @@ import retrofit2.http.Query;
 
 public interface NotificationApi {
 
-    // ✅ items + nextCursor 래핑
+    //  items + nextCursor 래핑
     @GET("/api/notifications")
     Call<ListResponse> getNotifications(
             @Query("cursor") Long cursor,

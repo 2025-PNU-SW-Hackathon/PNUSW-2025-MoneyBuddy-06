@@ -23,9 +23,9 @@ public class NotificationRepository {
     }
 
 
-    // ======================
+
     // 목록/카운트 조회
-    // ======================
+
 
     public void getNotifications(@Nullable Long cursor, @Nullable Integer size,
                                  Callback<ListResponse> cb) {
@@ -36,9 +36,9 @@ public class NotificationRepository {
         api.getUnreadCount().enqueue(cb);
     }
 
-    // ======================
+
     // 읽음 처리
-    // ======================
+
 
     public void markRead(long id, @Nullable Runnable onDone) {
         api.markRead(id).enqueue(new retrofit2.Callback<Void>() {
@@ -51,7 +51,7 @@ public class NotificationRepository {
         });
     }
 
-    /** 기존 호출부 호환용(에러 해결): 내부적으로 markRead로 위임 */
+
     public void markAsRead(long id) {
         markRead(id, null);
     }
@@ -67,7 +67,6 @@ public class NotificationRepository {
         });
     }
 
-    // 클래스 안 어딘가에 추가
     public void markAllRead(retrofit2.Callback<Void> cb) {
         api.markAllRead().enqueue(cb);
     }

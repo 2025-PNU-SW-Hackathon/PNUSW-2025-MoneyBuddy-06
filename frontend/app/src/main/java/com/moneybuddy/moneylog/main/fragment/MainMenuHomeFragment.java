@@ -57,7 +57,7 @@ public class MainMenuHomeFragment extends Fragment {
         bellBtn.setMinHeight(0);
         bellBtn.setPadding(0, 0, 0, 0);
 
-        // ✅ 실서버 레포
+        // 실서버 레포
         repo = new NotificationRepository(requireContext());
 
         // 숫자 없는 점 배지 + 위치 미세조정

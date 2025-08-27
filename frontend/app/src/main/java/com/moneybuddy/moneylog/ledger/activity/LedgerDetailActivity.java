@@ -1,6 +1,5 @@
 package com.moneybuddy.moneylog.ledger.activity;
 
-// ✅ minSdk 24 대응 - LocalDate 대신 Calendar 사용
 
 import android.graphics.Color;
 import android.os.Bundle;
@@ -28,7 +27,6 @@ import java.util.Locale;
 
 import android.content.Intent;
 
-// ▼▼▼ 백엔드 연동 추가 import
 import com.moneybuddy.moneylog.ledger.repository.LedgerRepository;
 import com.moneybuddy.moneylog.ledger.dto.response.LedgerDayResponse;
 import com.moneybuddy.moneylog.ledger.dto.response.LedgerEntryDto;
@@ -47,7 +45,6 @@ public class LedgerDetailActivity extends AppCompatActivity {
     private Calendar selectedDate;
     private final SimpleDateFormat iso = new SimpleDateFormat("yyyy-MM-dd", Locale.KOREA);
 
-    // ▼▼▼ 레포지토리 추가
     private LedgerRepository ledgerRepo;
 
     @Override
@@ -75,7 +72,7 @@ public class LedgerDetailActivity extends AppCompatActivity {
         // 3) 주간 날짜 칩 UI
         setupWeekDays(selectedDate);
 
-        // 4) 레포지토리 준비(토큰 가져오는 부분은 앱 로직에 맞게 교체)
+        // 4) 레포지토리 준비
         ledgerRepo = new LedgerRepository(this, token());
 
         // 5) 최초 로드
@@ -140,7 +137,6 @@ public class LedgerDetailActivity extends AppCompatActivity {
         }
     }
 
-    // ▼▼▼ 여기서부터 "일별 로드/바인딩" 추가
 
     /** 날짜별 데이터 로드 */
     private void loadDay(String date) {
@@ -177,7 +173,6 @@ public class LedgerDetailActivity extends AppCompatActivity {
 
 
 
-    /** 서버 응답을 화면에 바인딩 */
     private void bindDay(LedgerDayResponse dto) {
         long income  = dto.totalIncome  == null ? 0 : dto.totalIncome;
         long expense = dto.totalExpense == null ? 0 : dto.totalExpense;
@@ -191,7 +186,7 @@ public class LedgerDetailActivity extends AppCompatActivity {
                 String time = (e.dateTime != null && e.dateTime.length() >= 16)
                         ? e.dateTime.substring(11, 16) : "";
 
-                // 2) 제목(상호명 우선, 없으면 카테고리/메모)
+                // 2) 제목
                 String title = !isEmpty(e.store) ? e.store
                         : !isEmpty(e.description) ? e.description
                         : !isEmpty(e.category) ? e.category
@@ -201,19 +196,19 @@ public class LedgerDetailActivity extends AppCompatActivity {
                 String category = e.category == null ? "" : e.category;
                 String asset    = e.asset == null ? "" : e.asset;
 
-                // 4) 금액/타입 (서버: 지출 음수, 수입 양수 응답)
+                // 4) 금액/타입
                 int amountInt   = safeToInt(e.amount);  // long -> int 안전 변환
                 Type type       = (e.amount >= 0) ? Type.INCOME : Type.EXPENSE;
 
-                // 5) groupId는 화면 섹션 구분용 – 필요에 맞게 값 지정
+
                 String groupId  = "DAY";
 
-                // ★ 새 생성자 사용: (time, title, category, asset, amount, type, groupId)
+
                 Transaction t = new Transaction(time, title, category, asset, amountInt, type, groupId);
                 list.add(t);
             }
         }
-        // ✔ 합계 숫자/색상 동시 반영
+
         setDayTotal(net);
         bindList(list);
     }

@@ -3,6 +3,7 @@ package com.moneybuddy.moneylog.ledger.activity;
 import android.Manifest;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
@@ -48,9 +49,7 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
 
-/**
- * 가계부 작성/수정 화면
- */
+
 public class LedgerWriteActivity extends AppCompatActivity {
 
     // ===== UI =====
@@ -113,7 +112,7 @@ public class LedgerWriteActivity extends AppCompatActivity {
         initDateTimePickers();
         initTypeSwitching();
         readIntentExtrasIfEdit(); // 편집 모드면 값 주입
-        applyModeUI();            // 라디오 상태에 맞게 UI 정리
+        applyModeUI();            // UI 정리
         initReceiptLaunchers();   // 영수증 분석 런처/권한
 
         // 4) 버튼 리스너
@@ -145,7 +144,6 @@ public class LedgerWriteActivity extends AppCompatActivity {
         btnSave = findViewById(R.id.btn_save);
         btnAnalyzeReceipt = findViewById(R.id.btn_analyze_receipt);
 
-        // 옵션: 레이아웃에 있으면 자동 탐색
         etCustomCategory = findOptionalEditTextByName("edit_custom_category", "tv_custom_category", "et_custom_category");
         etCustomAsset = findOptionalEditTextByName("edit_custom_asset", "tv_custom_asset", "et_custom_asset");
 
@@ -437,7 +435,7 @@ public class LedgerWriteActivity extends AppCompatActivity {
         body.description = memo;
 
         if (isEditMode && editingId > 0) {
-            // -------- 수정(Update) --------
+
             ledgerRepo.update(editingId, body); // ✔️ 레포 시그니처: (id, body)
             Toast.makeText(this, "수정 요청 보냈습니다", Toast.LENGTH_SHORT).show();
             setResult(RESULT_OK);
@@ -520,7 +518,6 @@ public class LedgerWriteActivity extends AppCompatActivity {
         analyzeReceipt(uri);
     }
 
-    /** 백엔드 연동: 영수증 OCR 업로드 → 결과를 입력칸에 바인딩 */
     private void analyzeReceipt(Uri imageUri) {
         try {
             // 영수증 분석 로직
@@ -567,15 +564,29 @@ public class LedgerWriteActivity extends AppCompatActivity {
 
     // ───────────────────── 유틸 ─────────────────────
 
-    // TODO: 실제 앱의 토큰 저장소에서 JWT를 꺼내도록 교체
-    private String token() { return "YOUR_JWT_TOKEN"; }
+    private String token() {
+        String t = com.moneybuddy.moneylog.common.TokenManager
+                .getInstance(getApplicationContext())
+                .getToken();
 
-    private void selectSpinnerItemByValue(Spinner spinner, String value) {
-        if (spinner.getAdapter() == null || TextUtils.isEmpty(value)) return;
-        for (int i = 0; i < spinner.getAdapter().getCount(); i++) {
-            Object o = spinner.getAdapter().getItem(i);
-            if (o != null && value.equals(o.toString())) {
-                spinner.setSelection(i);
+        if (t == null || t.isEmpty()) {
+            SharedPreferences sp = getSharedPreferences("auth", MODE_PRIVATE);
+            t = sp.getString("token", null);
+            if (t == null) t = sp.getString("jwt", "");
+        }
+        return t == null ? "" : t;
+    }
+
+    private void selectSpinnerItemByValue(android.widget.Spinner spinner, String value) {
+        if (spinner == null || spinner.getAdapter() == null || android.text.TextUtils.isEmpty(value)) return;
+
+        String target = value.trim();
+        int count = spinner.getAdapter().getCount();
+        for (int i = 0; i < count; i++) {
+            Object item = spinner.getAdapter().getItem(i);
+            String text = (item == null) ? "" : String.valueOf(item);
+            if (target.equals(text)) {
+                if (spinner.getSelectedItemPosition() != i) spinner.setSelection(i, false);
                 return;
             }
         }
