@@ -13,8 +13,11 @@ import com.moneybuddy.moneylog.challenge.dto.RecommendedChallengeResponse;
 import com.moneybuddy.moneylog.challenge.dto.UserChallengeRequest;
 import com.moneybuddy.moneylog.challenge.dto.UserChallengeResponse;
 import com.moneybuddy.moneylog.challenge.model.ChallengeFilter;
+import com.moneybuddy.moneylog.challenge.network.ChallengeApiService;
 import com.moneybuddy.moneylog.common.ApiClient;
 import com.moneybuddy.moneylog.challenge.repository.ChallengeRepository;
+import com.moneybuddy.moneylog.common.RetrofitClient;
+
 import java.util.ArrayList;
 import java.util.List;
 import okhttp3.ResponseBody;
@@ -39,7 +42,8 @@ public class ChallengeViewModel extends AndroidViewModel {
 
     public ChallengeViewModel(@NonNull Application application) {
         super(application);
-        this.repository = new ChallengeRepository(ApiClient.getApiService(application));
+        ChallengeApiService apiService = RetrofitClient.getService(application, ChallengeApiService.class);
+        this.repository = new ChallengeRepository(apiService);
         loadChallenges();
     }
 

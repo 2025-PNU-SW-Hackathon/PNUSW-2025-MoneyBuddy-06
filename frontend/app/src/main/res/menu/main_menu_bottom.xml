@@ -8,7 +8,6 @@
         android:id="@+id/menu_home"
         android:icon="@drawable/menu_home"
         android:title="홈"/>
-
     <item
         android:id="@+id/menu_ledger"
         android:icon="@drawable/menu_ledger"
