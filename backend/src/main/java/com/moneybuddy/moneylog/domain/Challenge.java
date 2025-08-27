@@ -22,13 +22,20 @@ public class Challenge {
     private String goalType;
     private Integer goalValue;
 
-    private Boolean isSystemGenerated;
-    private Boolean isShared;
+    @Builder.Default
+    @Column(nullable = false)
+    private boolean isSystemGenerated = false;
 
     @Builder.Default
     @Column(nullable = false)
-    private Boolean isAccountLinked = false;
+    private boolean isShared = false;
+
+    @Builder.Default
+    @Column(nullable = false)
+    private boolean isAccountLinked = false;
+
     private Long createdBy;
+
 
     private String mobtiType;
 

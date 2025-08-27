@@ -75,11 +75,11 @@ public class UserChallengeService {
                 .goalPeriod(c.getGoalPeriod())
                 .goalType(c.getGoalType())
                 .goalValue(c.getGoalValue())
-                .isAccountLinked(c.getIsAccountLinked())
-                .isShared(c.getIsShared())
+                .isAccountLinked(c.isAccountLinked())
+                .isShared(c.isShared())
                 .joinedAt(userChallenge.getJoinedAt())
-                .completed(userChallenge.getCompleted())
-                .rewarded(userChallenge.getRewarded())
+                .completed(userChallenge.isCompleted())
+                .rewarded(userChallenge.isRewarded())
                 .build();
     }
 
@@ -104,7 +104,7 @@ public class UserChallengeService {
                 .goalPeriod(c.getGoalPeriod())
                 .goalValue(c.getGoalValue())
                 .completed(false)
-                .success(null)
+                .success(false)
                 .build();
     }
 
@@ -164,7 +164,7 @@ public class UserChallengeService {
                         return "저축".equals(c.getCategory());
                     } else if ("지출".equals(req.getType())) {
                         boolean cat = req.getCategory() == null || req.getCategory().equals(c.getCategory());
-                        boolean acc = req.getIsAccountLinked() == null || req.getIsAccountLinked().equals(c.getIsAccountLinked());
+                        boolean acc = req.getIsAccountLinked() == null || req.getIsAccountLinked().equals(c.isAccountLinked());
                         return cat && acc;
                     }
 
@@ -195,7 +195,7 @@ public class UserChallengeService {
                         return "저축".equals(c.getCategory());
                     } else if ("지출".equals(req.getType())) {
                         boolean cat = req.getCategory() == null || req.getCategory().equals(c.getCategory());
-                        boolean acc = req.getIsAccountLinked() == null || req.getIsAccountLinked().equals(c.getIsAccountLinked());
+                        boolean acc = req.getIsAccountLinked() == null || req.getIsAccountLinked().equals(c.isAccountLinked());
                         return cat && acc;
                     }
 
@@ -216,7 +216,7 @@ public class UserChallengeService {
         for (UserChallenge uc : ongoing) {
             Challenge c = uc.getChallenge();
 
-            if (c.getIsAccountLinked() == null || !c.getIsAccountLinked()) continue;
+            if (!c.isAccountLinked()) continue;
 
             boolean isSuccess = evaluateChallenge(c, userId);
 
@@ -264,7 +264,7 @@ public class UserChallengeService {
      *  챌린지 제목에 따라 조건 분기
      */
     public boolean evaluateChallenge(Challenge challenge, Long userId) {
-        if (!challenge.getIsAccountLinked()) return false;
+        if (!challenge.isAccountLinked()) return false;
 
         LocalDate end = LocalDate.now();
         LocalDate start = end.minusDays(parseGoalPeriod(challenge.getGoalPeriod()));
