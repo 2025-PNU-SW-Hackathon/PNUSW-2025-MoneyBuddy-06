@@ -119,36 +119,32 @@
                     </com.google.android.material.textfield.TextInputLayout>
 
                 <!-- 4. 챌린지 제목 -->
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="챌린지 제목"
-                    android:layout_marginTop="16dp"/>
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/layout_challenge_title"
-                    style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
-                    android:layout_width="match_parent"
-                    android:layout_height="50dp"
-                    android:layout_marginTop="5dp"
-                    app:boxCornerRadiusBottomEnd="10dp"
-                    app:boxCornerRadiusBottomStart="10dp"
-                    app:boxCornerRadiusTopEnd="10dp"
-                    app:boxCornerRadiusTopStart="10dp"
-                    app:boxBackgroundColor="@color/white"
-                    app:boxStrokeColor="@color/text_input_box_stroke_color"
-                    app:counterEnabled="true"
-                    app:counterMaxLength="20"
-                    android:textColorHint="@color/darker_gray"
-                    app:hintTextColor="@color/darker_gray">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="챌린지 제목"
+                android:layout_marginTop="16dp"/>
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/layout_challenge_title"
+                style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_marginTop="5dp"
+                app:boxCornerRadiusBottomEnd="10dp"
+                app:boxCornerRadiusBottomStart="10dp"
+                app:boxCornerRadiusTopEnd="10dp"
+                app:boxCornerRadiusTopStart="10dp"
+                app:boxBackgroundColor="@color/white"
+                app:boxStrokeColor="@color/text_input_box_stroke_color">
 
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/input_challenge_title"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:maxLength="20"
-                        android:hint="20자 이하로 작성해주세요."
-                        android:padding="0dp"/>
-                </com.google.android.material.textfield.TextInputLayout>
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/input_challenge_title"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:inputType="number"
+                    android:padding="0dp"/>
+            </com.google.android.material.textfield.TextInputLayout>
+
 
                 <!-- 5. 챌린지 소개 -->
                 <TextView
@@ -183,32 +179,31 @@
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <!-- 6. 목표 기간 -->
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="목표 기간"
-                    android:layout_marginTop="16dp"/>
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/layout_goal_period"
-                    style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
-                    android:layout_width="match_parent"
-                    android:layout_height="50dp"
-                    app:boxStrokeColor="@color/text_input_box_stroke_color"
-                    android:background="@color/white"
-                    android:layout_marginTop="5dp"
-                    app:boxCornerRadiusBottomEnd="10dp"
-                    app:boxCornerRadiusBottomStart="10dp"
-                    app:boxCornerRadiusTopEnd="10dp"
-                    app:boxCornerRadiusTopStart="10dp">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="목표 기간"
+                android:layout_marginTop="16dp"/>
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/layout_goal_period"
+                style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_marginTop="5dp"
+                app:boxCornerRadiusBottomEnd="10dp"
+                app:boxCornerRadiusBottomStart="10dp"
+                app:boxCornerRadiusTopEnd="10dp"
+                app:boxCornerRadiusTopStart="10dp"
+                app:boxBackgroundColor="@color/white"
+                app:boxStrokeColor="@color/text_input_box_stroke_color">
 
-                    <AutoCompleteTextView
-                        android:id="@+id/dropdown_goal_period"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:inputType="none"
-                        tools:ignore="LabelFor"
-                        android:padding="0dp"/>
-                </com.google.android.material.textfield.TextInputLayout>
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/input_goal_period"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:inputType="number"
+                    android:padding="0dp"/>
+            </com.google.android.material.textfield.TextInputLayout>
 
                 <!-- 7. 목표 금액 / 횟수 -->
                 <TextView

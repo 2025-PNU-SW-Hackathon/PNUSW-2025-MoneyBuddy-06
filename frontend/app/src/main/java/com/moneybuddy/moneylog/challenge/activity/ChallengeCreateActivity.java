@@ -26,8 +26,8 @@ import java.util.Objects;
 
 public class ChallengeCreateActivity extends AppCompatActivity {
     private ImageButton challengeBack;
-    private AutoCompleteTextView dropdownChallengeType, dropdownSpendingType, dropdownChallengeCategory, dropdownGoalPeriod;
-    private TextInputEditText inputChallengeTitle, inputChallengeIntro, inputGoalValue;
+    private AutoCompleteTextView dropdownChallengeType, dropdownSpendingType, dropdownChallengeCategory;
+    private TextInputEditText inputChallengeTitle, inputChallengeIntro, inputGoalValue, inputGoalPeriod;
     private TextInputLayout layoutSpendingType, layoutChallengeCategory, layoutGoalValue;
     private CheckBox checkboxConfirm, checkboxShare;
     private Button buttonCreateChallenge;
@@ -60,7 +60,7 @@ public class ChallengeCreateActivity extends AppCompatActivity {
         dropdownChallengeType = findViewById(R.id.dropdown_challenge_type);
         dropdownSpendingType = findViewById(R.id.dropdown_spending_type);
         dropdownChallengeCategory = findViewById(R.id.dropdown_challenge_category);
-        dropdownGoalPeriod = findViewById(R.id.dropdown_goal_period);
+        inputGoalPeriod = findViewById(R.id.input_goal_period);
         inputChallengeTitle = findViewById(R.id.input_challenge_title);
         inputChallengeIntro = findViewById(R.id.input_challenge_intro);
         inputGoalValue = findViewById(R.id.input_goal_value);
@@ -87,10 +87,6 @@ public class ChallengeCreateActivity extends AppCompatActivity {
         List<String> categories = Arrays.asList("식비", "교통", "문화여가", "의료건강", "의류미용", "카페베이커리", "기타");
         ArrayAdapter<String> categoryAdapter = new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line, categories);
         dropdownChallengeCategory.setAdapter(categoryAdapter);
-
-        List<String> periods = Arrays.asList("3일", "7일", "30일");
-        ArrayAdapter<String> periodAdapter = new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line, periods);
-        dropdownGoalPeriod.setAdapter(periodAdapter);
     }
 
     private void setupListeners() {
@@ -121,7 +117,7 @@ public class ChallengeCreateActivity extends AppCompatActivity {
                 layoutGoalValue.setHelperText("1,000,000 이하의 숫자를 입력하세요.");
             } else {
                 textViewGoalValue.setText("목표 횟수");
-                String selectedPeriod = dropdownGoalPeriod.getText().toString().replaceAll("[^0-9]", "");
+                String selectedPeriod = inputGoalPeriod.getText().toString().replaceAll("[^0-9]", "");
                 if (!selectedPeriod.isEmpty()) {
                     layoutGoalValue.setHelperText(selectedPeriod + "보다 작은 숫자를 입력하세요.");
                 } else {
@@ -134,6 +130,7 @@ public class ChallengeCreateActivity extends AppCompatActivity {
             if (validateInput()) {
                 sendChallengeDataToServer();
             }
+            finish();
         });
     }
 
@@ -141,7 +138,7 @@ public class ChallengeCreateActivity extends AppCompatActivity {
         String title = inputChallengeTitle.getText().toString();
         String description = inputChallengeIntro.getText().toString();
         String type = dropdownChallengeType.getText().toString();
-        String goalPeriod = dropdownGoalPeriod.getText().toString();
+        String goalPeriod = inputGoalPeriod.getText().toString();
         int goalValue = Integer.parseInt(inputGoalValue.getText().toString());
         Boolean isShared = checkboxShare.isChecked();
 
@@ -174,7 +171,7 @@ public class ChallengeCreateActivity extends AppCompatActivity {
 
         if (TextUtils.isEmpty(inputChallengeTitle.getText()) ||
                 TextUtils.isEmpty(inputChallengeIntro.getText()) ||
-                TextUtils.isEmpty(dropdownGoalPeriod.getText()) ||
+                TextUtils.isEmpty(inputGoalPeriod.getText()) ||
                 TextUtils.isEmpty(inputGoalValue.getText())) {
             Toast.makeText(this, "모든 항목을 입력해주세요.", Toast.LENGTH_SHORT).show();
             return false;
@@ -194,7 +191,7 @@ public class ChallengeCreateActivity extends AppCompatActivity {
                 return false;
             }
         } else if (Objects.equals(dropdownSpendingType.getText().toString(), "횟수")) {
-            String periodStr = dropdownGoalPeriod.getText().toString().replaceAll("[^0-9]", "");
+            String periodStr = inputGoalPeriod.getText().toString().replaceAll("[^0-9]", "");
             if (!periodStr.isEmpty()) {
                 int period = Integer.parseInt(periodStr);
                 if (goalValue >= period) {

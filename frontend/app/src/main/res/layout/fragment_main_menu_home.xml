@@ -266,11 +266,12 @@
 
         <TextView
             android:id="@+id/textView6"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="211dp"
+            android:layout_height="43dp"
             android:layout_marginTop="24dp"
-            android:layout_marginEnd="44dp"
+            android:layout_marginEnd="20dp"
             android:text="가계부 마스터"
+            android:textAlignment="center"
             android:textSize="32sp"
             android:textStyle="bold"
             app:layout_constraintBottom_toTopOf="@+id/textView3"
@@ -284,10 +285,10 @@
             android:layout_height="90dp"
             android:contentDescription="MoBTI 이미지"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/textView6"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            android:text="🐿️"
+            android:layout_marginStart="20dp"
+            android:text="🐂"
             android:textSize="70dp"/>
     </androidx.constraintlayout.widget.ConstraintLayout>
 

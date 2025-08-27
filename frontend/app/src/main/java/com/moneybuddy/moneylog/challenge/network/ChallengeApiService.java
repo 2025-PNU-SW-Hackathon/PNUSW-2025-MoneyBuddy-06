@@ -40,23 +40,23 @@ public interface ChallengeApiService {
     @POST("challenges/completed/filter")
     Call<List<ChallengeCardResponse>> filterCompletedChallenges(@Body ChallengeFilterRequest request);
 
-    @POST("challenges/shared/filter")
+    @POST("api/v1/challenges/shared/filter")
     Call<List<ChallengeCardResponse>> filterSharedChallenges(@Body ChallengeFilterRequest request);
 
-    @POST("challenges/recommended/mobti/filter")
+    @POST("api/v1/challenges/recommended/mobti/filter")
     Call<List<ChallengeCardResponse>> filterRecommendedChallenges(@Body ChallengeFilterRequest request);
 
-    @POST("challenges/create")
+    @POST("api/v1/challenges/create")
     Call<ResponseBody> createChallenge(@Body ChallengeCreateRequest request);
 
-    @POST("challenges/join")
+    @POST("api/v1/challenges/join")
     Call<UserChallengeResponse> joinChallenge(@Body UserChallengeRequest request);
 
-    @POST("challenges/status")
+    @POST("api/v1/challenges/status")
     Call<ChallengeStatusResponse> updateChallengeStatus(
             @Body ChallengeStatusRequest request
     );
 
-    @GET("/challenges/{challengeId}")
+    @GET("api/v1/challenges/{challengeId}")
     Call<ChallengeDetailResponse> getChallengeDetail(@Path("challengeId") Long challengeId);
 }

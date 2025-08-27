@@ -1,6 +1,8 @@
 package com.moneybuddy.moneylog.main.activity;
 
 import android.os.Bundle;
+
+import com.google.android.material.badge.ExperimentalBadgeUtils;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import android.view.MenuItem;
 
@@ -14,6 +16,7 @@ import com.moneybuddy.moneylog.main.fragment.MainMenuChallengeFragment;
 import com.moneybuddy.moneylog.main.fragment.MainMenuHomeFragment;
 import com.moneybuddy.moneylog.main.fragment.MainMenuLedgerFragment;
 
+@ExperimentalBadgeUtils
 public class MainMenuActivity extends AppCompatActivity {
 
     private FragmentManager fragmentManager = getSupportFragmentManager();
@@ -30,6 +33,8 @@ public class MainMenuActivity extends AppCompatActivity {
         transaction.replace(R.id.menu_frame_layout, fragmentHome).commitAllowingStateLoss();
 
         BottomNavigationView bottomNavigationView = findViewById(R.id.menu_bottom_navigation);
+
+        bottomNavigationView.setSelectedItemId(R.id.menu_home);
         bottomNavigationView.setOnItemSelectedListener(new ItemSelectedListener());
     }
 

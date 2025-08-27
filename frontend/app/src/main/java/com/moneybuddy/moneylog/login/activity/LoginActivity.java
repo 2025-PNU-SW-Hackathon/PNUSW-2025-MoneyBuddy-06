@@ -1,5 +1,6 @@
 package com.moneybuddy.moneylog.login.activity;
 
+import androidx.annotation.OptIn;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.ProgressDialog;
@@ -12,6 +13,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.material.badge.ExperimentalBadgeUtils;
 import com.moneybuddy.moneylog.R;
 import com.moneybuddy.moneylog.login.dto.LoginResponse;
 import com.moneybuddy.moneylog.login.network.AuthRepository;
@@ -24,7 +26,6 @@ public class LoginActivity extends AppCompatActivity {
 
     private EditText emailInput, passwordInput;
     private Button loginButton;
-    private TokenManager auth;
     private final AuthRepository repo = new AuthRepository();
     private ProgressDialog progress;
 
@@ -42,7 +43,6 @@ public class LoginActivity extends AppCompatActivity {
         });
 
         // ---- 로그인 UI ----
-        auth = new TokenManager(this);
         emailInput = findViewById(R.id.emailInput);
         passwordInput = findViewById(R.id.passwordInput);
         loginButton = findViewById(R.id.loginButton);
@@ -54,16 +54,31 @@ public class LoginActivity extends AppCompatActivity {
         String email = emailInput.getText().toString().trim();
         String pw = passwordInput.getText().toString();
 
-        if (email.isEmpty()) { emailInput.setError("이메일을 입력해주세요"); return; }
-        if (pw.isEmpty())    { passwordInput.setError("비밀번호를 입력해주세요"); return; }
+        if (email.isEmpty()) {
+            emailInput.setError("이메일을 입력해주세요");
+            return;
+        }
+        if (pw.isEmpty()) {
+            passwordInput.setError("비밀번호를 입력해주세요");
+            return;
+        }
 
         showLoading(true);
 
         repo.login(this, email, pw, new AuthRepository.LoginCallback() {
-            @Override public void onSuccess(LoginResponse data) {
+            @OptIn(markerClass = ExperimentalBadgeUtils.class)
+            @Override
+            public void onSuccess(LoginResponse data) {
                 showLoading(false);
 
+                String accessToken = data.token;
+                android.util.Log.d("LOGIN_TOKEN_CHECK", "서버에서 받은 토큰: " + accessToken);
+
                 TokenManager.getInstance(getApplicationContext()).saveLoginSession(data.token, data.userId, data.email);
+
+                String savedToken = TokenManager.getInstance(getApplicationContext()).getToken();
+                android.util.Log.d("LOGIN_TOKEN_CHECK", "TokenManager에 저장된 토큰: " + savedToken);
+
                 Toast.makeText(LoginActivity.this,
                         data.message != null ? data.message : "로그인 성공",
                         Toast.LENGTH_SHORT).show();
@@ -73,7 +88,8 @@ public class LoginActivity extends AppCompatActivity {
                 finish();
             }
 
-            @Override public void onError(String msg) {
+            @Override
+            public void onError(String msg) {
                 showLoading(false);
                 Toast.makeText(LoginActivity.this, msg, Toast.LENGTH_SHORT).show();
             }
