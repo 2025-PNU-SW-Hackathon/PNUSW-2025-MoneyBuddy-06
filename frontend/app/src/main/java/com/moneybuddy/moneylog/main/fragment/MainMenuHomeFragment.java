@@ -135,7 +135,7 @@ public class MainMenuHomeFragment extends Fragment {
         if (challengeId != -1L) {
             challengeViewModel.loadRepresentativeChallenge(challengeId);
         } else {
-            // TODO: 대표 챌린지가 설정되지 않았을 때의 UI 처리 (예: 챌린지 뷰 숨기기 또는 안내 문구 표시)
+            textView7.setText("대표 챌린지가 설정되지 않았습니다.");
             Log.d("HomeFragment", "대표 챌린지가 설정되지 않았습니다.");
         }
     }
