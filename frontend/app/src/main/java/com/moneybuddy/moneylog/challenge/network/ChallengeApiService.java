@@ -21,23 +21,23 @@ import retrofit2.http.POST;
 import retrofit2.http.Path;
 
 public interface ChallengeApiService {
-    @GET("challenges/view/ongoing")
+    @GET("api/v1/challenges/view/ongoing")
     Call<List<ChallengeCardResponse>> getOngoingChallenges();
 
-    @GET("challenges/view/completed")
+    @GET("api/v1/challenges/view/completed")
     Call<List<ChallengeCardResponse>> getCompletedChallenges();
 
-    @GET("challenges/shared")
+    @GET("api/v1/challenges/shared")
     Call<List<ChallengeCardResponse>> getSharedChallenges();
 
-    @GET("challenges/recommended/mobti")
+    @GET("api/v1/challenges/recommended/mobti")
     Call<List<RecommendedChallengeResponse>> getRecommendedChallenges();
 
 
-    @POST("challenges/ongoing/filter")
+    @POST("api/v1/challenges/ongoing/filter")
     Call<List<ChallengeCardResponse>> filterOngoingChallenges(@Body ChallengeFilterRequest request);
 
-    @POST("challenges/completed/filter")
+    @POST("api/v1/challenges/completed/filter")
     Call<List<ChallengeCardResponse>> filterCompletedChallenges(@Body ChallengeFilterRequest request);
 
     @POST("api/v1/challenges/shared/filter")

@@ -21,11 +21,10 @@ public final class RetrofitClient {
 
     // 필요 시 교체
     private static final String BASE_URL_DEBUG   = "http://172.21.170.228:8080/";
-    private static final String BASE_URL_RELEASE = "http://172.21.170.228:8080/";
+    private static final String BASE_URL_RELEASE = "http://172.21.170.228ㅅ:8080/";
 
     private RetrofitClient() {}
 
-    /** 전역 Retrofit 인스턴스 */
     public static Retrofit get(Context ctx) {
         if (instance == null) {
             synchronized (RetrofitClient.class) {
@@ -63,17 +62,14 @@ public final class RetrofitClient {
         return instance;
     }
 
-    /** 임의의 API 인터페이스 생성 (권장) */
     public static <T> T getService(Context ctx, Class<T> apiClass) {
         return get(ctx).create(apiClass);
     }
 
-    /** 편의 메서드: 공통 ApiService */
     public static ApiService api(Context ctx) {
         return getService(ctx, ApiService.class);
     }
 
-    /** 편의 메서드: 로그인/회원 관련 AuthApi (있다면) */
     public static com.moneybuddy.moneylog.login.network.AuthApi auth(Context ctx) {
         return getService(ctx, com.moneybuddy.moneylog.login.network.AuthApi.class);
     }

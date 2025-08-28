@@ -14,7 +14,6 @@ import com.moneybuddy.moneylog.challenge.dto.UserChallengeRequest;
 import com.moneybuddy.moneylog.challenge.dto.UserChallengeResponse;
 import com.moneybuddy.moneylog.challenge.model.ChallengeFilter;
 import com.moneybuddy.moneylog.challenge.network.ChallengeApiService;
-import com.moneybuddy.moneylog.common.ApiClient;
 import com.moneybuddy.moneylog.challenge.repository.ChallengeRepository;
 import com.moneybuddy.moneylog.common.RetrofitClient;
 
@@ -59,7 +58,7 @@ public class ChallengeViewModel extends AndroidViewModel {
     public void setFilter(ChallengeFilter filter) {
         this.currentFilter = filter;
         loadChallenges();
-        if (filter == ChallengeFilter.RECOMMENDED) loadTodoList();
+        if (filter == ChallengeFilter.ONGOING) loadTodoList();
     }
 
     public void applyCategoryFilter(List<String> categories) {

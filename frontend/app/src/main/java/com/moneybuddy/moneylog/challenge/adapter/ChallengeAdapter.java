@@ -22,12 +22,15 @@ import com.moneybuddy.moneylog.R;
 import com.moneybuddy.moneylog.challenge.activity.ChallengeDetailActivity;
 import com.moneybuddy.moneylog.challenge.dto.ChallengeCardResponse;
 import com.moneybuddy.moneylog.challenge.dto.RecommendedChallengeResponse;
+import com.moneybuddy.moneylog.challenge.model.ChallengeFilter;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import lombok.Setter;
 
 public class ChallengeAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private static final int VIEW_TYPE_TODO_HEADER = 0;
@@ -39,11 +42,16 @@ public class ChallengeAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     private final OnRepresentativeChallengeClickListener repChallengeClickListener;
 
     // 대표 챌린지 challengeId를 저장할 변수
+    @Setter
     private Long representativeChallengeId = -1L;
 
     private List<Object> items = new ArrayList<>();
     private List<ChallengeCardResponse> todoList = new ArrayList<>();
     private boolean showHeader = false;
+
+    // 현재 필터, 디폴트 값 ongoing
+    private ChallengeFilter currentFilter = ChallengeFilter.ONGOING;
+
 
     public ChallengeAdapter(Context context, BiConsumer<Long, Boolean> listener, OnRepresentativeChallengeClickListener repClickListener) {
         this.context = context;
@@ -51,8 +59,8 @@ public class ChallengeAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         this.repChallengeClickListener = repClickListener;
     }
 
-    public void setRepresentativeChallengeId(Long challengeId) {
-        this.representativeChallengeId = challengeId;
+    public void setCurrentFilter(ChallengeFilter filter) {
+        this.currentFilter = filter;
     }
 
     public interface OnRepresentativeChallengeClickListener {
@@ -80,11 +88,19 @@ public class ChallengeAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         if (showHeader && position == 0) {
             return VIEW_TYPE_TODO_HEADER;
         }
-        Object item = items.get(showHeader ? position - 1 : position);
-        if (item instanceof ChallengeCardResponse && ((ChallengeCardResponse) item).isJoined()) {
+
+        if (currentFilter == ChallengeFilter.ONGOING) {
             return VIEW_TYPE_ONGOING_CHALLENGE;
+        } else {
+            int actualPosition = showHeader ? position - 1 : position;
+
+            Object item = items.get(actualPosition);
+
+            if (item instanceof ChallengeCardResponse && Boolean.TRUE.equals(((ChallengeCardResponse) item).isJoined())) {
+                return VIEW_TYPE_ONGOING_CHALLENGE;
+            }
+            return VIEW_TYPE_DEFAULT_CHALLENGE;
         }
-        return VIEW_TYPE_DEFAULT_CHALLENGE;
     }
 
 
@@ -191,12 +207,13 @@ public class ChallengeAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             ivCategory = v.findViewById(R.id.iv_category);
             layout = v.findViewById(R.id.challenge_item_layout);
         }
+
         void bind(Object item) {
             if (item instanceof ChallengeCardResponse) {
                 ChallengeCardResponse c = (ChallengeCardResponse) item;
                 tvTitle.setText(c.getTitle());
                 tvPeriod.setText("기간: " + c.getGoalPeriod());
-                layout.setBackgroundColor(ContextCompat.getColor(context, c.isMine() ? R.color.my_challenge_color : R.color.other_challenge_color));
+                layout.setBackgroundColor(ContextCompat.getColor(context, Boolean.TRUE.equals(c.isMine()) ? R.color.my_challenge_color : R.color.other_challenge_color));
                 itemView.setOnClickListener(v -> {
                     Intent i = new Intent(context, ChallengeDetailActivity.class);
                     i.putExtra("challenge", c);

@@ -141,7 +141,6 @@
                     android:id="@+id/input_challenge_title"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:inputType="number"
                     android:padding="0dp"/>
             </com.google.android.material.textfield.TextInputLayout>
 

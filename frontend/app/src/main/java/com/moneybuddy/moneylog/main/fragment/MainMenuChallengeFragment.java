@@ -34,9 +34,9 @@ import com.moneybuddy.moneylog.challenge.adapter.ChallengeAdapter;
 import com.moneybuddy.moneylog.challenge.dto.ChallengeStatusRequest;
 import com.moneybuddy.moneylog.challenge.dto.ChallengeStatusResponse;
 import com.moneybuddy.moneylog.challenge.model.ChallengeFilter;
-import com.moneybuddy.moneylog.common.ApiClient;
 import com.moneybuddy.moneylog.challenge.network.ChallengeApiService;
 import com.moneybuddy.moneylog.challenge.viewmodel.ChallengeViewModel;
+import com.moneybuddy.moneylog.common.RetrofitClient;
 
 import java.util.ArrayList;
 
@@ -63,7 +63,7 @@ public class MainMenuChallengeFragment extends Fragment implements ChallengeAdap
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        apiService = ApiClient.getApiService(getContext());
+        apiService = RetrofitClient.getService(getContext(), ChallengeApiService.class);
 
         categoryFilterLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
@@ -138,6 +138,8 @@ public class MainMenuChallengeFragment extends Fragment implements ChallengeAdap
             categoryFilterLauncher.launch(intent);
         });
 
+        adapter.setCurrentFilter(ChallengeFilter.ONGOING);
+
         rg.setOnCheckedChangeListener((group, id) -> {
             ChallengeFilter filter;
             if (id == R.id.radioButton10) {
@@ -153,6 +155,8 @@ public class MainMenuChallengeFragment extends Fragment implements ChallengeAdap
                 filter = ChallengeFilter.COMPLETED;
                 adapter.setShowHeader(false);
             }
+            adapter.setCurrentFilter(filter);
+
             viewModel.setFilter(filter);
         });
     }
@@ -162,7 +166,7 @@ public class MainMenuChallengeFragment extends Fragment implements ChallengeAdap
         viewModel.getIsLoading().observe(getViewLifecycleOwner(), loading -> swipeRefresh.setRefreshing(loading));
         viewModel.getErrorMessage().observe(getViewLifecycleOwner(), err -> Toast.makeText(getContext(), err, Toast.LENGTH_SHORT).show());
         viewModel.getTodoList().observe(getViewLifecycleOwner(), todos -> {
-            if (viewModel.getCurrentFilter() == ChallengeFilter.RECOMMENDED) {
+            if (viewModel.getCurrentFilter() == ChallengeFilter.ONGOING) {
                 adapter.setTodoList(todos);
             }
         });

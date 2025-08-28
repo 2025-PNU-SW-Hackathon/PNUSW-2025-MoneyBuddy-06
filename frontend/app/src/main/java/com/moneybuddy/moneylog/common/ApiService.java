@@ -36,7 +36,7 @@ import retrofit2.http.POST;
  */
 public interface ApiService {
     // 내 MoBTI 요약 정보 조회
-    @GET("/api/v1/mobti/me/summary")
+    @GET("api/v1/mobti/me/summary")
     Call<MobtiBriefDto> getMyMobtiSummary();
 
     //MOBTI 상세
@@ -53,6 +53,7 @@ public interface ApiService {
     // 오늘의 퀴즈 조회
     @GET("api/v1/quiz/today")
     Call<QuizResponse> getTodayQuiz();
+
     // 비밀번호 변경
     @PATCH("api/v1/users/password")
     Call<Void> changePassword(

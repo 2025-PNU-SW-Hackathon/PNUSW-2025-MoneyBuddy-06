@@ -48,43 +48,48 @@ public class ChallengeDetailActivity extends AppCompatActivity {
     }
 
     private void displayDetails(ChallengeCardResponse c) {
-        tvTitle.setText(challenge.getTitle());
-        tvDesc.setText(challenge.getDescription());
-        tvPeriod.setText(challenge.getGoalPeriod());
+        tvTitle.setText(c.getTitle());
+        tvDesc.setText(c.getDescription());
+        tvPeriod.setText(c.getGoalPeriod());
 
-        switch (challenge.getCategory()) {
-            case "식비":
-                ivCategory.setImageResource(R.drawable.category_food);
-                break;
-            case "교통":
-                ivCategory.setImageResource(R.drawable.category_transport);
-                break;
-            case "문화여가":
-                ivCategory.setImageResource(R.drawable.category_culture);
-                break;
-            case "의료건강":
-                ivCategory.setImageResource(R.drawable.category_health);
-                break;
-            case "의류미용":
-                ivCategory.setImageResource(R.drawable.category_beauty);
-                break;
-            case "카페베이커리":
-                ivCategory.setImageResource(R.drawable.category_cafe);
-                break;
-            default:
-                ivCategory.setImageResource(R.drawable.category_others);
-                break;
+        if (c.getCategory() != null) {
+            switch (c.getCategory()) {
+                case "식비":
+                    ivCategory.setImageResource(R.drawable.category_food);
+                    break;
+                case "교통":
+                    ivCategory.setImageResource(R.drawable.category_transport);
+                    break;
+                case "문화여가":
+                    ivCategory.setImageResource(R.drawable.category_culture);
+                    break;
+                case "의료건강":
+                    ivCategory.setImageResource(R.drawable.category_health);
+                    break;
+                case "의류미용":
+                    ivCategory.setImageResource(R.drawable.category_beauty);
+                    break;
+                case "카페베이커리":
+                    ivCategory.setImageResource(R.drawable.category_cafe);
+                    break;
+                default:
+                    ivCategory.setImageResource(R.drawable.category_others);
+                    break;
+            }
+        } else {
+            // todo 이미지 변경 category가 null일 때
+            ivCategory.setImageResource(R.drawable.category_others);
         }
 
         String goalTypeLabel = "금액".equals(challenge.getGoalType()) ? "목표 금액" : "목표 횟수";
-        String isLinkedText = challenge.isAccountLinked() ? "연동됨" : "연동되지 않음";
+        String isLinkedText = Boolean.TRUE.equals(c.isAccountLinked()) ? "연동됨" : "연동되지 않음";
 
         String howtoText = "챌린지 유형: " + challenge.getType() + "\n"
                 + goalTypeLabel + ": " + challenge.getGoalValue() + "\n"
                 + "가계부 연동 체크 여부: " + isLinkedText;
         tvHowto.setText(howtoText);
 
-        if (challenge.isJoined()) {
+        if (Boolean.TRUE.equals(c.isJoined())) {
             buttonJoin.setText("참여 중인 챌린지 입니다.");
             buttonJoin.setEnabled(false);
         }
