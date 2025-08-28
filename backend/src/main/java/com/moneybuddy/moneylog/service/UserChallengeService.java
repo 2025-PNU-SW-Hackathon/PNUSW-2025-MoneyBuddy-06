@@ -117,9 +117,10 @@ public class UserChallengeService {
                 .isAccountLinked(c.isAccountLinked())
                 .isShared(c.isShared())
                 .joinedAt(uc.getJoinedAt())
-                .completed(false)
-                .success(successCount >= c.getGoalValue())
+                .completed(uc.isCompleted())
+                .success(uc.isSuccess())
                 .rewarded(uc.isRewarded())
+                .isJoined(true)
                 .mine(c.getCreatedBy() != null && c.getCreatedBy().equals(userId))
                 .build();
     }
@@ -147,7 +148,6 @@ public class UserChallengeService {
                         uc.getUserId(), c.getId(), start, end.minusDays(1)
                 );
 
-        boolean isSuccess = successCount >= c.getGoalValue();
 
         return ChallengeCardResponse.builder()
                 .challengeId(c.getId())
@@ -163,9 +163,10 @@ public class UserChallengeService {
                 .isAccountLinked(c.isAccountLinked())
                 .isShared(c.isShared())
                 .joinedAt(uc.getJoinedAt())
-                .completed(true)
-                .success(isSuccess)
+                .completed(uc.isCompleted())
+                .success(uc.isSuccess())
                 .rewarded(uc.isRewarded())
+                .isJoined(true)
                 .mine(c.getCreatedBy() != null && c.getCreatedBy().equals(userId))
                 .build();
     }
@@ -248,8 +249,9 @@ public class UserChallengeService {
             boolean isSuccess = evaluateChallenge(c, userId);
 
             if (isSuccess) {
-                uc.setCompleted(true);
-                userChallengeRepository.save(uc); // 완료 처리
+                uc.setSuccess(true);   // 성공 처리
+                uc.setCompleted(true); // 완료 처리
+                userChallengeRepository.save(uc);
 
                 // 성공 기록 저장
                 userChallengeSuccessRepository.save(UserChallengeSuccess.builder()
