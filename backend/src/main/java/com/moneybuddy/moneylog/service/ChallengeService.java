@@ -261,7 +261,6 @@ public class ChallengeService {
                 .goalPeriod(challenge.getGoalPeriod())
                 .goalType(challenge.getGoalType())
                 .goalValue(challenge.getGoalValue())
-
                 .isSystemGenerated(challenge.isSystemGenerated())
                 .isAccountLinked(challenge.isAccountLinked())
                 .createdBy(challenge.getCreatedBy())
