@@ -12,6 +12,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -386,20 +387,8 @@ public class LedgerWriteActivity extends AppCompatActivity {
             setErrorBg(tvTime, true);
             if (firstError == null) firstError = tvTime;
         }
-        if (!isIncomeMode()) { // 수입은 자산 필수 아님
-            if (!isSpinnerSelected(spinnerAsset)) {
-                missing.add("자산");
-                setErrorBg(spinnerAsset, true);
-                if (firstError == null) firstError = spinnerAsset;
-            }
-        }
-        if (!isIncomeMode()) { // 수입은 카테고리 고정
-            if (!isSpinnerSelected(spinnerCategory)) {
-                missing.add("카테고리");
-                setErrorBg(spinnerCategory, true);
-                if (firstError == null) firstError = spinnerCategory;
-            }
-        }
+        // 필요하면 자산/카테고리 검증도 추가
+
         String amountStr = editAmount.getText() != null ? editAmount.getText().toString().trim() : "";
         if (TextUtils.isEmpty(amountStr)) {
             missing.add("금액");
@@ -418,34 +407,57 @@ public class LedgerWriteActivity extends AppCompatActivity {
         String type = isIncomeMode() ? "INCOME" : "EXPENSE";
         String date = tvDate.getText().toString();
         String time = tvTime.getText().toString();
-        String dateTime = date + "T" + time + ":00"; // ISO-like
+        String dateTime = date + "T" + time + ":00"; // LocalDateTime 문자열
+
         String category = isIncomeMode() ? getString(R.string.income)
                 : safeSelectedText(spinnerCategory, etCustomCategory);
         String asset = isIncomeMode() ? null : safeSelectedText(spinnerAsset, etCustomAsset);
-        long amount = Long.parseLong(amountStr.replaceAll("[^0-9]", "")); // 항상 양수로 전송
+
+        long amount = Long.parseLong(amountStr.replaceAll("[^0-9]", "")); // 현재 로직: 항상 양수 전송
         String memo = editMemo.getText() != null ? editMemo.getText().toString().trim() : null;
 
         LedgerCreateRequest body = new LedgerCreateRequest();
         body.dateTime = dateTime;
         body.entryType = type;
-        body.amount = amount; // 서버가 entryType에 따라 부호 적용
+        body.amount = amount;
         body.asset = asset;
-        body.store = memo;       // UI에 별도 매장 입력란이 없다면 메모를 임시 매핑
+        body.store = memo;
         body.category = category;
         body.description = memo;
 
-        if (isEditMode && editingId > 0) {
+        // 디버그 로그
+        com.google.gson.Gson gson = new com.google.gson.Gson();
+        Log.d("LedgerWrite", "REQ body=" + gson.toJson(body));
 
-            ledgerRepo.update(editingId, body); // ✔️ 레포 시그니처: (id, body)
-            Toast.makeText(this, "수정 요청 보냈습니다", Toast.LENGTH_SHORT).show();
-            setResult(RESULT_OK);
-            finish();
+        // ==== 네트워크 호출: 성공 시에만 finish ====
+        btnSave.setEnabled(false); // 중복 클릭 방지
+
+        if (isEditMode && editingId > 0) {
+            // 수정(Update)
+            ledgerRepo.update(editingId, body, new ResultCallback<Void>() {
+                @Override public void onSuccess(Void ignored) {
+                    Toast.makeText(LedgerWriteActivity.this, "수정 완료", Toast.LENGTH_SHORT).show();
+                    setResult(RESULT_OK);
+                    finish();
+                }
+                @Override public void onError(Throwable t) {
+                    btnSave.setEnabled(true);
+                    Toast.makeText(LedgerWriteActivity.this, "수정 실패: " + (t.getMessage()==null ? "알 수 없는 오류" : t.getMessage()), Toast.LENGTH_LONG).show();
+                }
+            });
         } else {
-            // -------- 신규(Create) --------
-            ledgerRepo.create(body);            // ✔️ 레포 시그니처: (body)
-            Toast.makeText(this, "저장 요청 보냈습니다", Toast.LENGTH_SHORT).show();
-            setResult(RESULT_OK);
-            finish();
+            // 신규(Create)
+            ledgerRepo.create(body, new ResultCallback<Long>() {
+                @Override public void onSuccess(Long id) {
+                    Toast.makeText(LedgerWriteActivity.this, "저장 완료", Toast.LENGTH_SHORT).show();
+                    setResult(RESULT_OK);
+                    finish();
+                }
+                @Override public void onError(Throwable t) {
+                    btnSave.setEnabled(true);
+                    Toast.makeText(LedgerWriteActivity.this, "저장 실패: " + (t.getMessage()==null ? "알 수 없는 오류" : t.getMessage()), Toast.LENGTH_LONG).show();
+                }
+            });
         }
     }
 

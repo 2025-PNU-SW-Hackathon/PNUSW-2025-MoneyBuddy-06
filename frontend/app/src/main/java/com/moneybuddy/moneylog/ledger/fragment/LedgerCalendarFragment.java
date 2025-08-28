@@ -150,7 +150,7 @@ public class LedgerCalendarFragment extends Fragment {
             @Override public void onResponse(Call<BudgetGoalDto> call, Response<BudgetGoalDto> gres) {
                 if (!isAdded()) return;
                 long goal = 0L;
-                if (gres.isSuccessful() && gres.body() != null && gres.body().amount != null) {
+                if (gres.isSuccessful() && gres.body() != null) {
                     goal = Math.max(0L, gres.body().amount);
                 }
                 if (tvGoalTarget != null) tvGoalTarget.setText(formatWon(goal));

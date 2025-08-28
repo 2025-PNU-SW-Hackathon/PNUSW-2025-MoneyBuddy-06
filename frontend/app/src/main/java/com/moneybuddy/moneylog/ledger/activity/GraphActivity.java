@@ -68,11 +68,10 @@ public class GraphActivity extends AppCompatActivity {
         legend       = findViewById(R.id.legend_container);
         if (btnBack != null) btnBack.setOnClickListener(v -> getOnBackPressedDispatcher().onBackPressed());
 
-        // repos (토큰 파라미터는 내부에서 인터셉터가 쓰면 무시되어도 OK)
+        // repos
         String tk = token();
         analyticsRepo = new AnalyticsRepository(this, tk);
         budgetRepo    = new BudgetRepository(this, tk);
-
 
         // 상단 닉네임
         if (tvUserName != null) tvUserName.setText(loadMobtiNickname());
@@ -172,7 +171,9 @@ public class GraphActivity extends AppCompatActivity {
                 CategoryRatioResponse dto = res.body();
 
                 long spent = Math.max(0L, dto.spent);
-                Long goal = dto.goalAmount == null ? null : Math.max(0L, dto.goalAmount);
+
+                // goalAmount가 Long(박싱)일 수 있어 null 처리를 유지
+                Long goal = (dto.goalAmount == null) ? null : Math.max(0L, dto.goalAmount);
 
                 if (tvMonthNet != null)  tvMonthNet.setText(KoreanMoney.format(spent));
                 if (goal == null) {
@@ -186,14 +187,19 @@ public class GraphActivity extends AppCompatActivity {
                     }
                 }
 
-                LinkedHashMap<String, Long> sorted = new LinkedHashMap<>();
-                if (dto.items != null) {
+                // 파이차트: 백엔드 비율을 그대로 사용하고 남은 구간은 PieChartView가 회색으로 처리
+                if (pie != null && dto.items != null) {
                     List<CategoryRatioResponse.Item> items = new ArrayList<>(dto.items);
-                    items.sort((a, b) -> Long.compare(b.expense, a.expense));
-                    for (CategoryRatioResponse.Item it : items) sorted.put(it.category, Math.max(0L, it.expense));
+                    items.sort((a, b) -> Long.compare(b.expense, a.expense)); // 보기 좋게
+                    Map<String, Double> ratios = new LinkedHashMap<>();
+                    for (CategoryRatioResponse.Item it : items) {
+                        ratios.put(it.category, it.ratioPercent); // 0.04 (=4%)
+                    }
+                    pie.setDataByRatio(ratios);
                 }
-                if (pie != null) pie.setData(sorted);
-                if (legend != null) renderLegend(sorted, spent);
+
+                // 범례: 백엔드 항목 그대로 사용
+                if (legend != null) renderLegend(dto.items);
             }
             @Override public void onFailure(Call<CategoryRatioResponse> call, Throwable t) {
                 Toast.makeText(GraphActivity.this, "그래프 데이터 실패: " + t.getMessage(), Toast.LENGTH_SHORT).show();
@@ -231,20 +237,26 @@ public class GraphActivity extends AppCompatActivity {
     private void saveGoalToServer(int y, int m, long goal) {
         String ym = String.format(Locale.KOREAN, "%04d-%02d", y, m);
         budgetRepo.putGoal(ym, goal).enqueue(new Callback<BudgetGoalDto>() {
-            @Override public void onResponse(Call<BudgetGoalDto> call, Response<BudgetGoalDto> res) {
+            @Override
+            public void onResponse(Call<BudgetGoalDto> call, Response<BudgetGoalDto> res) {
                 if (!res.isSuccessful() || res.body() == null) {
                     Toast.makeText(GraphActivity.this, "목표 저장 실패", Toast.LENGTH_SHORT).show();
                     return;
                 }
+
                 BudgetGoalDto data = res.body();
                 if (tvMonthGoal != null) {
                     tvMonthGoal.setVisibility(View.VISIBLE);
-                    tvMonthGoal.setText(KoreanMoney.format(data.amount == null ? 0 : data.amount));
+                    long amount = data.amount; // primitive long 기준
+                    tvMonthGoal.setText(KoreanMoney.format(amount));
                 }
+
                 if (tvBetween != null) tvBetween.setVisibility(View.VISIBLE);
+
                 Toast.makeText(GraphActivity.this, "목표가 저장되었습니다.", Toast.LENGTH_SHORT).show();
                 loadMonth(ym);
             }
+
             @Override public void onFailure(Call<BudgetGoalDto> call, Throwable t) {
                 Toast.makeText(GraphActivity.this, "목표 저장 실패", Toast.LENGTH_SHORT).show();
             }
@@ -252,17 +264,28 @@ public class GraphActivity extends AppCompatActivity {
     }
 
     // --- Legend ---
-    private void renderLegend(Map<String, Long> data, long all) {
+    // 백엔드 items를 그대로 받아서 범례를 렌더링
+    private void renderLegend(List<CategoryRatioResponse.Item> items) {
+        if (legend == null) return;
         legend.removeAllViews();
-        for (Map.Entry<String, Long> e : data.entrySet()) {
-            String label = e.getKey();
-            long amount = e.getValue() == null ? 0 : e.getValue();
-            int percent = all > 0 ? Math.round(100f * amount / all) : 0;
+        if (items == null || items.isEmpty()) return;
+
+        // 보기 좋게 지출액 내림차순 정렬(원치 않으면 제거)
+        List<CategoryRatioResponse.Item> list = new ArrayList<>(items);
+        list.sort((a, b) -> Long.compare(b.expense, a.expense));
+
+        for (CategoryRatioResponse.Item it : list) {
+            String label = it.category != null ? it.category : "-";
+            long amount  = it.expense; // 백엔드 값 그대로 사용
+            int percent  = (int) Math.round(it.ratioPercent ); // 0.04 -> 4%
 
             View row = getLayoutInflater().inflate(R.layout.item_category_breakdown, legend, false);
 
-            View percentBg = row.findViewById(R.id.percent_bg);
-            TextView tvPercent = row.findViewById(R.id.tv_percent);
+            View percentBg      = row.findViewById(R.id.percent_bg);
+            TextView tvPercent  = row.findViewById(R.id.tv_percent);
+            TextView tvLabel    = row.findViewById(R.id.tv_label);
+            TextView tvAmount   = row.findViewById(R.id.tv_amount);
+
             tvPercent.setText(percent + "%");
 
             int base = CategoryColors.bg(this, label);
@@ -272,8 +295,8 @@ public class GraphActivity extends AppCompatActivity {
             percentBg.setBackground(gd);
             tvPercent.setTextColor(0xFFFFFFFF);
 
-            ((TextView) row.findViewById(R.id.tv_label)).setText(label);
-            ((TextView) row.findViewById(R.id.tv_amount)).setText(KoreanMoney.format(amount) + "원");
+            tvLabel.setText(label);
+            tvAmount.setText(KoreanMoney.format(amount) + "원");
 
             legend.addView(row);
         }

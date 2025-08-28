@@ -32,8 +32,10 @@ import com.moneybuddy.moneylog.ledger.domain.CalendarGridBuilder;
 import com.moneybuddy.moneylog.ledger.dto.response.CategoryRatioResponse;
 import com.moneybuddy.moneylog.ledger.model.LedgerDayData;
 import com.moneybuddy.moneylog.ledger.repository.AnalyticsRepository;
+import com.moneybuddy.moneylog.ledger.ui.CategoryColors;
 import com.moneybuddy.moneylog.util.KoreanMoney;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
@@ -67,6 +69,10 @@ public class MainMenuLedgerFragment extends Fragment {
     // 최근 지출 합계(미니 막대 갱신용)
     private long lastMonthSpentCached = 0L;
 
+    // 상단 필드들 근처에 추가
+    private com.moneybuddy.moneylog.ledger.repository.LedgerRepository ledgerRepo;
+
+
     // 작성 화면 런처(저장 성공 시 달력 새로고침)
     private ActivityResultLauncher<Intent> writeLauncher;
 
@@ -82,6 +88,8 @@ public class MainMenuLedgerFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         analyticsRepo = new AnalyticsRepository(requireContext(), token());
+        // 월별 내역 조회용 레포
+        ledgerRepo    = new com.moneybuddy.moneylog.ledger.repository.LedgerRepository(requireContext(), token());
 
         writeLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
@@ -160,10 +168,10 @@ public class MainMenuLedgerFragment extends Fragment {
         List<LedgerDayData> days = CalendarGridBuilder.generateCalendar(year, month);
         adapter = new CalendarAdapter(requireContext(), days, ym);
         rvCalendar.setAdapter(adapter);
+        fetchAndApplyMonthEntries(year, month, days);
 
-        // 월 합계
+        // 월 합계(달력 셀 기준) — 화면 요약에는 사용
         MonthTotals totals = calcMonthlyTotals(days);
-
         if (tvMonthIncome != null)  tvMonthIncome.setText(KoreanMoney.format(totals.income));
         if (tvMonthExpense != null) tvMonthExpense.setText(KoreanMoney.format(totals.expense));
         if (tvMonthNet != null) {
@@ -174,35 +182,132 @@ public class MainMenuLedgerFragment extends Fragment {
                     : Color.parseColor("#C5463F"));
         }
 
-        // 미니 막대: 지출 합계 + 서버 목표 동기화
-        long monthSpent = totals.expense;
-        lastMonthSpentCached = monthSpent;
+        // 미니 막대: 서버 응답으로 렌더(실패 시 달력 합계 fallback)
+        lastMonthSpentCached = totals.expense;
+        previewSegments = buildSegmentsForPreview(lastMonthSpentCached);
+        if (tvGoalSpent != null) tvGoalSpent.setText(KoreanMoney.format(lastMonthSpentCached));
 
-        if (tvGoalSpent != null) tvGoalSpent.setText(KoreanMoney.format(monthSpent));
-        previewSegments = buildSegmentsForPreview(monthSpent);
-
-        // ✅ 그래프와 동일 API에서 goalAmount 읽어와 적용
         fetchGoalAndApply(ym);
     }
 
-    /** 서버에서 goalAmount 받아와 목표/미니막대 반영 */
-    private void fetchGoalAndApply(String ym) {
-        analyticsRepo.getCategoryRatio(ym).enqueue(new Callback<CategoryRatioResponse>() {
-            @Override public void onResponse(Call<CategoryRatioResponse> call, Response<CategoryRatioResponse> res) {
-                if (!res.isSuccessful() || res.body() == null) return;
-                Long goal = res.body().goalAmount;
-                monthGoal = (goal == null) ? 0L : goal;
+    // yyyy-MM 의 각 날짜별로 income/expense 합계를 계산해 Calendar 셀에 반영
+    private void fetchAndApplyMonthEntries(int year, int month, List<LedgerDayData> days) {
+        if (ledgerRepo == null) return;
 
-                if (tvGoalTarget != null) tvGoalTarget.setText(KoreanMoney.format(monthGoal));
-                if (goalBarTrack != null) renderStackedGoalBar(monthGoal, lastMonthSpentCached, previewSegments);
+        ledgerRepo.getMonth(year, month).enqueue(new retrofit2.Callback<java.util.List<com.moneybuddy.moneylog.ledger.dto.response.LedgerEntryDto>>() {
+            @Override public void onResponse(
+                    retrofit2.Call<java.util.List<com.moneybuddy.moneylog.ledger.dto.response.LedgerEntryDto>> call,
+                    retrofit2.Response<java.util.List<com.moneybuddy.moneylog.ledger.dto.response.LedgerEntryDto>> res) {
+
+                if (!res.isSuccessful() || res.body() == null) {
+                    // 실패해도 화면은 기존 합계(로컬 계산)로 유지
+                    return;
+                }
+
+                // 1) 날짜별 합계 집계
+                java.util.Map<String, long[]> daily = new java.util.HashMap<>();
+                // long[0] = income(+), long[1] = expense(+) 로 저장
+                for (com.moneybuddy.moneylog.ledger.dto.response.LedgerEntryDto it : res.body()) {
+                    if (it == null) continue;
+
+                    // 날짜 문자열 뽑기 (예: "2025-08-28")
+                    String date = extractDate(it);
+                    if (date == null) continue;
+
+                    long amt = extractAmountAsLong(it);  // signed
+                    long inc = 0L, exp = 0L;
+                    if (amt >= 0) inc = amt; else exp = -amt;
+
+                    long[] pair = daily.get(date);
+                    if (pair == null) pair = new long[]{0L, 0L};
+                    pair[0] += inc;
+                    pair[1] += exp;
+                    daily.put(date, pair);
+                }
+
+                // 2) 달력 셀에 주입
+                applyDailyTotalsToDays(days, daily);
+
+                // 3) 상단 월 요약도 서버 집계 기반으로 갱신(선택)
+                long monthIncome = 0L, monthExpense = 0L;
+                for (long[] p : daily.values()) { monthIncome += p[0]; monthExpense += p[1]; }
+                if (tvMonthIncome  != null) tvMonthIncome.setText(KoreanMoney.format(monthIncome));
+                if (tvMonthExpense != null) tvMonthExpense.setText(KoreanMoney.format(monthExpense));
+                if (tvMonthNet != null) {
+                    long net = monthIncome - monthExpense;
+                    tvMonthNet.setText(net < 0 ? "-" + KoreanMoney.format(Math.abs(net)) : KoreanMoney.format(net));
+                    tvMonthNet.setTextColor(net >= 0 ? Color.parseColor("#2A86FF") : Color.parseColor("#C5463F"));
+                }
+
+                // 4) 어댑터 갱신
+                if (rvCalendar != null && rvCalendar.getAdapter() != null) {
+                    rvCalendar.getAdapter().notifyDataSetChanged();
+                }
             }
-            @Override public void onFailure(Call<CategoryRatioResponse> call, Throwable t) {
-                // 필요 시 로그/토스트
+
+            @Override public void onFailure(
+                    retrofit2.Call<java.util.List<com.moneybuddy.moneylog.ledger.dto.response.LedgerEntryDto>> call,
+                    Throwable t) {
+                // 네트워크 실패 시 스킵 (로컬 합계 유지)
             }
         });
     }
 
-    /** 년·월 선택 다이얼로그 */
+    /** 서버 응답 DTO에서 yyyy-MM-dd 문자열을 안전하게 뽑는다. */
+    @Nullable
+    private String extractDate(com.moneybuddy.moneylog.ledger.dto.response.LedgerEntryDto it) {
+        try {
+            // 서버/클라 DTO에 따라 dateTime 타입이 다를 수 있어 방어적으로 처리
+            // 1) 문자열 ISO 형태: "2025-08-28T10:00:00" 등
+            java.lang.reflect.Field f = it.getClass().getDeclaredField("dateTime");
+            f.setAccessible(true);
+            Object v = f.get(it);
+            if (v instanceof String) {
+                String s = (String) v;
+                if (s.length() >= 10) return s.substring(0, 10);
+            } else if (v != null) {
+                // 2) java.time.LocalDateTime 가 넘어올 경우 toString() 사용
+                String s = String.valueOf(v);
+                if (s.length() >= 10) return s.substring(0, 10);
+            }
+        } catch (Throwable ignored) {}
+        return null;
+    }
+
+    /** 서버 응답 DTO에서 금액(signed)을 long 으로 꺼낸다. (BigDecimal 대응) */
+    private long extractAmountAsLong(com.moneybuddy.moneylog.ledger.dto.response.LedgerEntryDto it) {
+        try {
+            java.lang.reflect.Field fAmt = it.getClass().getDeclaredField("amount");
+            fAmt.setAccessible(true);
+            Object v = fAmt.get(it);
+            if (v instanceof Number) return ((Number) v).longValue();                 // Long/Integer
+            if (v != null && v.getClass().getName().endsWith("BigDecimal")) {        // BigDecimal
+                return new java.math.BigDecimal(String.valueOf(v)).longValue();
+            }
+        } catch (Throwable ignored) {}
+        // entryType 으로 부호 유추가 필요하다면 추가 처리 가능
+        return 0L;
+    }
+
+    /** 날짜별 합계를 기존 days 리스트에 반영 */
+    private void applyDailyTotalsToDays(List<LedgerDayData> days, java.util.Map<String, long[]> daily) {
+        if (days == null || daily == null) return;
+        for (LedgerDayData d : days) {
+            if (d == null || d.isEmpty()) continue;
+            // LedgerDayData가 yyyy-MM-dd 형태의 dateString 을 갖고 있다면 그대로 사용
+            String key = d.getDateString(); // 없으면 d.toDateString() 등 프로젝트에 맞게 대체
+            long[] pair = daily.get(key);
+            long inc = 0L, exp = 0L;
+            if (pair != null) { inc = pair[0]; exp = pair[1]; }
+
+            // 프로젝트의 LedgerDayData에 맞춰 세터 호출
+            // (필드명이 다르면 여기를 맞춰 바꿔주세요)
+            d.setIncome(inc);
+            d.setExpense(exp);
+        }
+    }
+
+
     private void showYearMonthPicker() {
         final int curYear  = currentCalendar.get(Calendar.YEAR);
         final int curMonth = currentCalendar.get(Calendar.MONTH) + 1;
@@ -224,7 +329,8 @@ public class MainMenuLedgerFragment extends Fragment {
         monthPicker.setValue(curMonth);
         monthPicker.setWrapSelectorWheel(true);
 
-        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f);
+        LinearLayout.LayoutParams lp =
+                new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f);
         container.addView(yearPicker, lp);
         container.addView(monthPicker, lp);
 
@@ -241,6 +347,196 @@ public class MainMenuLedgerFragment extends Fragment {
                 })
                 .show();
     }
+
+
+    /** 서버에서 goalAmount/카테고리 받아와 목표/미니막대 반영 */
+    private void fetchGoalAndApply(String ym) {
+        analyticsRepo.getCategoryRatio(ym).enqueue(new Callback<CategoryRatioResponse>() {
+            @Override public void onResponse(Call<CategoryRatioResponse> call, Response<CategoryRatioResponse> res) {
+                if (!res.isSuccessful() || res.body() == null) {
+                    if (goalBarTrack != null) renderStackedGoalBar(monthGoal, lastMonthSpentCached, previewSegments);
+                    return;
+                }
+
+                CategoryRatioResponse body = res.body();
+
+                long spentFromApi = Math.max(0L, body.spent);
+                Long goalFromApi  = body.goalAmount;
+                monthGoal = (goalFromApi == null) ? 0L : Math.max(0L, goalFromApi);
+
+                lastMonthSpentCached = spentFromApi;
+                if (tvGoalSpent  != null) tvGoalSpent.setText(KoreanMoney.format(spentFromApi));
+                if (tvGoalTarget != null) tvGoalTarget.setText(KoreanMoney.format(monthGoal));
+
+                // ✅ 파이차트와 동일한 규칙(카테고리 색)으로 미니 막대 렌더
+                renderGoalBarWithCategories(monthGoal, spentFromApi, body.items);
+            }
+
+            @Override public void onFailure(Call<CategoryRatioResponse> call, Throwable t) {
+                if (goalBarTrack != null) renderStackedGoalBar(monthGoal, lastMonthSpentCached, previewSegments);
+            }
+        });
+    }
+
+    /** 파이차트와 동일한 카테고리 색으로 미니 막대 렌더링 */
+    private void renderGoalBarWithCategories(long goal, long spent, List<CategoryRatioResponse.Item> items) {
+        if (goalBarTrack == null) return;
+        goalBarTrack.setVisibility(View.VISIBLE);
+        goalBarTrack.removeAllViews();
+
+        goalBarTrack.post(() -> {
+            int trackW = goalBarTrack.getWidth();
+            if (trackW <= 0) return;
+
+            // 전체 폭 중 지출이 차지하는 픽셀 계산(최소 4dp 보장)
+            float ratio = (goal > 0) ? Math.min(1f, spent / (float) goal) : (spent > 0 ? 1f : 0f);
+            int minPx = (spent > 0) ? dp2px(4) : 0;
+            int spentPx = Math.max(Math.round(trackW * ratio), minPx);
+            spentPx = Math.min(spentPx, trackW);
+            int remainPx = Math.max(0, trackW - spentPx);
+
+            // 지출 영역 컨테이너
+            LinearLayout spentBar = new LinearLayout(requireContext());
+            spentBar.setOrientation(LinearLayout.HORIZONTAL);
+            spentBar.setLayoutParams(new LinearLayout.LayoutParams(
+                    spentPx, LinearLayout.LayoutParams.MATCH_PARENT));
+
+            // 남은 영역(빈 공간)
+            View remainSpacer = new View(requireContext());
+            remainSpacer.setLayoutParams(new LinearLayout.LayoutParams(
+                    remainPx, LinearLayout.LayoutParams.MATCH_PARENT));
+
+            goalBarTrack.addView(spentBar);
+            goalBarTrack.addView(remainSpacer);
+
+            if (items == null || items.isEmpty() || spentPx == 0) return;
+
+            // 보기 좋게 금액 내림차순
+            List<CategoryRatioResponse.Item> list = new ArrayList<>(items);
+            list.sort((a, b) -> Long.compare(b.expense, a.expense));
+
+            long totalExpense = 0L;
+            for (CategoryRatioResponse.Item it : list) totalExpense += Math.max(0L, it.expense);
+            if (totalExpense <= 0L) return;
+
+            long acc = 0L;
+            for (int i = 0; i < list.size(); i++) {
+                CategoryRatioResponse.Item it = list.get(i);
+                long v = Math.max(0L, it.expense);
+                if (v == 0) continue;
+
+                float weight = v / (float) totalExpense;
+                LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
+                        0, LinearLayout.LayoutParams.MATCH_PARENT, weight);
+
+                View part = new View(requireContext());
+                part.setLayoutParams(lp);
+
+                boolean first = (spentBar.getChildCount() == 0);
+                acc += v;
+                boolean last  = (i == list.size() - 1);
+
+                int color = CategoryColors.bg(requireContext(), normalizeLabel(it.category));
+                part.setBackground(makeRoundedSegment(color, first, last));
+                spentBar.addView(part);
+            }
+        });
+    }
+
+    /** 기존 프리뷰 방식(고정 팔레트) — 네트워크 실패 시 fallback용 */
+    private void renderStackedGoalBar(long goal, long spent, int[] seg) {
+        if (goalBarTrack == null) return;
+
+        goalBarTrack.setVisibility(View.VISIBLE);
+        goalBarTrack.removeAllViews();
+
+        // 픽셀 기반으로 최소 가시성 보장
+        goalBarTrack.post(() -> {
+            int trackW = goalBarTrack.getWidth();
+            if (trackW <= 0) return;
+
+            float ratio = (goal > 0) ? Math.min(1f, spent / (float) goal) : (spent > 0 ? 1f : 0f);
+            int minPx = (spent > 0) ? dp2px(4) : 0;
+            int spentPx = Math.max(Math.round(trackW * ratio), minPx);
+            spentPx = Math.min(spentPx, trackW);
+            int remainPx = Math.max(0, trackW - spentPx);
+
+            LinearLayout spentBar = new LinearLayout(requireContext());
+            spentBar.setOrientation(LinearLayout.HORIZONTAL);
+            spentBar.setLayoutParams(new LinearLayout.LayoutParams(
+                    spentPx, LinearLayout.LayoutParams.MATCH_PARENT));
+
+            View remainSpacer = new View(requireContext());
+            remainSpacer.setLayoutParams(new LinearLayout.LayoutParams(
+                    remainPx, LinearLayout.LayoutParams.MATCH_PARENT));
+
+            goalBarTrack.addView(spentBar);
+            goalBarTrack.addView(remainSpacer);
+
+            int[] colors = new int[]{
+                    0xFFFCA5A5, 0xFFFDBA74, 0xFFFDE047,
+                    0xFF86EFAC, 0xFF93C5FD, 0xFFA5B4FC, 0xFFD8B4FE
+            };
+
+            long total = 0; for (int v : seg) total += v;
+            long cap = Math.min(total, spent);
+            long acc = 0;
+
+            for (int i = 0; i < seg.length; i++) {
+                long amt = seg[i];
+                if (amt <= 0) continue;
+                if (acc + amt > cap) amt = cap - acc;
+                acc += amt;
+
+                LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
+                        0, LinearLayout.LayoutParams.MATCH_PARENT, amt);
+                View part = new View(requireContext());
+                part.setLayoutParams(lp);
+
+                boolean first = (spentBar.getChildCount() == 0);
+                boolean last  = (acc == cap);
+                part.setBackground(makeRoundedSegment(colors[i % colors.length], first, last));
+
+                spentBar.addView(part);
+                if (acc >= cap) break;
+            }
+        });
+    }
+
+    /** 라벨 정규화 — CategoryColors 키와 맞추기 */
+    private static String normalizeLabel(String s) {
+        if (s == null) return "";
+        String x = s.replace('\u00A0',' ')
+                .replace("·", "/")
+                .replace("／", "/")
+                .replace("|", "/")
+                .trim()
+                .replaceAll("\\s+", " ");
+        if (x.equals("카페 / 베이커리")) x = "카페/베이커리";
+        return x;
+    }
+
+    private android.graphics.drawable.GradientDrawable makeRoundedSegment(int color, boolean first, boolean last) {
+        float r = requireContext().getResources().getDisplayMetrics().density * 8f;
+        float tl = first ? r : 0, bl = first ? r : 0;
+        float tr = last  ? r : 0, br = last  ? r : 0;
+
+        android.graphics.drawable.GradientDrawable gd = new android.graphics.drawable.GradientDrawable();
+        gd.setColor(color);
+        gd.setCornerRadii(new float[]{tl, tl, tr, tr, br, br, bl, bl});
+        return gd;
+    }
+
+    private String token() {
+        try {
+            String t = TokenManager.getInstance(requireContext()).getToken();
+            return TextUtils.isEmpty(t) ? "" : t;
+        } catch (Exception e) {
+            return "";
+        }
+    }
+
+    // ===== 기존 합계/보조 메서드 =====
 
     private MonthTotals calcMonthlyTotals(List<LedgerDayData> list) {
         long income = 0, expense = 0;
@@ -268,69 +564,7 @@ public class MainMenuLedgerFragment extends Fragment {
         return new int[]{(int) a, (int) b, (int) c};
     }
 
-    private void renderStackedGoalBar(long goal, long spent, int[] seg) {
-        if (goalBarTrack == null) return;
-
-        goalBarTrack.removeAllViews();
-
-        LinearLayout spentBar = new LinearLayout(requireContext());
-        spentBar.setOrientation(LinearLayout.HORIZONTAL);
-        spentBar.setLayoutParams(new LinearLayout.LayoutParams(
-                0, LinearLayout.LayoutParams.MATCH_PARENT, Math.max(spent, 0)));
-
-        View remainSpacer = new View(requireContext());
-        remainSpacer.setLayoutParams(new LinearLayout.LayoutParams(
-                0, LinearLayout.LayoutParams.MATCH_PARENT, Math.max(goal - spent, 0)));
-
-        goalBarTrack.addView(spentBar);
-        goalBarTrack.addView(remainSpacer);
-
-        int[] colors = new int[]{
-                0xFFFCA5A5, 0xFFFDBA74, 0xFFFDE047,
-                0xFF86EFAC, 0xFF93C5FD, 0xFFA5B4FC, 0xFFD8B4FE
-        };
-
-        long total = 0; for (int v : seg) total += v;
-        long cap = Math.min(total, spent);
-        long acc = 0;
-
-        for (int i = 0; i < seg.length; i++) {
-            long amt = seg[i];
-            if (amt <= 0) continue;
-            if (acc + amt > cap) amt = cap - acc;
-            acc += amt;
-
-            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
-                    0, LinearLayout.LayoutParams.MATCH_PARENT, amt);
-            View part = new View(requireContext());
-            part.setLayoutParams(lp);
-
-            boolean first = (spentBar.getChildCount() == 0);
-            boolean last  = (acc == cap);
-            part.setBackground(makeRoundedSegment(colors[i % colors.length], first, last));
-
-            spentBar.addView(part);
-            if (acc >= cap) break;
-        }
-    }
-
-    private android.graphics.drawable.GradientDrawable makeRoundedSegment(int color, boolean first, boolean last) {
-        float r = requireContext().getResources().getDisplayMetrics().density * 8f;
-        float tl = first ? r : 0, bl = first ? r : 0;
-        float tr = last  ? r : 0, br = last  ? r : 0;
-
-        android.graphics.drawable.GradientDrawable gd = new android.graphics.drawable.GradientDrawable();
-        gd.setColor(color);
-        gd.setCornerRadii(new float[]{tl, tl, tr, tr, br, br, bl, bl});
-        return gd;
-    }
-
-    private String token() {
-        try {
-            String t = TokenManager.getInstance(requireContext()).getToken();
-            return TextUtils.isEmpty(t) ? "" : t;
-        } catch (Exception e) {
-            return "";
-        }
+    private int dp2px(float dp) {
+        return Math.round(requireContext().getResources().getDisplayMetrics().density * dp);
     }
 }

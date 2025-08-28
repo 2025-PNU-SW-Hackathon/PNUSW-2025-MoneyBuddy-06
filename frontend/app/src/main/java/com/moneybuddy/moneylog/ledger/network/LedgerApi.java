@@ -1,59 +1,38 @@
 package com.moneybuddy.moneylog.ledger.network;
 
-import com.moneybuddy.moneylog.ledger.dto.response.CategoryRatioResponse;
 import com.moneybuddy.moneylog.ledger.dto.request.AutoLedgerRequest;
-import com.moneybuddy.moneylog.ledger.dto.response.AutoLedgerResponse;
-import com.moneybuddy.moneylog.ledger.dto.response.BudgetGoalDto;
 import com.moneybuddy.moneylog.ledger.dto.request.LedgerCreateRequest;
+import com.moneybuddy.moneylog.ledger.dto.response.AutoLedgerResponse;
 import com.moneybuddy.moneylog.ledger.dto.response.LedgerDayResponse;
-import com.moneybuddy.moneylog.ledger.dto.response.LedgerEntryDto;
 import com.moneybuddy.moneylog.ledger.dto.response.LedgerMonthResponse;
-import com.moneybuddy.moneylog.ledger.dto.response.OcrResultDto;
 
-import okhttp3.MultipartBody;
 import retrofit2.Call;
-import retrofit2.http.*;
+import retrofit2.http.Body;
+import retrofit2.http.GET;
+import retrofit2.http.POST;
+import retrofit2.http.PUT;
+import retrofit2.http.Path;
+import retrofit2.http.Query;
+
+
 
 public interface LedgerApi {
+    @GET("api/ledger/day")
+    Call<LedgerDayResponse> getDay(@Query("date") String yyyyMMdd);
 
-    // 수동 작성/수정/삭제 (이미 존재한다고 하셔서 유지)
-    @POST("/api/ledger")
-    Call<WrappedEntry> create(@Body LedgerCreateRequest body);
+    // 서버가 ym=yyyy-MM 으로 받는 경우
+    @GET("api/ledger/month")
+    Call<LedgerMonthResponse> getMonth(@Query("ym") String ym);
 
-    @PUT("/api/ledger/{id}")
-    Call<WrappedEntry> update(@Path("id") long id, @Body LedgerCreateRequest body);
+    // (대신 year/month 로 받으면 위 한 줄 대신 아래 사용)
+    // @GET("ledger/month") Call<LedgerMonthResponse> getMonth(@Query("year") int y, @Query("month") int m);
 
-    @DELETE("/api/ledger/{id}")
-    Call<Void> delete(@Path("id") long id);
-    class WrappedEntry {
-        public String status;
-        public LedgerEntryDto entry;
-    }
+    @POST("api/ledger")
+    Call<Long> create(@Body LedgerCreateRequest body);
 
-    // 월/일 요약
-    @GET("/api/ledger/month")
-    Call<LedgerMonthResponse> getMonth(@Query("ym") String yearMonth); // "YYYY-MM"
+    @PUT("api/ledger/{id}")
+    Call<Void> update(@Path("id") long id, @Body LedgerCreateRequest body);
 
-    @GET("/api/ledger/day")
-    Call<LedgerDayResponse> getDay(@Query("date") String date); // "YYYY-MM-DD"
-
-    // 자동 작성: 인앱 알림 텍스트 파싱
-    @POST("/api/ledger/auto")
+    @POST("api/ledger/auto")   // ← 베이스 URL 뒤에 붙는 상대 경로. 서버 경로가 다르면 여길 맞추세요.
     Call<AutoLedgerResponse> postAuto(@Body AutoLedgerRequest body);
-
-    // 영수증 OCR 업로드 (Multipart)
-    @Multipart
-    @POST("/api/receipt/ocr")
-    Call<OcrResultDto> uploadReceipt(@Part MultipartBody.Part file);
-
-    // 예산 목표 업서트/조회
-    @PUT("/budget-goal")
-    Call<BudgetGoalDto> putBudgetGoal(@Query("ym") String yearMonth, @Body BudgetGoalDto body);
-
-    @GET("/budget-goal")
-    Call<BudgetGoalDto> getBudgetGoal(@Query("ym") String yearMonth);
-
-    // 카테고리 비율
-    @GET("/analytics/category-ratio")
-    Call<CategoryRatioResponse> getCategoryRatio(@Query("ym") String yearMonth);
 }

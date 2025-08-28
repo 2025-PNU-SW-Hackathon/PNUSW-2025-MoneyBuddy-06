@@ -73,6 +73,8 @@
         <activity android:name=".mobti.activity.MobtiResultActivity" />
         <activity android:name=".mobti.activity.MobtiActivity" />
 
+        <activity android:name=".finance.activity.FinanceInfoActivity" />
+
         <!--My Page-->
         <activity
             android:name=".mypage.activity.MypageActivity"

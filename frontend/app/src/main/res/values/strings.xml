@@ -49,11 +49,11 @@
     <string-array name="category_list">
         <item>선택</item>
         <item>식비</item>
-        <item>카페/베이커리</item>
+        <item>카페베이커리</item>
         <item>교통</item>
-        <item>문화/여가</item>
-        <item>의료/건강</item>
-        <item>의류/미용</item>
+        <item>문화여가</item>
+        <item>의료건강</item>
+        <item>의류미용</item>
         <item>기타</item>
     </string-array>
 
