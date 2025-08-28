@@ -14,13 +14,27 @@ public class Challenge {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String title;
-    private String description;
-    private String type;
-    private String category;
-    private String goalPeriod;
-    private String goalType;
-    private Integer goalValue;
+    @Column(nullable = false)
+    private String title = "";
+
+    @Column(nullable = false)
+    private String description = "";
+
+    @Column(nullable = false)
+    private String type = "";
+
+    @Column(nullable = false)
+    private String category = "";
+
+    @Column(nullable = false)
+    private String goalPeriod = "";
+
+    @Column(nullable = false)
+    private String goalType = "";
+
+    @Builder.Default
+    @Column(nullable = false)
+    private Integer goalValue = 0;
 
     @Builder.Default
     @Column(nullable = false)
@@ -34,10 +48,10 @@ public class Challenge {
     @Column(nullable = false)
     private boolean isAccountLinked = false;
 
-    private Long createdBy;
+    @Builder.Default
+    @Column(nullable = false)
+    private Long createdBy = 0L; // 사용자 ID 없으면 0으로
 
-
-    private String mobtiType;
-
-
+    @Column(nullable = false)
+    private String mobtiType = "";
 }
