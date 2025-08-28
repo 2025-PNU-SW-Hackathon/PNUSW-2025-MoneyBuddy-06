@@ -131,7 +131,7 @@ public class RecomendedChallengeDataLoader implements CommandLineRunner {
                         .isAccountLinked(false)
                         .createdBy(null)
                         .build());
-
+      
         saveIfNotExists("‘무지출 데이’ 실천하기",
                 Challenge.builder()
                         .title("‘무지출 데이’ 실천하기")
