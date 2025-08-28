@@ -15,10 +15,10 @@ public class RecomendedChallengeDataLoader implements CommandLineRunner {
     @Override
     public void run(String... args) {
         // I형
-        saveIfNotExists("감정소비는 꾹참고, 산책이나 글쓰기처럼 말을 편하게 해주는 활동하기",
+        saveIfNotExists("마음을 달래는 힐링타임",
                 Challenge.builder()
-                        .title("감정소비는 꾹참고, 산책이나 글쓰기처럼 말을 편하게 해주는 활동하기")
-                        .description("감정소비를 대신해 마음이 편해지는 활동을 해보세요")
+                        .title("마음을 달래는 힐링타임")
+                        .description("감정소비는 꾹참고, 산책이나 글쓰기처럼 말을 편하게 해주는 활동하기")
                         .goalPeriod("1주")
                         .goalType("횟수")
                         .goalValue(3)
@@ -31,10 +31,10 @@ public class RecomendedChallengeDataLoader implements CommandLineRunner {
                         .createdBy(null)
                         .build());
 
-        saveIfNotExists("구매하기 전, 중고앱이나 최저가 사이트를 먼저 찾아보기",
+        saveIfNotExists("중고 먼저 보기 습관",
                 Challenge.builder()
-                        .title("구매하기 전, 중고앱이나 최저가 사이트를 먼저 찾아보기")
-                        .description("즉흥적 구매 전에 가격을 비교해보는 습관 들이기")
+                        .title("중고 먼저 보기 습관")
+                        .description("중고앱이나 최저가 사이트 먼저 찾아보기")
                         .goalPeriod("2주")
                         .goalType("횟수")
                         .goalValue(3)
@@ -47,10 +47,10 @@ public class RecomendedChallengeDataLoader implements CommandLineRunner {
                         .createdBy(null)
                         .build());
 
-        saveIfNotExists("자주쓰는 카테고리에서 15000원 이하로 소비하기",
+        saveIfNotExists("좋아하는 건 소소하게",
                 Challenge.builder()
-                        .title("자주쓰는 카테고리에서 15000원 이하로 소비하기")
-                        .description("특정 소비 카테고리에서 절약하기 (가계부 연동)")
+                        .title("좋아하는 건 소소하게")
+                        .description("자주쓰는 카테고리에서 15000원 이하로 소비하기")
                         .goalPeriod("1주")
                         .goalType("금액")
                         .goalValue(15000)
@@ -64,10 +64,10 @@ public class RecomendedChallengeDataLoader implements CommandLineRunner {
                         .build());
 
         // E형
-        saveIfNotExists("구매한 사이트에 실용적인 리뷰 남기기",
+        saveIfNotExists("리뷰 달고 나눔왕 되기",
                 Challenge.builder()
-                        .title("구매한 사이트에 실용적인 리뷰 남기기")
-                        .description("나의 소비 경험을 공유해 타인에게도 도움되게 하기")
+                        .title("리뷰 달고 나눔왕 되기")
+                        .description("구매한 사이트에 실용적인 리뷰 남기기")
                         .goalPeriod("1달")
                         .goalType("횟수")
                         .goalValue(3)
@@ -80,10 +80,10 @@ public class RecomendedChallengeDataLoader implements CommandLineRunner {
                         .createdBy(null)
                         .build());
 
-        saveIfNotExists("쿠폰이나 포인트를 활용해서 할인 받기",
+        saveIfNotExists("쿠폰 챙겨 알뜰천사",
                 Challenge.builder()
-                        .title("쿠폰이나 포인트를 활용해서 할인 받기")
-                        .description("쌓인 포인트, 쿠폰을 적극 활용해 소비 습관 개선")
+                        .title("쿠폰 챙겨 알뜰천사")
+                        .description("쿠폰이나 포인트를 활용해서 할인 받기")
                         .goalPeriod("2주")
                         .goalType("횟수")
                         .goalValue(3)
@@ -99,7 +99,7 @@ public class RecomendedChallengeDataLoader implements CommandLineRunner {
         saveIfNotExists("최저가 비교를 통해 1000원 이상 절약해보기",
                 Challenge.builder()
                         .title("최저가 비교를 통해 1000원 이상 절약해보기")
-                        .description("동일 상품이라면 더 저렴하게 사는 습관 들이기")
+                        .description("최저가 비교를 통해 1000원 이상 절약해보기")
                         .goalPeriod("1달")
                         .goalType("횟수")
                         .goalValue(3)
@@ -118,8 +118,8 @@ public class RecomendedChallengeDataLoader implements CommandLineRunner {
         // M형
         saveIfNotExists("한 달 수입의 30%를 저축하기",
                 Challenge.builder()
-                        .title("한 달 수입의 30%를 저축하기")
-                        .description("수입의 30%를 자동이체 또는 따로 관리하며 저축하기")
+                        .title("")
+                        .description("한 달 수입의 30%를 저축하기")
                         .goalPeriod("1달")
                         .goalType("금액")
                         .goalValue(300000)
