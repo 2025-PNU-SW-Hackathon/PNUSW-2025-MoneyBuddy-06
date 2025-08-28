@@ -66,34 +66,31 @@ public class ChallengeSuccessService {
             UserExp userExp = userExpRepository.findById(userId)
                     .orElseGet(() -> {
                         UserExp newExp = UserExp.builder()
-                                .user(user)        // @MapsId 때문에 반드시 User 넣어야 함
+                                .user(user)
                                 .experience(0)
                                 .level(1)
                                 .build();
                         return userExpRepository.save(newExp);
                     });
 
-            // 경험치 추가
-            boolean leveledUp = userExp.addExperience(25, 100);
+            boolean leveledUp = userExp.addExperience(EXP_PER_SUCCESS, EXP_PER_LEVEL);
             userExpRepository.save(userExp);
 
-            // 챌린지 시작일 ~ 종료일 계산
+            // 챌린지 기간 내 성공 횟수 계산
             LocalDate start = userChallenge.getJoinedAt().toLocalDate();
             LocalDate end = start.plusDays(parseGoalPeriod(challenge.getGoalPeriod()));
 
-            // 챌린지 기간 내 성공 횟수 계산
             long successCount = successRepository.countByUserIdAndChallengeIdAndSuccessDateBetween(
                     userId, challengeId, start, end.minusDays(1)
             );
 
-            // 목표 달성 시 챌린지 완료 및 보상 지급
+            // 목표 달성 시 최종 성공 처리
             if (!userChallenge.isCompleted() && successCount >= challenge.getGoalValue()) {
                 userChallenge.setCompleted(true);
+                userChallenge.setSuccess(true);   // 최종 성공 처리
                 userChallenge.setRewarded(true);
                 userChallengeRepository.save(userChallenge);
 
-
-                // 챌린지 성공 알림
                 notifier.send(
                         userId,
                         NotificationType.CHALLENGE_SUCCESS,
@@ -106,7 +103,6 @@ public class ChallengeSuccessService {
                         "/challenges/" + challengeId
                 );
 
-                // 레벨업 알림
                 if (leveledUp) {
                     notifier.send(
                             userId,
@@ -114,7 +110,7 @@ public class ChallengeSuccessService {
                             TargetType.PROFILE,
                             null,
                             "레벨 업! 🎉",
-                            "새 레벨에 도달했습니다.레벨을 확인해보세요.",
+                            "새 레벨에 도달했습니다. 레벨을 확인해보세요.",
                             NotificationAction.OPEN_PROFILE_LEVEL,
                             Map.of("newLevel", userExp.getLevel()),
                             "/profile/level"
@@ -123,19 +119,41 @@ public class ChallengeSuccessService {
 
                 message = "축하합니다! 챌린지를 성공하고 경험치 " + EXP_PER_SUCCESS + "점을 획득했습니다!";
             } else {
-                // 하루 성공 기록만
                 message = "하루 성공 기록 완료!";
             }
 
         } else {
+            // 하루 성공 기록 취소
             successRepository.deleteByUserIdAndChallengeIdAndSuccessDate(userId, challengeId, today);
+
+            // 전체 성공 횟수 재계산
+            LocalDate start = userChallenge.getJoinedAt().toLocalDate();
+            LocalDate end = start.plusDays(parseGoalPeriod(challenge.getGoalPeriod()));
+            long successCount = successRepository.countByUserIdAndChallengeIdAndSuccessDateBetween(
+                    userId, challengeId, start, end.minusDays(1)
+            );
+
+            // 목표치 미달이면 최종 성공 상태 되돌리기
+            if (successCount < challenge.getGoalValue()) {
+                userChallenge.setCompleted(false);
+                userChallenge.setSuccess(false);
+                userChallenge.setRewarded(false);
+                userChallengeRepository.save(userChallenge);
+            }
+
             message = "하루 성공 기록이 취소되었습니다.";
         }
 
-        // 현재까지의 총 성공 일수 반환
+        // 현재까지 총 성공 일수
         int currentDay = successRepository.countByUserIdAndChallengeId(userId, challengeId);
 
-        return new ChallengeStatusResponse(true, message, currentDay);
+        // 최종 성공 여부(DB 기준)
+        boolean finalSuccess = userChallenge.isSuccess();
+
+        // 오늘 성공 여부 (요청값 그대로)
+        boolean todaySuccess = isTodayCompleted;
+
+        return new ChallengeStatusResponse(message, currentDay, todaySuccess, finalSuccess);
     }
 
     /**
