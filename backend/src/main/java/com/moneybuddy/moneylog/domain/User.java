@@ -20,7 +20,7 @@ public class User {
     @Column(name = "password", nullable = false)
     private String password;
 
-    @Column(name = "mobti_type", nullable = true)
+    @Column(name = "mobti", nullable = true)
     private String mobti;
 
     @Column(name = "mobti_updated_at")
@@ -39,7 +39,7 @@ public class User {
     public User(String email, String password) {
         this.email = email;
         this.password = password;
-        this.mobti = null;
+        this.mobti = "UNDEFINED";
         this.score = 0;
     }
 
