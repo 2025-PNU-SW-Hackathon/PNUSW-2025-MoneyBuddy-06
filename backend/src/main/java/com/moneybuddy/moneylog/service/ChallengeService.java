@@ -213,7 +213,7 @@ public class ChallengeService {
                 .goalPeriod(c.getGoalPeriod())
                 .goalValue(c.getGoalValue())
                 .isAccountLinked(c.isAccountLinked())
-                .isMine(false)
+                .mine(false)
                 .completed(false)
                 .success(false)
                 .build();
@@ -264,7 +264,7 @@ public class ChallengeService {
                 .isSystemGenerated(challenge.isSystemGenerated())
                 .isAccountLinked(challenge.isAccountLinked())
                 .createdBy(challenge.getCreatedBy())
-                .isMine(challenge.getCreatedBy() != null && challenge.getCreatedBy().equals(userId))
+                .mine(challenge.getCreatedBy() != null && challenge.getCreatedBy().equals(userId))
 
                 .isJoined(isJoined)
                 .joinedAt(null)

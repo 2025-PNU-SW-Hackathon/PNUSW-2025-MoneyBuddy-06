@@ -22,7 +22,6 @@ public class ChallengeCardResponse {
     private boolean isSystemGenerated;
     private boolean isAccountLinked;
     private Long createdBy;
-    private boolean isMine;
 
 
     private boolean isJoined;
