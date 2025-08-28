@@ -125,16 +125,17 @@ public class RecomendedChallengeDataLoader implements CommandLineRunner {
                         .isAccountLinked(false)
                         .createdBy(null)
                         .build());
-
-        saveIfNotExists("‘무지출 데이’ 실천하기 (M)",
+      
+        saveIfNotExists("‘무지출 데이’ 실천하기",
                 Challenge.builder()
-                        .title("‘무지출 데이’ 실천하기 (M)")
+                        .title("‘무지출 데이’ 실천하기")
                         .description("일주일에 하루는 무조건 무지출로 버텨보기")
                         .goalPeriod("1주")
                         .goalType("횟수")
                         .goalValue(1)
                         .mobtiType("M")
-                        .type("저축")
+                        .type("지출")
+                        .category("기타")
                         .isSystemGenerated(true)
                         .isShared(false)
                         .isAccountLinked(true)

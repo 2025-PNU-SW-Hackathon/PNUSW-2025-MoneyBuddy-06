@@ -9,10 +9,12 @@ import com.moneybuddy.moneylog.dto.request.UserChallengeRequest;
 import com.moneybuddy.moneylog.dto.response.ChallengeCardResponse;
 import com.moneybuddy.moneylog.repository.ChallengeRepository;
 import com.moneybuddy.moneylog.repository.UserChallengeRepository;
+import com.moneybuddy.moneylog.repository.UserChallengeSuccessRepository;
 import com.moneybuddy.moneylog.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -24,6 +26,7 @@ public class ChallengeService {
     private final ChallengeRepository challengeRepository;
     private final UserRepository userRepository;
     private final UserChallengeRepository userChallengeRepository;
+    private final UserChallengeSuccessRepository userChallengeSuccessRepository;
 
     /**
      * 사용자의 MoBTI 값을 기반으로 추천 챌린지 목록 조회
@@ -84,7 +87,6 @@ public class ChallengeService {
                 .joinedAt(LocalDateTime.now())
                 .completed(false)
                 .rewarded(false)
-                .success(false)
                 .build();
         userChallengeRepository.save(userChallenge);
     }
@@ -96,16 +98,13 @@ public class ChallengeService {
         List<Challenge> challenges = challengeRepository.findByIsSharedTrue();
 
         return challenges.stream()
-                .map(challenge -> ChallengeCardResponse.builder()
-                        .challengeId(challenge.getId())
-                        .title(challenge.getTitle())
-                        .goalPeriod(challenge.getGoalPeriod())
-                        .goalValue(challenge.getGoalValue())
-                        .isMine(challenge.getCreatedBy() != null && challenge.getCreatedBy().equals(userId))
-                        .build())
+                .map(challenge -> toSharedChallengeResponse(challenge, userId))
                 .toList();
     }
 
+    /**
+     * 챌린지 상세 정보 조회
+     */
     /**
      * 챌린지 상세 정보 조회
      */
@@ -113,18 +112,57 @@ public class ChallengeService {
         Challenge challenge = challengeRepository.findById(challengeId)
                 .orElseThrow(() -> new IllegalArgumentException("챌린지를 찾을 수 없습니다."));
 
-        boolean isJoined = userChallengeRepository.existsByUserIdAndChallengeId(userId, challengeId);
+        Optional<UserChallenge> userChallengeOpt =
+                userChallengeRepository.findByUserIdAndChallengeId(userId, challengeId);
+
         int participantCount = userChallengeRepository.countByChallengeId(challengeId);
+
+        boolean isJoined = userChallengeOpt.isPresent();
+        boolean completed = false;
+        boolean rewarded = false;
+        LocalDateTime joinedAt = null;
+
+        long successCount = 0;
+
+        if (userChallengeOpt.isPresent()) {
+            UserChallenge uc = userChallengeOpt.get();
+            completed = uc.isCompleted();
+            rewarded = uc.isRewarded();
+            joinedAt = uc.getJoinedAt();
+
+            LocalDate start = uc.getJoinedAt().toLocalDate();
+            LocalDate end = start.plusDays(parseGoalPeriod(challenge.getGoalPeriod()));
+
+            successCount = userChallengeSuccessRepository
+                    .countByUserIdAndChallengeIdAndSuccessDateBetween(
+                            userId, challengeId, start, end.minusDays(1)
+                    );
+        }
+
+        boolean success = successCount >= challenge.getGoalValue(); // 목표 달성 여부
 
         return ChallengeDetailResponse.builder()
                 .challengeId(challenge.getId())
                 .title(challenge.getTitle())
                 .description(challenge.getDescription())
+                .type(challenge.getType())
+                .category(challenge.getCategory())
                 .goalPeriod(challenge.getGoalPeriod())
                 .goalType(challenge.getGoalType())
                 .goalValue(challenge.getGoalValue())
+                .mobtiType(challenge.getMobtiType())
+                .isSystemGenerated(challenge.isSystemGenerated())
+                .isAccountLinked(challenge.isAccountLinked())
+                .createdBy(challenge.getCreatedBy())
                 .currentParticipants(participantCount)
+
                 .isJoined(isJoined)
+                .joinedAt(joinedAt)
+                .completed(completed)
+                .success(success)
+                .rewarded(rewarded)
+                .mine(challenge.getCreatedBy() != null && challenge.getCreatedBy().equals(userId))
+
                 .build();
     }
 
@@ -184,7 +222,7 @@ public class ChallengeService {
     /**
      * 공유 챌린지 필터링
      */
-    public List<ChallengeCardResponse> filterSharedChallenges(ChallengeFilterRequest request) {
+    public List<ChallengeCardResponse> filterSharedChallenges(Long userId, ChallengeFilterRequest request) {
         List<Challenge> challenges;
 
         String type = request.getType();
@@ -203,24 +241,59 @@ public class ChallengeService {
         }
 
         return challenges.stream()
-                .map(this::toSharedChallengeResponse)
+                .map(c -> toSharedChallengeResponse(c, userId)) // userId 반영
                 .collect(Collectors.toList());
     }
 
     /**
      * 공유 챌린지 → 카드 응답 변환
      */
-    private ChallengeCardResponse toSharedChallengeResponse(Challenge challenge) {
+    private ChallengeCardResponse toSharedChallengeResponse(Challenge challenge, Long userId) {
+        int participantCount = userChallengeRepository.countByChallengeId(challenge.getId());
+        boolean isJoined = userChallengeRepository.existsByUserIdAndChallengeId(userId, challenge.getId());
+
         return ChallengeCardResponse.builder()
                 .challengeId(challenge.getId())
                 .title(challenge.getTitle())
-                .category(challenge.getCategory())
+                .description(challenge.getDescription())
                 .type(challenge.getType())
-                .goalType(challenge.getGoalType())
+                .category(challenge.getCategory())
                 .goalPeriod(challenge.getGoalPeriod())
+                .goalType(challenge.getGoalType())
                 .goalValue(challenge.getGoalValue())
+                .isSystemGenerated(challenge.isSystemGenerated())
                 .isAccountLinked(challenge.isAccountLinked())
-                .isMine(false)
+                .createdBy(challenge.getCreatedBy())
+                .isMine(challenge.getCreatedBy() != null && challenge.getCreatedBy().equals(userId))
+
+                .isJoined(isJoined)
+                .joinedAt(null)
+                .currentParticipants(participantCount)
+
+                .completed(false)
+                .success(false)
+                .rewarded(false)
+
+                .mobtiType(challenge.getMobtiType())
                 .build();
+    }
+
+    /**
+     * 챌린지 기간을 일(day) 단위로 환산
+     */
+    private int parseGoalPeriod(String periodStr) {
+        if (periodStr == null || periodStr.isEmpty()) {
+            throw new IllegalArgumentException("goalPeriod 값이 없습니다.");
+        }
+
+        if (periodStr.endsWith("일")) {
+            return Integer.parseInt(periodStr.replace("일", "").trim());
+        } else if (periodStr.endsWith("주")) {
+            return Integer.parseInt(periodStr.replace("주", "").trim()) * 7;
+        } else if (periodStr.endsWith("개월") || periodStr.endsWith("달")) {
+            return Integer.parseInt(periodStr.replaceAll("개월|달", "").trim()) * 30;
+        } else {
+            throw new IllegalArgumentException("goalPeriod 형식이 잘못되었습니다: " + periodStr);
+        }
     }
 }

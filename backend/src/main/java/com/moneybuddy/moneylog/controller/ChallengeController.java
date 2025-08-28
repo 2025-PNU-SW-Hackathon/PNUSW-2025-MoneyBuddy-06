@@ -55,8 +55,12 @@ public class ChallengeController {
     }
 
     @PostMapping("/shared/filter")
-    public List<ChallengeCardResponse> filterSharedChallenges(@RequestBody ChallengeFilterRequest request) {
-        return challengeService.filterSharedChallenges(request);
+    public List<ChallengeCardResponse> filterSharedChallenges(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @RequestBody ChallengeFilterRequest request
+    ) {
+        Long userId = userDetails.getUserId();
+        return challengeService.filterSharedChallenges(userId, request);
     }
 
     // 챌린지 상세 정보 조회

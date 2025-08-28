@@ -22,7 +22,6 @@ public class ChallengeDetailResponse {
     private boolean isSystemGenerated;
     private boolean isAccountLinked;
     private Long createdBy;
-    private boolean isMine;
 
     private boolean isJoined;
     private LocalDateTime joinedAt;
@@ -30,6 +29,7 @@ public class ChallengeDetailResponse {
     private boolean completed;
     private boolean success;
     private boolean rewarded;
+    private boolean mine;
 
     private String mobtiType;
 

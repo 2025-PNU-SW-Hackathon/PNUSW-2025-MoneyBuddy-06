@@ -17,11 +17,20 @@ public class UserChallengeSuccess {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false)
     private Long userId;
 
-    @ManyToOne
-    @JoinColumn(name = "challenge_id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "challenge_id", nullable = false)
     private Challenge challenge;
 
+    @Column(nullable = false)
     private LocalDate successDate;
+
+    @PrePersist
+    public void prePersist() {
+        if (successDate == null) {
+            successDate = LocalDate.now();
+        }
+    }
 }
