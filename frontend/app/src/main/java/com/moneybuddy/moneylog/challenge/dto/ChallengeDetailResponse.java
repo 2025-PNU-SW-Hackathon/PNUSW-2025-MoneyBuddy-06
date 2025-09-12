@@ -40,4 +40,30 @@ public class ChallengeDetailResponse implements Serializable {
             return 0;
         }
     }
+
+    public int getGoalPeriodInDays() {
+        if (goalPeriod == null || goalPeriod.trim().isEmpty()) {
+            return 0;
+        }
+
+        int numericValue;
+        try {
+            String numberOnly = goalPeriod.replaceAll("[^0-9]", "");
+            if (numberOnly.isEmpty()) {
+                return 0;
+            }
+            numericValue = Integer.parseInt(numberOnly);
+        } catch (NumberFormatException e) {
+            e.printStackTrace();
+            return 0;
+        }
+
+        if (goalPeriod.contains("달") || goalPeriod.contains("month")) {
+            return numericValue * 30;
+        } else if (goalPeriod.contains("주") || goalPeriod.contains("week")) {
+            return numericValue * 7;
+        } else {
+            return numericValue;
+        }
+    }
 }

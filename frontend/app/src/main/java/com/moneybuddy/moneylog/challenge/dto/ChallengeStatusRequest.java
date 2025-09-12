@@ -7,7 +7,7 @@ public class ChallengeStatusRequest {
     @SerializedName("challengeId")
     private Long challengeId;
 
-    @SerializedName("isTodayCompleted")
+    @SerializedName("todayCompleted")
     private boolean isTodayCompleted;
 
     // Getter

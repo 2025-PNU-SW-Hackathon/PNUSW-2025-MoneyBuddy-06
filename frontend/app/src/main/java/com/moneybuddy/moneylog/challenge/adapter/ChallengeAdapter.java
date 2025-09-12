@@ -10,7 +10,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.content.res.ColorStateList;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
@@ -27,8 +26,6 @@ import com.moneybuddy.moneylog.challenge.model.ChallengeFilter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiConsumer;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import lombok.Setter;
 
@@ -45,7 +42,7 @@ public class ChallengeAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     @Setter
     private Long representativeChallengeId = -1L;
 
-    private List<Object> items = new ArrayList<>();
+    private List<ChallengeCardResponse> items = new ArrayList<>();
     private List<ChallengeCardResponse> todoList = new ArrayList<>();
     private boolean showHeader = false;
 
@@ -68,7 +65,7 @@ public class ChallengeAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     }
 
 
-    public void submitList(List<Object> newItems) {
+    public void submitList(List<ChallengeCardResponse> newItems) {
         this.items = newItems;
         notifyDataSetChanged();
     }
@@ -156,22 +153,19 @@ public class ChallengeAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             btnRepChallenge = v.findViewById(R.id.btn_rep_challenge);
         }
 
+
         void bind(ChallengeCardResponse c) {
             tvTitle.setText(c.getTitle());
-            tvPeriod.setText("목표 기간: " + c.getGoalPeriod());
-            if (c.getGoalType().equals("금액")) tvValue.setText("목표 금액: " + c.getGoalValue() + "원");
-            else tvValue.setText("목표 횟수: " + c.getGoalValue() + "회"); // 횟수
 
-            try {
-                Pattern pattern = Pattern.compile("\\d+");
-                Matcher matcher = pattern.matcher(c.getGoalPeriod());
-                if (matcher.find()) {
-                    int goalDays = Integer.parseInt(matcher.group());
-                    progressBar.setMax(goalDays);
-                }
-            } catch (Exception e) {
-                progressBar.setMax(1);
+            tvPeriod.setText("목표 기간: " + c.getGoalPeriod());
+
+            if ("금액".equals(c.getGoalType())) {
+                tvValue.setText("목표 금액: " + c.getGoalValue() + "원");
+            } else {
+                tvValue.setText("목표 횟수: " + c.getGoalValue() + "회");
             }
+
+            progressBar.setMax(c.getGoalPeriodInDays());
             progressBar.setProgress((int) c.getDaysSinceJoined());
 
             itemView.setOnClickListener(v -> {
@@ -213,6 +207,9 @@ public class ChallengeAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
                 ChallengeCardResponse c = (ChallengeCardResponse) item;
                 tvTitle.setText(c.getTitle());
                 tvPeriod.setText("기간: " + c.getGoalPeriod());
+                if (c.getGoalValue() == 0) tvValue.setText("");
+                else if (c.getGoalType().equals("금액")) tvValue.setText("금액: " + c.getGoalValue() + "원");
+                else tvValue.setText("횟수: " + c.getGoalValue() + "회");
                 layout.setBackgroundColor(ContextCompat.getColor(context, Boolean.TRUE.equals(c.isMine()) ? R.color.my_challenge_color : R.color.other_challenge_color));
                 itemView.setOnClickListener(v -> {
                     Intent i = new Intent(context, ChallengeDetailActivity.class);
@@ -223,6 +220,9 @@ public class ChallengeAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
                 RecommendedChallengeResponse c = (RecommendedChallengeResponse) item;
                 tvTitle.setText(c.getTitle());
                 tvPeriod.setText("기간: " + c.getGoalPeriod());
+                if (c.getGoalValue() == 0) tvValue.setText("");
+                else if (c.getGoalType().equals("금액")) tvValue.setText("금액: " + c.getGoalValue() + "원");
+                else tvValue.setText("횟수: " + c.getGoalValue() + "회");
                 layout.setBackgroundColor(ContextCompat.getColor(context, R.color.other_challenge_color));
                 itemView.setOnClickListener(v -> {
                     ChallengeCardResponse challengeToPass = new ChallengeCardResponse(c);
