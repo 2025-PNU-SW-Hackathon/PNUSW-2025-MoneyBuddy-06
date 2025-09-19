@@ -28,7 +28,7 @@ public class RecomendedChallengeDataLoader implements CommandLineRunner {
                         .isSystemGenerated(true)
                         .isShared(false)
                         .isAccountLinked(false)
-                        .createdBy(null)
+                        .createdBy(0L)
                         .build());
 
         saveIfNotExists("중고 먼저 보기 습관",
@@ -44,7 +44,7 @@ public class RecomendedChallengeDataLoader implements CommandLineRunner {
                         .isSystemGenerated(true)
                         .isShared(false)
                         .isAccountLinked(false)
-                        .createdBy(null)
+                        .createdBy(0L)
                         .build());
 
         saveIfNotExists("좋아하는 건 소소하게",
@@ -60,7 +60,7 @@ public class RecomendedChallengeDataLoader implements CommandLineRunner {
                         .isSystemGenerated(true)
                         .isShared(false)
                         .isAccountLinked(true)
-                        .createdBy(null)
+                        .createdBy(0L)
                         .build());
 
         // E형
@@ -77,7 +77,7 @@ public class RecomendedChallengeDataLoader implements CommandLineRunner {
                         .isSystemGenerated(true)
                         .isShared(false)
                         .isAccountLinked(false)
-                        .createdBy(null)
+                        .createdBy(0L)
                         .build());
 
         saveIfNotExists("쿠폰 챙겨 알뜰천사",
@@ -93,7 +93,7 @@ public class RecomendedChallengeDataLoader implements CommandLineRunner {
                         .isSystemGenerated(true)
                         .isShared(false)
                         .isAccountLinked(false)
-                        .createdBy(null)
+                        .createdBy(0L)
                         .build());
 
         saveIfNotExists("최저가로 득템 성공",
@@ -109,7 +109,7 @@ public class RecomendedChallengeDataLoader implements CommandLineRunner {
                         .isSystemGenerated(true)
                         .isShared(false)
                         .isAccountLinked(false)
-                        .createdBy(null)
+                        .createdBy(0L)
                         .build());
 
 
@@ -129,7 +129,7 @@ public class RecomendedChallengeDataLoader implements CommandLineRunner {
                         .isSystemGenerated(true)
                         .isShared(false)
                         .isAccountLinked(false)
-                        .createdBy(null)
+                        .createdBy(0L)
                         .build());
       
         saveIfNotExists("무지출 데이 도전",
@@ -145,7 +145,7 @@ public class RecomendedChallengeDataLoader implements CommandLineRunner {
                         .isSystemGenerated(true)
                         .isShared(false)
                         .isAccountLinked(true)
-                        .createdBy(null)
+                        .createdBy(0L)
                         .build());
 
         saveIfNotExists("참은 소비, 저금통 뿅",
@@ -161,7 +161,7 @@ public class RecomendedChallengeDataLoader implements CommandLineRunner {
                         .isSystemGenerated(true)
                         .isShared(false)
                         .isAccountLinked(false)
-                        .createdBy(null)
+                        .createdBy(0L)
                         .build());
 
         // S형
@@ -178,7 +178,7 @@ public class RecomendedChallengeDataLoader implements CommandLineRunner {
                         .isSystemGenerated(true)
                         .isShared(false)
                         .isAccountLinked(false)
-                        .createdBy(null)
+                        .createdBy(0L)
                         .build());
 
         saveIfNotExists("안 산 물건값 저금통",
@@ -194,7 +194,7 @@ public class RecomendedChallengeDataLoader implements CommandLineRunner {
                         .isSystemGenerated(true)
                         .isShared(false)
                         .isAccountLinked(false)
-                        .createdBy(null)
+                        .createdBy(0L)
                         .build());
 
         saveIfNotExists("일주일 15만 지키기",
@@ -210,7 +210,7 @@ public class RecomendedChallengeDataLoader implements CommandLineRunner {
                         .isSystemGenerated(true)
                         .isShared(false)
                         .isAccountLinked(true)
-                        .createdBy(null)
+                        .createdBy(0L)
                         .build());
 
         // T형
@@ -227,7 +227,7 @@ public class RecomendedChallengeDataLoader implements CommandLineRunner {
                         .isSystemGenerated(true)
                         .isShared(false)
                         .isAccountLinked(false)
-                        .createdBy(null)
+                        .createdBy(0L)
                         .build());
 
         saveIfNotExists("SNS 유혹, 잠깐 뿅",
@@ -243,7 +243,7 @@ public class RecomendedChallengeDataLoader implements CommandLineRunner {
                         .isSystemGenerated(true)
                         .isShared(false)
                         .isAccountLinked(false)
-                        .createdBy(null)
+                        .createdBy(0L)
                         .build());
 
         saveIfNotExists("집에 있나 확인 먼저",
@@ -259,7 +259,7 @@ public class RecomendedChallengeDataLoader implements CommandLineRunner {
                         .isSystemGenerated(true)
                         .isShared(false)
                         .isAccountLinked(false)
-                        .createdBy(null)
+                        .createdBy(0L)
                         .build());
 
         // C형
@@ -276,7 +276,7 @@ public class RecomendedChallengeDataLoader implements CommandLineRunner {
                         .isSystemGenerated(true)
                         .isShared(false)
                         .isAccountLinked(false)
-                        .createdBy(null)
+                        .createdBy(0L)
                         .build());
 
         saveIfNotExists("리뷰 3개는 기본이지",
@@ -292,7 +292,7 @@ public class RecomendedChallengeDataLoader implements CommandLineRunner {
                         .isSystemGenerated(true)
                         .isShared(false)
                         .isAccountLinked(false)
-                        .createdBy(null)
+                        .createdBy(0L)
                         .build());
 
         // P형
@@ -309,7 +309,7 @@ public class RecomendedChallengeDataLoader implements CommandLineRunner {
                         .isSystemGenerated(true)
                         .isShared(false)
                         .isAccountLinked(false)
-                        .createdBy(null)
+                        .createdBy(0L)
                         .build());
 
         saveIfNotExists("소비 계획 다시 점검",
@@ -325,7 +325,7 @@ public class RecomendedChallengeDataLoader implements CommandLineRunner {
                         .isSystemGenerated(true)
                         .isShared(false)
                         .isAccountLinked(false)
-                        .createdBy(null)
+                        .createdBy(0L)
                         .build());
 
         saveIfNotExists("오늘 지출 체크 완료",
@@ -341,7 +341,7 @@ public class RecomendedChallengeDataLoader implements CommandLineRunner {
                         .isSystemGenerated(true)
                         .isShared(false)
                         .isAccountLinked(true)
-                        .createdBy(null)
+                        .createdBy(0L)
                         .build());
 
         saveIfNotExists("고정비 줄이는 습관",
@@ -357,7 +357,7 @@ public class RecomendedChallengeDataLoader implements CommandLineRunner {
                         .isSystemGenerated(true)
                         .isShared(false)
                         .isAccountLinked(false)
-                        .createdBy(null)
+                        .createdBy(0L)
                         .build());
 
         // R형
@@ -374,7 +374,7 @@ public class RecomendedChallengeDataLoader implements CommandLineRunner {
                         .isSystemGenerated(true)
                         .isShared(false)
                         .isAccountLinked(false)
-                        .createdBy(null)
+                        .createdBy(0L)
                         .build());
 
         saveIfNotExists("주간 10만 챌린지",
@@ -390,7 +390,7 @@ public class RecomendedChallengeDataLoader implements CommandLineRunner {
                         .isSystemGenerated(true)
                         .isShared(false)
                         .isAccountLinked(true)
-                        .createdBy(null)
+                        .createdBy(0L)
                         .build());
 
         saveIfNotExists("사기 전 계획 세우기",
@@ -406,7 +406,7 @@ public class RecomendedChallengeDataLoader implements CommandLineRunner {
                         .isSystemGenerated(true)
                         .isShared(false)
                         .isAccountLinked(false)
-                        .createdBy(null)
+                        .createdBy(0L)
                         .build());
     }
 
