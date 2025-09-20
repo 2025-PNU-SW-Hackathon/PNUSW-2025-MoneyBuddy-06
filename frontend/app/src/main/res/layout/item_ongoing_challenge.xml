@@ -34,8 +34,7 @@
                 <ImageView
                     android:id="@+id/iv_category"
                     android:layout_width="20dp"
-                    android:layout_height="20dp"
-                    android:background="@drawable/category_cafe" />
+                    android:layout_height="20dp"/>
 
                 <TextView
                     android:id="@+id/tv_challenge_title"

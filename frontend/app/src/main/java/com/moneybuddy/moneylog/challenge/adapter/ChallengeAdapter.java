@@ -89,13 +89,6 @@ public class ChallengeAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         if (currentFilter == ChallengeFilter.ONGOING) {
             return VIEW_TYPE_ONGOING_CHALLENGE;
         } else {
-            int actualPosition = showHeader ? position - 1 : position;
-
-            Object item = items.get(actualPosition);
-
-            if (item instanceof ChallengeCardResponse && Boolean.TRUE.equals(((ChallengeCardResponse) item).isJoined())) {
-                return VIEW_TYPE_ONGOING_CHALLENGE;
-            }
             return VIEW_TYPE_DEFAULT_CHALLENGE;
         }
     }
@@ -143,6 +136,8 @@ public class ChallengeAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         TextView tvTitle, tvPeriod, tvValue;
         CircularProgressIndicator progressBar;
         ImageButton btnRepChallenge;
+        ImageView ivCategory;
+        View itemLayout;
 
         OngoingChallengeViewHolder(@NonNull View v) {
             super(v);
@@ -151,6 +146,8 @@ public class ChallengeAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             tvValue = v.findViewById(R.id.tv_challenge_value);
             progressBar = v.findViewById(R.id.progressBar);
             btnRepChallenge = v.findViewById(R.id.btn_rep_challenge);
+            ivCategory = v.findViewById(R.id.iv_category);
+            itemLayout = v.findViewById(R.id.challenge_item_layout);
         }
 
 
@@ -167,6 +164,48 @@ public class ChallengeAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 
             progressBar.setMax(c.getGoalPeriodInDays());
             progressBar.setProgress((int) c.getDaysSinceJoined());
+
+            if (c.getCategory() != null) {
+                switch (c.getCategory()) {
+                    case "식비":
+                        ivCategory.setImageResource(R.drawable.category_food);
+                        break;
+                    case "교통":
+                        ivCategory.setImageResource(R.drawable.category_transport);
+                        break;
+                    case "문화여가":
+                        ivCategory.setImageResource(R.drawable.category_culture);
+                        break;
+                    case "의료건강":
+                        ivCategory.setImageResource(R.drawable.category_health);
+                        break;
+                    case "의류미용":
+                        ivCategory.setImageResource(R.drawable.category_beauty);
+                        break;
+                    case "카페베이커리":
+                        ivCategory.setImageResource(R.drawable.category_cafe);
+                        break;
+                    case "저축":
+                        ivCategory.setImageResource(R.drawable.category_saving);
+                        break;
+                    case "습관":
+                        ivCategory.setImageResource(R.drawable.category_habit);
+                        break;
+                    default:
+                        ivCategory.setImageResource(R.drawable.category_others);
+                        break;
+                }
+            } else {
+                ivCategory.setImageResource(R.drawable.category_others);
+            }
+
+            if (itemLayout != null && c.isMine()) {
+                itemLayout.setBackgroundColor(ContextCompat.getColor(context, R.color.my_challenge_color));
+                progressBar.setTrackColor(ContextCompat.getColor(context, R.color.my_challenge_progressbar_track));
+                progressBar.setIndicatorColor(ContextCompat.getColor(context, R.color.my_challenge_progressbar_indicator));
+            } else {
+                itemLayout.setBackgroundColor(ContextCompat.getColor(context, R.color.other_challenge_color));
+            }
 
             itemView.setOnClickListener(v -> {
                 Intent i = new Intent(context, ChallengeDetailActivity.class);
@@ -203,34 +242,87 @@ public class ChallengeAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         }
 
         void bind(Object item) {
+            String title, period, category, goalType;
+            Integer goalValue;
+
             if (item instanceof ChallengeCardResponse) {
                 ChallengeCardResponse c = (ChallengeCardResponse) item;
-                tvTitle.setText(c.getTitle());
-                tvPeriod.setText("기간: " + c.getGoalPeriod());
-                if (c.getGoalValue() == 0) tvValue.setText("");
-                else if (c.getGoalType().equals("금액")) tvValue.setText("금액: " + c.getGoalValue() + "원");
-                else tvValue.setText("횟수: " + c.getGoalValue() + "회");
+                title = c.getTitle();
+                period = c.getGoalPeriod();
+                category = c.getCategory();
+                goalType = c.getGoalType();
+                goalValue = c.getGoalValue();
+
                 layout.setBackgroundColor(ContextCompat.getColor(context, Boolean.TRUE.equals(c.isMine()) ? R.color.my_challenge_color : R.color.other_challenge_color));
                 itemView.setOnClickListener(v -> {
                     Intent i = new Intent(context, ChallengeDetailActivity.class);
                     i.putExtra("challenge", c);
                     context.startActivity(i);
                 });
+
             } else if (item instanceof RecommendedChallengeResponse) {
                 RecommendedChallengeResponse c = (RecommendedChallengeResponse) item;
-                tvTitle.setText(c.getTitle());
-                tvPeriod.setText("기간: " + c.getGoalPeriod());
-                if (c.getGoalValue() == 0) tvValue.setText("");
-                else if (c.getGoalType().equals("금액")) tvValue.setText("금액: " + c.getGoalValue() + "원");
-                else tvValue.setText("횟수: " + c.getGoalValue() + "회");
+                title = c.getTitle();
+                period = c.getGoalPeriod();
+                category = c.getCategory();
+                goalType = c.getGoalType();
+                goalValue = c.getGoalValue();
+
                 layout.setBackgroundColor(ContextCompat.getColor(context, R.color.other_challenge_color));
                 itemView.setOnClickListener(v -> {
                     ChallengeCardResponse challengeToPass = new ChallengeCardResponse(c);
-
                     Intent i = new Intent(context, ChallengeDetailActivity.class);
                     i.putExtra("challenge", challengeToPass);
                     context.startActivity(i);
                 });
+
+            } else {
+                return;
+            }
+
+            tvTitle.setText(title);
+            tvPeriod.setText("기간: " + period);
+
+            if (goalValue == null || goalValue == 0) {
+                tvValue.setText("");
+            } else if ("금액".equals(goalType)) {
+                tvValue.setText("금액: " + goalValue + "원");
+            } else {
+                tvValue.setText("횟수: " + goalValue + "회");
+            }
+
+            if (category != null) {
+                switch (category) {
+                    case "식비":
+                        ivCategory.setImageResource(R.drawable.category_food);
+                        break;
+                    case "교통":
+                        ivCategory.setImageResource(R.drawable.category_transport);
+                        break;
+                    case "문화여가":
+                        ivCategory.setImageResource(R.drawable.category_culture);
+                        break;
+                    case "의료건강":
+                        ivCategory.setImageResource(R.drawable.category_health);
+                        break;
+                    case "의류미용":
+                        ivCategory.setImageResource(R.drawable.category_beauty);
+                        break;
+                    case "카페베이커리":
+                        ivCategory.setImageResource(R.drawable.category_cafe);
+                        break;
+                    case "저축":
+                        ivCategory.setImageResource(R.drawable.category_saving);
+                        break;
+                    case "습관":
+                        ivCategory.setImageResource(R.drawable.category_habit);
+                        break;
+                    default:
+                        ivCategory.setImageResource(R.drawable.category_others);
+                        break;
+                }
+            } else {
+                ivCategory.setImageResource(R.drawable.category_others);
             }
         }
     }

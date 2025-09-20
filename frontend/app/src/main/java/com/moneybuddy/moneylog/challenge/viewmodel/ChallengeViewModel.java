@@ -53,6 +53,7 @@ public class ChallengeViewModel extends AndroidViewModel {
         ChallengeApiService apiService = RetrofitClient.getService(application, ChallengeApiService.class);
         this.repository = new ChallengeRepository(apiService);
         loadChallenges();
+        loadTodoList();
     }
 
     public LiveData<List<ChallengeCardResponse>> getChallengeList() { return challengeList; }

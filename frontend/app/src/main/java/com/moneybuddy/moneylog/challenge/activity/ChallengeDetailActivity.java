@@ -90,9 +90,9 @@ public class ChallengeDetailActivity extends AppCompatActivity {
         String goalTypeLabel = "금액".equals(c.getGoalType()) ? "목표 금액" : "목표 횟수";
         String isLinkedText = Boolean.TRUE.equals(c.isAccountLinked()) ? "연동됨" : "연동되지 않음";
 
-        String howtoText = "챌린지 유형: " + c.getType() + "\n"
-                + goalTypeLabel + ": " + c.getGoalValue() + "\n"
-                + "가계부 연동 체크 여부: " + isLinkedText;
+        String howtoText = "";
+        if (c.getCategory() != null) howtoText += "챌린지 유형: " + c.getCategory() + "\n";
+        howtoText += goalTypeLabel + ": " + c.getGoalValue() + "\n" + "가계부 연동 체크 여부: " + isLinkedText;
         tvHowto.setText(howtoText);
 
         if (Boolean.TRUE.equals(c.isJoined())) {
