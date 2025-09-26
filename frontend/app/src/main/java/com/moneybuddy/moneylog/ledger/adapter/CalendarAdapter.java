@@ -1,92 +1,122 @@
 package com.moneybuddy.moneylog.ledger.adapter;
 
 import android.content.Context;
-import android.content.Intent;
-import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.moneybuddy.moneylog.R;
-import com.moneybuddy.moneylog.ledger.activity.LedgerDetailActivity;
 import com.moneybuddy.moneylog.ledger.model.LedgerDayData;
 import com.moneybuddy.moneylog.util.KoreanMoney;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
-public class CalendarAdapter extends RecyclerView.Adapter<CalendarAdapter.CalendarViewHolder> {
+public class CalendarAdapter extends RecyclerView.Adapter<CalendarAdapter.VH> {
 
-    private final Context context;
-    private final List<LedgerDayData> dayDataList;
-    private final String yearMonth; // ex: "2025-07"
+    public interface OnDayClickListener { void onDayClick(LedgerDayData item); }
 
-    public CalendarAdapter(Context context, List<LedgerDayData> dayDataList, String yearMonth) {
-        this.context = context;
-        this.dayDataList = dayDataList;
-        this.yearMonth = yearMonth;
+    private final List<LedgerDayData> items = new ArrayList<>();
+    @Nullable private OnDayClickListener listener;
+    @Nullable private Context appCtx;
+    @Nullable private String tag;
+
+    // --- 생성자 오버로드(호출부 호환) ---
+    public CalendarAdapter() { }
+    public CalendarAdapter(@Nullable Context ctx) {
+        this.appCtx = (ctx == null ? null : ctx.getApplicationContext());
+    }
+    public CalendarAdapter(@Nullable Context ctx, @Nullable List<LedgerDayData> initial) {
+        this(ctx);
+        if (initial != null) items.addAll(initial);
+    }
+    // (Context, List<LedgerDayData>, String) 생성자 – 기존 호출부 호환용
+    public CalendarAdapter(@Nullable Context ctx,
+                           @Nullable List<LedgerDayData> initial,
+                           @Nullable String tag) {
+        this(ctx, initial);
+        this.tag = tag;
+    }
+    // 선택: 리스너 버전
+    public CalendarAdapter(@Nullable Context ctx,
+                           @Nullable List<LedgerDayData> initial,
+                           @Nullable OnDayClickListener l) {
+        this(ctx, initial);
+        this.listener = l;
     }
 
-    @NonNull
-    @Override
-    public CalendarViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(context).inflate(R.layout.item_calendar_day, parent, false);
-        return new CalendarViewHolder(view);
+    // --- 데이터 주입 ---
+    public void submitDays(@Nullable List<LedgerDayData> list) {
+        items.clear();
+        if (list != null) items.addAll(list);
+        notifyDataSetChanged();
     }
+    public void submit(@Nullable List<LedgerDayData> list) { submitDays(list); }
 
-    @Override
-    public void onBindViewHolder(@NonNull CalendarViewHolder holder, int position) {
-        LedgerDayData item = dayDataList.get(position);
+    public void setOnDayClickListener(@Nullable OnDayClickListener l) { this.listener = l; }
 
-        // 빈 칸
-        if (item == null || item.isEmpty()) {
-            holder.tvDay.setText("");
-            holder.tvTotal.setText("");
-            holder.itemView.setClickable(false);
-            return;
+    /** 날짜별 합계 주입: key=YYYY-MM-DD, val[0]=income(+), val[1]=expense(+) */
+    public void updateTotals(@Nullable Map<String, long[]> daily) {
+        if (daily == null) return;
+        for (LedgerDayData d : items) {
+            long inc = 0, exp = 0;
+            long[] pair = daily.get(d.getDate());
+            if (pair != null) { inc = pair[0]; exp = pair[1]; }
+            d.setIncome(inc);
+            d.setExpense(exp);
         }
+        notifyDataSetChanged();
+    }
 
-        // 날짜
-        holder.tvDay.setText(String.valueOf(item.getDay()));
+    @NonNull @Override
+    public VH onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View v = LayoutInflater.from(parent.getContext())
+                .inflate(R.layout.item_calendar_day, parent, false);
+        return new VH(v);
+    }
 
-        // 합계 = 수입 - 지출
-        int net = item.getIncome() - item.getExpense();
-        String text;
-        if (net > 0) {
-            text = "+ " + KoreanMoney.format(net);
-            holder.tvTotal.setTextColor(Color.parseColor("#2A86FF")); // 파랑
-        } else if (net < 0) {
-            text = "- " + KoreanMoney.format(Math.abs(net));
-            holder.tvTotal.setTextColor(Color.parseColor("#C5463F")); // 빨강
+    @Override
+    public void onBindViewHolder(@NonNull VH h, int position) {
+        LedgerDayData d = items.get(position);
+
+        h.tvDayNumber.setText(String.valueOf(d.getDayOfMonth()));
+        h.itemView.setAlpha(d.isInThisMonth() ? 1f : 0.45f);
+
+        long inc = d.getIncome();
+        long exp = d.getExpense();
+
+        if (inc > 0) {
+            h.tvIncomeSmall.setVisibility(View.VISIBLE);
+            h.tvIncomeSmall.setText("+" + KoreanMoney.format(inc));
         } else {
-            text = "0";
-            holder.tvTotal.setTextColor(Color.parseColor("#888888")); // 회색
+            h.tvIncomeSmall.setVisibility(View.GONE);
         }
-        holder.tvTotal.setText(text);
 
-        // 상세로 이동
-        holder.itemView.setOnClickListener(v -> {
-            Intent intent = new Intent(context, LedgerDetailActivity.class);
-            intent.putExtra("selected_date", yearMonth + "-" + String.format("%02d", item.getDay()));
-            context.startActivity(intent);
-        });
+        if (exp > 0) {
+            h.tvExpenseSmall.setVisibility(View.VISIBLE);
+            h.tvExpenseSmall.setText("-" + KoreanMoney.format(exp));
+        } else {
+            h.tvExpenseSmall.setVisibility(View.GONE);
+        }
+
+        h.itemView.setOnClickListener(v -> { if (listener != null) listener.onDayClick(d); });
     }
 
-    @Override
-    public int getItemCount() {
-        return dayDataList.size();
-    }
+    @Override public int getItemCount() { return items.size(); }
 
-    static class CalendarViewHolder extends RecyclerView.ViewHolder {
-        TextView tvDay, tvTotal;
-
-        CalendarViewHolder(@NonNull View itemView) {
-            super(itemView);
-            tvDay = itemView.findViewById(R.id.tv_day);
-            tvTotal = itemView.findViewById(R.id.tv_total);
+    static class VH extends RecyclerView.ViewHolder {
+        final TextView tvDayNumber, tvIncomeSmall, tvExpenseSmall;
+        VH(@NonNull View v) {
+            super(v);
+            tvDayNumber    = v.findViewById(R.id.tvDayNumber);
+            tvIncomeSmall  = v.findViewById(R.id.tvIncomeSmall);
+            tvExpenseSmall = v.findViewById(R.id.tvExpenseSmall);
         }
     }
 }

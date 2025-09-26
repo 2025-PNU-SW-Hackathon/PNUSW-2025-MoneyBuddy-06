@@ -23,6 +23,7 @@ import com.moneybuddy.moneylog.ledger.adapter.CalendarDayAdapter;
 import com.moneybuddy.moneylog.ledger.dto.response.BudgetGoalDto;
 import com.moneybuddy.moneylog.ledger.dto.response.CategoryRatioResponse;
 import com.moneybuddy.moneylog.ledger.dto.response.LedgerMonthResponse;
+import com.moneybuddy.moneylog.ledger.model.DayCell;
 import com.moneybuddy.moneylog.ledger.repository.AnalyticsRepository;
 import com.moneybuddy.moneylog.ledger.repository.BudgetRepository;
 import com.moneybuddy.moneylog.ledger.repository.LedgerRepository;
@@ -123,9 +124,9 @@ public class LedgerCalendarFragment extends Fragment {
         }
     }
 
-    // ─────────────────────────────────────────────────────────────
-    // 데이터 로드: 월 요약 / 목표 / 카테고리 비율(카드 막대)
-    // ─────────────────────────────────────────────────────────────
+
+    //  월 요약 / 목표 / 카테고리 비율(카드 막대)
+
     private void loadMonthAndGoalAndBar(int y, int m) {
         final String ym = String.format(Locale.KOREAN, "%04d-%02d", y, m);
 
@@ -175,9 +176,9 @@ public class LedgerCalendarFragment extends Fragment {
 
     private void bindMonthSummary(@NonNull LedgerMonthResponse dto) {
         NumberFormat nf = NumberFormat.getInstance(Locale.KOREA);
-        tvIncome.setText(nf.format(safeLong(dto.totalIncome)));
-        tvExpense.setText(nf.format(safeLong(dto.totalExpense)));
-        tvNet.setText(nf.format(safeLong(dto.balance)));
+        tvIncome.setText(nf.format(safeLong(dto.getTotalIncome())));
+        tvExpense.setText(nf.format(safeLong(dto.getTotalExpense())));
+        tvNet.setText(nf.format(safeLong(dto.getBalance())));
     }
 
     /** 소비목표 카드의 막대 + 숫자 표기 */
@@ -248,8 +249,8 @@ public class LedgerCalendarFragment extends Fragment {
     // ─────────────────────────────────────────────────────────────
     // 캘린더 유틸
     // ─────────────────────────────────────────────────────────────
-    private List<CalendarDayAdapter.DayCell> build42Cells(int y, int m) {
-        List<CalendarDayAdapter.DayCell> list = new ArrayList<>();
+    private List<DayCell> build42Cells(int y, int m) {
+        List<DayCell> list = new ArrayList<>();
         Calendar cal = Calendar.getInstance();
         cal.set(y, m - 1, 1);
 
@@ -257,9 +258,9 @@ public class LedgerCalendarFragment extends Fragment {
         int leading = firstDow - 1;
         int daysInMonth = cal.getActualMaximum(Calendar.DAY_OF_MONTH);
 
-        for (int i = 0; i < leading; i++) list.add(new CalendarDayAdapter.DayCell(null));
-        for (int d = 1; d <= daysInMonth; d++) list.add(new CalendarDayAdapter.DayCell(d));
-        while (list.size() < 42) list.add(new CalendarDayAdapter.DayCell(null));
+        for (int i = 0; i < leading; i++) list.add(new DayCell(null));
+        for (int d = 1; d <= daysInMonth; d++) list.add(new DayCell(d));
+        while (list.size() < 42) list.add(new DayCell(null));
         return list;
     }
 

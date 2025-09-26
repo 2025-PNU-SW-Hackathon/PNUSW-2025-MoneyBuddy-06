@@ -41,7 +41,6 @@ import com.moneybuddy.moneylog.ledger.dto.response.LedgerEntryDto;
 import com.moneybuddy.moneylog.ledger.repository.LedgerRepository;
 import com.moneybuddy.moneylog.ledger.repository.ReceiptRepository;
 import com.moneybuddy.moneylog.common.ResultCallback;
-// ❌ ResultCallback 은 현재 레포 시그니처와 맞지 않으므로 사용하지 않음
 
 import java.io.File;
 import java.text.SimpleDateFormat;
@@ -49,7 +48,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
-
 
 public class LedgerWriteActivity extends AppCompatActivity {
 
@@ -153,8 +151,8 @@ public class LedgerWriteActivity extends AppCompatActivity {
     }
 
     private void initRepositories() {
-        ledgerRepo = new LedgerRepository(this, token());   // ← (Context, token)
-        receiptRepo = new ReceiptRepository(this, token()); // ← (Context, token)
+        ledgerRepo = new LedgerRepository(this, token());   // 시그니처에 맞춰 사용
+        receiptRepo = new ReceiptRepository(this, token());
     }
 
     private void initAdapters() {
@@ -387,7 +385,6 @@ public class LedgerWriteActivity extends AppCompatActivity {
             setErrorBg(tvTime, true);
             if (firstError == null) firstError = tvTime;
         }
-        // 필요하면 자산/카테고리 검증도 추가
 
         String amountStr = editAmount.getText() != null ? editAmount.getText().toString().trim() : "";
         if (TextUtils.isEmpty(amountStr)) {
@@ -413,15 +410,17 @@ public class LedgerWriteActivity extends AppCompatActivity {
                 : safeSelectedText(spinnerCategory, etCustomCategory);
         String asset = isIncomeMode() ? null : safeSelectedText(spinnerAsset, etCustomAsset);
 
-        long amount = Long.parseLong(amountStr.replaceAll("[^0-9]", "")); // 현재 로직: 항상 양수 전송
+        long amount = Long.parseLong(amountStr.replaceAll("[^0-9]", "")); // 항상 양수 전송
         String memo = editMemo.getText() != null ? editMemo.getText().toString().trim() : null;
 
         LedgerCreateRequest body = new LedgerCreateRequest();
+        // LedgerCreateRequest가 세터를 제공한다면 세터 사용 권장:
+        // body.setDateTime(dateTime); body.setEntryType(type); body.setAmount(amount) ...
         body.dateTime = dateTime;
         body.entryType = type;
         body.amount = amount;
         body.asset = asset;
-        body.store = memo;
+        body.store = memo;         // 메모를 상호명으로도 사용 중이라면 그대로 둠
         body.category = category;
         body.description = memo;
 
@@ -532,16 +531,16 @@ public class LedgerWriteActivity extends AppCompatActivity {
 
     private void analyzeReceipt(Uri imageUri) {
         try {
-            // 영수증 분석 로직
+            // 영수증 분석: 성공 시 onOcrResult로 연결
             receiptRepo.uploadOcr(imageUri, new ResultCallback<LedgerEntryDto>() {
                 @Override public void onSuccess(LedgerEntryDto ocr) {
-                    // 성공 처리
+                    onOcrResult(ocr);
                 }
                 @Override public void onError(Throwable t) {
-                    toast("영수증 분석 실패: " + t.getMessage());
+                    toast("영수증 분석 실패: " + (t.getMessage() == null ? "" : t.getMessage()));
                 }
             });
-        } catch (Exception e) {   // checked exception을 잡음
+        } catch (Exception e) {
             e.printStackTrace();
             toast("분석 중 오류 발생");
         }
@@ -551,31 +550,41 @@ public class LedgerWriteActivity extends AppCompatActivity {
     public void onOcrResult(LedgerEntryDto ocr) {
         if (ocr == null) { toast("영수증 분석 실패"); return; }
 
-        if ("INCOME".equalsIgnoreCase(ocr.entryType)) rbIncome.setChecked(true);
+        // 타입
+        if ("INCOME".equalsIgnoreCase(ocr.getEntryType())) rbIncome.setChecked(true);
         else rbExpense.setChecked(true);
         applyModeUI();
 
-        if (ocr.dateTime != null && ocr.dateTime.length() >= 16) {
-            String d = ocr.dateTime.substring(0, 10);
-            String t = ocr.dateTime.substring(11, 16);
+        // 날짜/시간
+        String dt = ocr.getDateTime();
+        if (dt != null && dt.length() >= 16) {
+            String d = dt.substring(0, 10);
+            String t = dt.substring(11, 16);
             tvDate.setText(d);
             tvTime.setText(t);
         }
+
+        // 카테고리/자산
         if (isIncomeMode()) {
-            if (tvCategoryReadonly != null && ocr.category != null) tvCategoryReadonly.setText(ocr.category);
+            if (tvCategoryReadonly != null && ocr.getCategory() != null) {
+                tvCategoryReadonly.setText(ocr.getCategory());
+            }
         } else {
-            if (ocr.category != null) selectSpinnerItemByValue(spinnerCategory, ocr.category);
-            if (ocr.asset != null) selectSpinnerItemByValue(spinnerAsset, ocr.asset);
+            if (ocr.getCategory() != null) selectSpinnerItemByValue(spinnerCategory, ocr.getCategory());
+            if (ocr.getAsset() != null) selectSpinnerItemByValue(spinnerAsset, ocr.getAsset());
         }
-        editAmount.setText(String.valueOf(Math.abs(ocr.amount)));
-        if (!TextUtils.isEmpty(ocr.store)) editMemo.setText(ocr.store);
-        else if (!TextUtils.isEmpty(ocr.description)) editMemo.setText(ocr.description);
+
+        // 금액(서버는 부호 적용)
+        editAmount.setText(String.valueOf(Math.abs(ocr.getAmount())));
+
+        // 메모/상호
+        if (!TextUtils.isEmpty(ocr.getStore())) editMemo.setText(ocr.getStore());
+        else if (!TextUtils.isEmpty(ocr.getDescription())) editMemo.setText(ocr.getDescription());
 
         toast("영수증 인식 완료");
     }
 
     // ───────────────────── 유틸 ─────────────────────
-
     private String token() {
         String t = com.moneybuddy.moneylog.common.TokenManager
                 .getInstance(getApplicationContext())
@@ -589,8 +598,8 @@ public class LedgerWriteActivity extends AppCompatActivity {
         return t == null ? "" : t;
     }
 
-    private void selectSpinnerItemByValue(android.widget.Spinner spinner, String value) {
-        if (spinner == null || spinner.getAdapter() == null || android.text.TextUtils.isEmpty(value)) return;
+    private void selectSpinnerItemByValue(Spinner spinner, String value) {
+        if (spinner == null || spinner.getAdapter() == null || TextUtils.isEmpty(value)) return;
 
         String target = value.trim();
         int count = spinner.getAdapter().getCount();
@@ -653,11 +662,6 @@ public class LedgerWriteActivity extends AppCompatActivity {
     private boolean isEmpty(TextView tv) {
         CharSequence s = tv.getText();
         return s == null || s.toString().trim().isEmpty();
-    }
-
-    private boolean isSpinnerSelected(Spinner spinner) {
-        if (spinner.getAdapter() == null || spinner.getAdapter().getCount() == 0) return false;
-        return spinner.getSelectedItemPosition() > 0; // 0 = "선택" 프롬프트
     }
 
     private void setErrorBg(TextView v, boolean error) { v.setBackground(error ? bgError : bgNormal); }
