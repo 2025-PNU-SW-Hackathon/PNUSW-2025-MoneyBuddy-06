@@ -48,9 +48,7 @@ public class Challenge {
     @Column(nullable = false)
     private boolean isAccountLinked = false;
 
-    @Column(nullable = false)
     private Long createdBy = 0L; 
 
-    @Column(nullable = false)
     private String mobtiType = "";
 }
