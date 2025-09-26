@@ -11,6 +11,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@Table(name = "quiz", uniqueConstraints = @UniqueConstraint(columnNames = "question"))
 public class Quiz {
 
     @Id
@@ -26,8 +27,6 @@ public class Quiz {
     @Column(columnDefinition = "TEXT")
     private String explanation;
 
-    @Column(name = "quiz_date", nullable = false, unique = true)
-    private LocalDate quizDate;
 
     @Builder.Default
     @Column(name = "created_at", nullable = false)

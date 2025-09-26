@@ -8,11 +8,12 @@ import com.moneybuddy.moneylog.repository.UserRepository;
 import com.moneybuddy.moneylog.service.QuizService;
 import com.moneybuddy.moneylog.security.CustomUserDetails;
 
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 
 import lombok.RequiredArgsConstructor;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/quiz")
@@ -22,25 +23,36 @@ public class QuizController {
     private final QuizService quizService;
     private final UserRepository userRepository;
 
+    // 오늘의 문제 가져오기
     @GetMapping("/today")
-    public ResponseEntity<QuizResponse> getTodayQuiz(@AuthenticationPrincipal CustomUserDetails userDetails) {
-        // User 엔티티를 DB에서 조회
+    public QuizResponse getTodayQuiz(@AuthenticationPrincipal CustomUserDetails userDetails) {
         User user = userRepository.findById(userDetails.getUserId())
-                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
-
-        QuizResponse quiz = quizService.getTodayQuiz(user);
-        return ResponseEntity.ok(quiz);
+                .orElseThrow(() -> new IllegalStateException("유저를 찾을 수 없습니다."));
+        return quizService.getUserDailyQuiz(user);
     }
 
+    // 오늘 문제 답 제출
     @PostMapping("/answer")
-    public ResponseEntity<QuizResultResponse> submitAnswer(
-            @AuthenticationPrincipal CustomUserDetails userDetails,
-            @RequestBody QuizAnswerRequest request) {
-
+    public QuizResultResponse submitAnswer(@AuthenticationPrincipal CustomUserDetails userDetails,
+                                           @RequestBody QuizAnswerRequest request) {
         User user = userRepository.findById(userDetails.getUserId())
-                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+                .orElseThrow(() -> new IllegalStateException("유저를 찾을 수 없습니다."));
+        return quizService.submitAnswer(user, request);
+    }
 
-        QuizResultResponse result = quizService.submitAnswer(user, request);
-        return ResponseEntity.ok(result);
+    // 완료한 퀴즈 ID만
+    @GetMapping("/me/completed-ids")
+    public List<Long> getCompletedIds(@AuthenticationPrincipal CustomUserDetails userDetails) {
+        User user = userRepository.findById(userDetails.getUserId())
+                .orElseThrow(() -> new IllegalStateException("유저를 찾을 수 없습니다."));
+        return quizService.getCompletedQuizIds(user.getId());
+    }
+
+    // 완료한 퀴즈 간단 정보
+    @GetMapping("/me/completed")
+    public List<QuizResponse> getCompleted(@AuthenticationPrincipal CustomUserDetails userDetails) {
+        User user = userRepository.findById(userDetails.getUserId())
+                .orElseThrow(() -> new IllegalStateException("유저를 찾을 수 없습니다."));
+        return quizService.getCompletedQuizzes(user.getId());
     }
 }
