@@ -203,8 +203,10 @@ public class ChallengeAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
                 itemLayout.setBackgroundColor(ContextCompat.getColor(context, R.color.my_challenge_color));
                 progressBar.setTrackColor(ContextCompat.getColor(context, R.color.my_challenge_progressbar_track));
                 progressBar.setIndicatorColor(ContextCompat.getColor(context, R.color.my_challenge_progressbar_indicator));
-            } else {
+            } else if (itemLayout != null){
                 itemLayout.setBackgroundColor(ContextCompat.getColor(context, R.color.other_challenge_color));
+                progressBar.setTrackColor(ContextCompat.getColor(context, R.color.other_challenge_progressbar_track));
+                progressBar.setIndicatorColor(ContextCompat.getColor(context, R.color.other_challenge_progressbar_indicator));
             }
 
             itemView.setOnClickListener(v -> {

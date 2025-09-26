@@ -183,6 +183,10 @@ public class ChallengeViewModel extends AndroidViewModel {
             SharedPreferences.Editor editor = prefs.edit();
             editor.putLong(KEY_REP_CHALLENGE_ID, -1L);
             editor.apply();
+
+            // ▼▼▼ ViewModel에 남아있는 과거 데이터를 null로 초기화합니다. ▼▼▼
+            representativeChallenge.postValue(null);
+
             _representativeChallengeCleared.postValue(true); // UI 업데이트를 위해 신호 보내기
         }
     }
