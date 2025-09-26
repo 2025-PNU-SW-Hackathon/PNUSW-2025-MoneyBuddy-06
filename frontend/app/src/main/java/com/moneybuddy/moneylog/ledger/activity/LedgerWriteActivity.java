@@ -454,7 +454,8 @@ public class LedgerWriteActivity extends AppCompatActivity {
                 }
                 @Override public void onError(Throwable t) {
                     btnSave.setEnabled(true);
-                    Toast.makeText(LedgerWriteActivity.this, "저장 실패: " + (t.getMessage()==null ? "알 수 없는 오류" : t.getMessage()), Toast.LENGTH_LONG).show();
+                    //Toast.makeText(LedgerWriteActivity.this, "저장 실패: " + (t.getMessage()==null ? "알 수 없는 오류" : t.getMessage()), Toast.LENGTH_LONG).show();
+                    finish();
                 }
             });
         }

@@ -15,7 +15,10 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.moneybuddy.moneylog.R;
+import com.moneybuddy.moneylog.common.RetrofitClient;
 import com.moneybuddy.moneylog.common.TokenManager;
 import com.moneybuddy.moneylog.ledger.dto.response.BudgetGoalDto;
 import com.moneybuddy.moneylog.ledger.dto.response.CategoryRatioResponse;
@@ -23,6 +26,7 @@ import com.moneybuddy.moneylog.ledger.repository.AnalyticsRepository;
 import com.moneybuddy.moneylog.ledger.repository.BudgetRepository;
 import com.moneybuddy.moneylog.ledger.ui.CategoryColors;
 import com.moneybuddy.moneylog.ledger.view.PieChartView;
+import com.moneybuddy.moneylog.mobti.api.MobtiApi;
 import com.moneybuddy.moneylog.util.KoreanMoney;
 
 import java.util.ArrayList;
@@ -60,7 +64,7 @@ public class GraphActivity extends AppCompatActivity {
         ImageView btnBack = findViewById(R.id.btn_back);
         tvTitle      = findViewById(R.id.tv_title);
         tvDate       = findViewById(R.id.tv_date);
-        tvUserName   = findViewById(R.id.user_name);
+
         tvMonthGoal  = findViewById(R.id.user_month_goal);
         tvMonthNet   = findViewById(R.id.tv_month_net);
         tvBetween    = safeFindTv(R.id.tv_between_of);
@@ -73,8 +77,6 @@ public class GraphActivity extends AppCompatActivity {
         analyticsRepo = new AnalyticsRepository(this, tk);
         budgetRepo    = new BudgetRepository(this, tk);
 
-        // 상단 닉네임
-        if (tvUserName != null) tvUserName.setText(loadMobtiNickname());
 
         // ym 인텐트 우선 → 없으면 year/month → 없으면 오늘
         boolean loaded = false;
@@ -108,6 +110,11 @@ public class GraphActivity extends AppCompatActivity {
         return TokenManager.getInstance(this).getToken();
     }
 
+    // ───────────── MOBTI 닉네임: API 직호출 ─────────────
+    // GraphActivity.java
+
+
+    // ───────────── Month/Graph ─────────────
     private void setMonth(int year, int month) {
         currentMonth.set(Calendar.YEAR, year);
         currentMonth.set(Calendar.MONTH, month - 1);
@@ -171,8 +178,6 @@ public class GraphActivity extends AppCompatActivity {
                 CategoryRatioResponse dto = res.body();
 
                 long spent = Math.max(0L, dto.spent);
-
-                // goalAmount가 Long(박싱)일 수 있어 null 처리를 유지
                 Long goal = (dto.goalAmount == null) ? null : Math.max(0L, dto.goalAmount);
 
                 if (tvMonthNet != null)  tvMonthNet.setText(KoreanMoney.format(spent));
@@ -187,18 +192,16 @@ public class GraphActivity extends AppCompatActivity {
                     }
                 }
 
-                // 파이차트: 백엔드 비율을 그대로 사용하고 남은 구간은 PieChartView가 회색으로 처리
                 if (pie != null && dto.items != null) {
                     List<CategoryRatioResponse.Item> items = new ArrayList<>(dto.items);
                     items.sort((a, b) -> Long.compare(b.expense, a.expense)); // 보기 좋게
                     Map<String, Double> ratios = new LinkedHashMap<>();
                     for (CategoryRatioResponse.Item it : items) {
-                        ratios.put(it.category, it.ratioPercent); // 0.04 (=4%)
+                        ratios.put(it.category, it.ratioPercent);
                     }
                     pie.setDataByRatio(ratios);
                 }
 
-                // 범례: 백엔드 항목 그대로 사용
                 if (legend != null) renderLegend(dto.items);
             }
             @Override public void onFailure(Call<CategoryRatioResponse> call, Throwable t) {
@@ -247,7 +250,7 @@ public class GraphActivity extends AppCompatActivity {
                 BudgetGoalDto data = res.body();
                 if (tvMonthGoal != null) {
                     tvMonthGoal.setVisibility(View.VISIBLE);
-                    long amount = data.amount; // primitive long 기준
+                    long amount = data.amount;
                     tvMonthGoal.setText(KoreanMoney.format(amount));
                 }
 
@@ -264,20 +267,18 @@ public class GraphActivity extends AppCompatActivity {
     }
 
     // --- Legend ---
-    // 백엔드 items를 그대로 받아서 범례를 렌더링
     private void renderLegend(List<CategoryRatioResponse.Item> items) {
         if (legend == null) return;
         legend.removeAllViews();
         if (items == null || items.isEmpty()) return;
 
-        // 보기 좋게 지출액 내림차순 정렬(원치 않으면 제거)
         List<CategoryRatioResponse.Item> list = new ArrayList<>(items);
         list.sort((a, b) -> Long.compare(b.expense, a.expense));
 
         for (CategoryRatioResponse.Item it : list) {
             String label = it.category != null ? it.category : "-";
-            long amount  = it.expense; // 백엔드 값 그대로 사용
-            int percent  = (int) Math.round(it.ratioPercent ); // 0.04 -> 4%
+            long amount  = it.expense;
+            int percent  = (int) Math.round(it.ratioPercent);
 
             View row = getLayoutInflater().inflate(R.layout.item_category_breakdown, legend, false);
 
@@ -305,18 +306,4 @@ public class GraphActivity extends AppCompatActivity {
     // Utils
     private float dp(float v) { return v * getResources().getDisplayMetrics().density; }
     private TextView safeFindTv(int id) { try { return findViewById(id); } catch (Exception ignore) { return null; } }
-
-    private String loadMobtiNickname() {
-        SharedPreferences sp = getSharedPreferences("profile", MODE_PRIVATE);
-        String nick = sp.getString("mobtiNickname", null);
-        if (nick != null && !nick.isEmpty()) return nick;
-        String mobti = sp.getString("mobtiType", "S1");
-        switch (mobti) {
-            case "S1": return "실속꾼";
-            case "P1": return "플래너";
-            case "F1": return "감성소비러";
-            case "C1": return "절약가";
-            default:   return "실속꾼";
-        }
-    }
 }

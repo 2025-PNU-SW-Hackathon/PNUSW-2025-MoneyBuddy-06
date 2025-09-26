@@ -8,31 +8,42 @@ import com.moneybuddy.moneylog.ledger.dto.response.LedgerMonthResponse;
 
 import retrofit2.Call;
 import retrofit2.http.Body;
+import retrofit2.http.DELETE;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
 import retrofit2.http.PUT;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
 
-
-
 public interface LedgerApi {
-    @GET("api/ledger/day")
+
+    // ───────── 조회 ─────────
+    // 예: GET /api/ledger/day?date=2025-08-28
+    @GET("/api/ledger/day")
     Call<LedgerDayResponse> getDay(@Query("date") String yyyyMMdd);
 
-    // 서버가 ym=yyyy-MM 으로 받는 경우
-    @GET("api/ledger/month")
+    // 예: GET /api/ledger/month?ym=2025-08
+    @GET("/api/ledger/month")
     Call<LedgerMonthResponse> getMonth(@Query("ym") String ym);
 
-    // (대신 year/month 로 받으면 위 한 줄 대신 아래 사용)
-    // @GET("ledger/month") Call<LedgerMonthResponse> getMonth(@Query("year") int y, @Query("month") int m);
+    // 서버가 year/month 쿼리를 받는다면 아래 시그니처를 사용
+    // @GET("/api/ledger/month")
+    // Call<LedgerMonthResponse> getMonth(@Query("year") int year, @Query("month") int month);
 
-    @POST("api/ledger")
+    // ───────── 생성/수정/삭제 ─────────
+    // 생성: 서버 스펙이 Long(생성된 id) 반환
+    @POST("/api/ledger")
     Call<Long> create(@Body LedgerCreateRequest body);
 
-    @PUT("api/ledger/{id}")
+    // 수정: 서버 스펙이 Void(바디 없음) 반환
+    @PUT("/api/ledger/{id}")
     Call<Void> update(@Path("id") long id, @Body LedgerCreateRequest body);
 
-    @POST("api/ledger/auto")   // ← 베이스 URL 뒤에 붙는 상대 경로. 서버 경로가 다르면 여길 맞추세요.
+    // 삭제: 204 No Content
+    @DELETE("/api/ledger/{id}")
+    Call<Void> delete(@Path("id") long id);
+
+    // ───────── 자동작성(영수증/알림) ─────────
+    @POST("/api/ledger/auto")
     Call<AutoLedgerResponse> postAuto(@Body AutoLedgerRequest body);
 }
