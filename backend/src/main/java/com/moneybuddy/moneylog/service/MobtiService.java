@@ -163,8 +163,10 @@ public class MobtiService {
     public MobtiBriefDto getMyMobtiBrief(Long userId) {
         User u = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found: " + userId));
-        if (u.getMobti() == null || u.getMobti().isBlank()) {
-            throw new IllegalStateException("사용자의 MOBTI 코드가 아직 없습니다.");
+
+        if (u.getMobti() == null || u.getMobti().isBlank() || "UNDEFINED".equals(u.getMobti())) {
+            //throw new IllegalStateException("사용자의 MOBTI 코드가 아직 없습니다.");
+            return new MobtiBriefDto("UNDEFINED", "유형 분석 필요", "아직 소비 유형이 없어요.");
         }
         MobtiInfo info = mobtiInfoRepository.findById(u.getMobti())
                 .orElseThrow(() -> new IllegalStateException("mobti 사전에 코드가 없습니다: " + u.getMobti()));
@@ -176,9 +178,19 @@ public class MobtiService {
     public MobtiFullDto getMyMobtiFull(Long userId) {
         User u = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found: " + userId));
-        if (u.getMobti() == null || u.getMobti().isBlank()) {
-            throw new IllegalStateException("사용자의 MOBTI 코드가 아직 없습니다.");
+
+        if (u.getMobti() == null || u.getMobti().isBlank() || "UNDEFINED".equals(u.getMobti())) {
+            //throw new IllegalStateException("사용자의 MOBTI 코드가 아직 없습니다.");
+            return new MobtiFullDto(
+                    "UNDEFINED",
+                    "유형 분석 필요",
+                    "아직 나의 소비 유형을 몰라요!",
+                    List.of("소비 유형을 진단하고", "나에게 꼭 맞는 금융 정보를 얻어보세요."), // 상세 설명
+                    List.of(), // 소비 성향
+                    List.of()  // 소셜 스타일
+            );
         }
+
         MobtiInfo info = mobtiInfoRepository.findById(u.getMobti())
                 .orElseThrow(() -> new IllegalStateException("mobti 사전에 코드가 없습니다: " + u.getMobti()));
 
