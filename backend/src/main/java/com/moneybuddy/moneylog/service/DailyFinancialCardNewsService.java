@@ -1,9 +1,9 @@
 package com.moneybuddy.moneylog.service;
 
 import com.moneybuddy.moneylog.domain.FinancialKeyword;
-import com.moneybuddy.moneylog.domain.FinancialKnowledge;
+import com.moneybuddy.moneylog.domain.FinancialCardNews;
 import com.moneybuddy.moneylog.repository.FinancialKeywordRepository;
-import com.moneybuddy.moneylog.repository.FinancialKnowledgeRepository;
+import com.moneybuddy.moneylog.repository.FinancialCardNewsRepository;
 import com.moneybuddy.moneylog.repository.FinancialTitleCacheRepository;
 import com.moneybuddy.moneylog.util.KeywordExtractor;
 import com.moneybuddy.moneylog.util.TitleDeduper;
@@ -25,9 +25,9 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class DailyFinanceNewsService {
+public class DailyFinancialCardNewsService {
 
-    private final FinancialKnowledgeRepository newsRepo;
+    private final FinancialCardNewsRepository newsRepo;
     private final FinancialKeywordRepository keywordRepo;
     private final FinancialTitleCacheRepository titleCacheRepo;
 
@@ -99,7 +99,7 @@ public class DailyFinanceNewsService {
             if (blocked) continue;
 
             // 저장
-            newsRepo.save(new FinancialKnowledge(title, plain + "\n\n원문: " + link, today));
+            newsRepo.save(new FinancialCardNews(title, plain + "\n\n원문: " + link, today));
 
             // 제목 캐시 저장
             titleDeduper.remember(today, title);

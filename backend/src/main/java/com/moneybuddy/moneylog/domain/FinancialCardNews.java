@@ -1,9 +1,7 @@
 package com.moneybuddy.moneylog.domain;
 
 import jakarta.persistence.*;
-
 import lombok.*;
-
 
 import java.time.LocalDate;
 
@@ -15,7 +13,9 @@ import java.time.LocalDate;
 
 @AllArgsConstructor
 
-public class FinancialKnowledge {
+@Table(name = "financial_cardnews")
+
+public class FinancialCardNews {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY) // 자동 증가 ID
@@ -28,12 +28,9 @@ public class FinancialKnowledge {
 
     private LocalDate date; // 오늘의 카드뉴스 구분용 날짜
 
-    public FinancialKnowledge(String title, String content, LocalDate date) {
+    public FinancialCardNews(String title, String content, LocalDate date) {
         this.title = title;
         this.content = content;
         this.date = date;
     }
-    public FinancialKnowledge() {
-    }
-
 }

@@ -7,7 +7,7 @@ import java.time.LocalDate;
 
 @Getter
 @AllArgsConstructor
-public class KnowledgeResponse {
+public class FinancialCardNewsResponse {
     private String title;
     private String content;
     private LocalDate date;
