@@ -1,5 +1,8 @@
 package com.moneybuddy.moneylog.mobti.activity;
 
+import androidx.annotation.OptIn;
+import com.google.android.material.badge.ExperimentalBadgeUtils;
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.TextView;
@@ -26,16 +29,17 @@ public class MobtiResultActivity extends AppCompatActivity {
     private TextView tvEmoji, tvCode, tvTitle, sec1Body, sec2Body, sec3Body;
     private MaterialButton btnGoHome;
     private TextView tvCodeKrName;
-    private String code;                 // 서버/설문에서 받은 코드(없어도 서버 조회 시 채움)
-    private boolean fromFirstLogin;      // 첫 로그인에서 검사한 경우 홈으로 보내기
+    private String code;
+    private boolean fromFirstLogin;
 
+    @OptIn(markerClass = ExperimentalBadgeUtils.class)
     @Override
     protected void onCreate(Bundle b) {
         super.onCreate(b);
         setContentView(R.layout.activity_mobti_result);
 
         MaterialToolbar tb = findViewById(R.id.toolbar);
-        tb.setNavigationOnClickListener(v -> finish());
+        //tb.setNavigationOnClickListener(v -> finish());
 
         tvEmoji  = findViewById(R.id.tvMascotEmoji);
         tvCode   = findViewById(R.id.tvTypeCode);
@@ -46,37 +50,37 @@ public class MobtiResultActivity extends AppCompatActivity {
         sec3Body = findViewById(R.id.section3Body);
         btnGoHome = findViewById(R.id.btnGoHome);
 
-        // 설문/이전 화면에서 전달된 값
         Intent it = getIntent();
         code = it.getStringExtra("code");
         fromFirstLogin = it.getBooleanExtra("fromFirstLogin", false);
 
-        // 버튼 라벨 & 동작
+        Runnable goToHomeAndClearStack = () -> {
+            Intent home = new Intent(MobtiResultActivity.this, MainMenuActivity.class);
+            home.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(home);
+            finish();
+        };
+
         if (fromFirstLogin) {
             btnGoHome.setText("머니로그 시작하기");
-            btnGoHome.setOnClickListener(v -> {
-                Intent home = new Intent(MobtiResultActivity.this, MainMenuActivity.class);
-                home.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                startActivity(home);
-                finish();
-            });
+            btnGoHome.setOnClickListener(v -> goToHomeAndClearStack.run());
+
+            tb.setNavigationOnClickListener(v -> goToHomeAndClearStack.run());
+
         } else {
+            //
             btnGoHome.setText("홈으로");
-            btnGoHome.setOnClickListener(v -> {
-                Intent home = new Intent(MobtiResultActivity.this, MainMenuActivity.class);
-                home.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                startActivity(home);
-                finish();
-            });
+            btnGoHome.setOnClickListener(v -> goToHomeAndClearStack.run());
+
+            tb.setNavigationOnClickListener(v -> finish());
         }
 
-        // 코드가 넘어왔으면 우선 상단 표현은 셋업
         if (code != null && !code.isBlank()) {
             tvCode.setText(code);
             tvEmoji.setText(MobtiMascot.emoji(code));
         }
 
-        // 상세 설명은 항상 서버에서 조회하여 반영
+
         loadDetails();
     }
 
@@ -89,7 +93,6 @@ public class MobtiResultActivity extends AppCompatActivity {
                 }
                 MobtiFullDto d = res.body();
 
-                // 코드/이모지
                 String resolvedCode = (d.getCode() != null && !d.getCode().isBlank()) ? d.getCode() : code;
                 if (resolvedCode != null) {
                     tvCode.setText(resolvedCode);
@@ -99,11 +102,9 @@ public class MobtiResultActivity extends AppCompatActivity {
                 String nickAnimal1 = MobtiMascot.nicknameWithAnimal(d.getNickname(), code);
                 tvCodeKrName.setText(nickAnimal1.isEmpty() ? "" : nickAnimal1);
 
-                // "닉네임(동물)인 당신은"
                 String nickAnimal = MobtiMascot.nicknameWithAnimal(d.getNickname(), resolvedCode);
                 tvTitle.setText( (nickAnimal == null || nickAnimal.isEmpty()) ? "당신은" : (nickAnimal + "인 당신은") );
 
-                // 본문 3개 섹션(백엔드에서 내려준 문장 리스트 그대로)
                 sec1Body.setText(joinBullets(d.getDetailTraits()));
                 sec2Body.setText(joinBullets(d.getSpendingTendency()));
                 sec3Body.setText(joinBullets(d.getSocialStyle()));
