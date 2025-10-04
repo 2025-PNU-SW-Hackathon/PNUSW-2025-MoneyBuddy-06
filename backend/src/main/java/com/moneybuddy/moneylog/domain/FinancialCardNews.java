@@ -8,9 +8,13 @@ import java.time.LocalDate;
 @Entity
 @Getter
 @Setter
-@NoArgsConstructor
+
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+
 @AllArgsConstructor
+
 @Table(name = "financial_cardnews")
+
 public class FinancialCardNews {
 
     @Id
