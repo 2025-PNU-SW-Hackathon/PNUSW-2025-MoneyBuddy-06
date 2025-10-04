@@ -79,11 +79,8 @@ public class FinanceInfoActivity extends AppCompatActivity {
         // ApiService 초기화
         apiService = RetrofitClient.api(FinanceInfoActivity.this);
 
-        // 카드뉴스
+        // 카드뉴스, 퀴즈
         setupCardNewsSection();
-        loadCardNewsData();
-
-        // 데이터 로딩 호출
         loadCardNewsData();
         loadTodayQuiz();
 

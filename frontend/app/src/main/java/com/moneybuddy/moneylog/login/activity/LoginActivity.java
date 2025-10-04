@@ -17,9 +17,13 @@ import com.google.android.material.badge.ExperimentalBadgeUtils;
 import com.moneybuddy.moneylog.R;
 import com.moneybuddy.moneylog.login.dto.LoginResponse;
 import com.moneybuddy.moneylog.login.network.AuthRepository;
+import com.moneybuddy.moneylog.login.network.MobtiCheckCallback;
+import com.moneybuddy.moneylog.mobti.activity.MobtiActivity;
 import com.moneybuddy.moneylog.main.activity.MainMenuActivity;
+
 import com.moneybuddy.moneylog.common.TokenManager;
 
+import com.moneybuddy.moneylog.mobti.activity.MobtiIntroActivity;
 import com.moneybuddy.moneylog.signup.activity.SignupActivity;
 
 public class LoginActivity extends AppCompatActivity {
@@ -42,7 +46,6 @@ public class LoginActivity extends AppCompatActivity {
             startActivity(intent);
         });
 
-        // ---- 로그인 UI ----
         emailInput = findViewById(R.id.emailInput);
         passwordInput = findViewById(R.id.passwordInput);
         loginButton = findViewById(R.id.loginButton);
@@ -71,21 +74,32 @@ public class LoginActivity extends AppCompatActivity {
             public void onSuccess(LoginResponse data) {
                 showLoading(false);
 
-                String accessToken = data.token;
-                android.util.Log.d("LOGIN_TOKEN_CHECK", "서버에서 받은 토큰: " + accessToken);
-
                 TokenManager.getInstance(getApplicationContext()).saveLoginSession(data.token, data.userId, data.email);
+                Toast.makeText(LoginActivity.this, "로그인 성공", Toast.LENGTH_SHORT).show();
 
-                String savedToken = TokenManager.getInstance(getApplicationContext()).getToken();
-                android.util.Log.d("LOGIN_TOKEN_CHECK", "TokenManager에 저장된 토큰: " + savedToken);
+                repo.checkMobtiStatus(getApplicationContext(), new MobtiCheckCallback() {
+                    @Override
+                    public void onMobtiExists() {
+                        // MoBTI 결과가 있으면 홈 화면으로 이동
+                        startActivity(new Intent(LoginActivity.this, MainMenuActivity.class));
+                        finish();
+                    }
 
-                Toast.makeText(LoginActivity.this,
-                        data.message != null ? data.message : "로그인 성공",
-                        Toast.LENGTH_SHORT).show();
+                    @Override
+                    public void onMobtiNotExists() {
+                        // MoBTI 결과가 없으면(신규 가입자) MoBTI 검사 화면으로 이동
+                        startActivity(new Intent(LoginActivity.this, MobtiIntroActivity.class));
+                        //finish();
+                    }
 
-                // 로그인 성공 → 홈 화면
-                startActivity(new Intent(LoginActivity.this, MainMenuActivity.class));
-                finish();
+                    @Override
+                    public void onError(String message) {
+                        // 통신 중 오류가 발생하면 사용자에게 알리고, 일단 홈 화면으로 보냄
+                        Toast.makeText(LoginActivity.this, message, Toast.LENGTH_SHORT).show();
+                        startActivity(new Intent(LoginActivity.this, MainMenuActivity.class));
+                        finish();
+                    }
+                });
             }
 
             @Override
