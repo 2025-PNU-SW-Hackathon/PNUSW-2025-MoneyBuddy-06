@@ -1,36 +1,36 @@
 package com.moneybuddy.moneylog.finance;
 
-import com.moneybuddy.moneylog.domain.FinancialKnowledge;
+import com.moneybuddy.moneylog.domain.FinancialCardNews;
 import com.moneybuddy.moneylog.model.NotificationAction;
 import com.moneybuddy.moneylog.model.NotificationType;
 import com.moneybuddy.moneylog.model.TargetType;
 import com.moneybuddy.moneylog.port.Notifier;
-import com.moneybuddy.moneylog.repository.FinancialKnowledgeRepository;
+import com.moneybuddy.moneylog.repository.FinancialCardNewsRepository;
 import com.moneybuddy.moneylog.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.Map;
 
 @Component
-@EnableScheduling
 @RequiredArgsConstructor
 public class FinanceInfoScheduler {
 
     private final UserRepository userRepository;
-    private final FinancialKnowledgeRepository knowledgeRepository;
+    private final FinancialCardNewsRepository knowledgeRepository;
     private final Notifier notifier;
 
     // 매일 10:00에 "오늘의 금융 정보" 카드뉴스 알림 발송
-    @Scheduled(cron = "0 0 10 * * *")
+    @Scheduled(cron = "0 0 10 * * *", zone = "Asia/Seoul")
     public void pushDailyFinanceInfo() {
-        LocalDate today = LocalDate.now();
+        LocalDate today = LocalDate.now(ZoneId.of("Asia/Seoul"));
 
         // 오늘자 카드뉴스가 없으면 알림 X
-        List<FinancialKnowledge> todayNews = knowledgeRepository.findAllByDate(today);
+        List<FinancialCardNews> todayNews = knowledgeRepository.findAllByDate(today);
         if (todayNews.isEmpty()) return;
 
         // 딥링크 파라미터 (날짜 기준 목록 화면으로 진입)
