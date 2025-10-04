@@ -28,9 +28,7 @@ public class ChallengeService {
     private final UserChallengeRepository userChallengeRepository;
     private final UserChallengeSuccessRepository userChallengeSuccessRepository;
 
-    /**
-     * 사용자의 MoBTI 값을 기반으로 추천 챌린지 목록 조회
-     */
+    // 사용자의 MoBTI 값을 기반으로 추천 챌린지 목록 조회
     public List<RecommendedChallengeResponse> getRecommendedChallenges(Long userId) {
         String mobti = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("유저를 찾을 수 없습니다."))
@@ -59,9 +57,7 @@ public class ChallengeService {
                 .toList();
     }
 
-    /**
-     * 사용자가 직접 챌린지를 생성할 때 호출됨
-     */
+    // 사용자가 직접 챌린지를 생성할 때 호출됨
     public void createUserChallenge(Long userId, UserChallengeRequest request) {
         Challenge challenge = Challenge.builder()
                 .title(request.getTitle())
@@ -91,9 +87,7 @@ public class ChallengeService {
         userChallengeRepository.save(userChallenge);
     }
 
-    /**
-     * 공유 챌린지 전체 목록 조회
-     */
+    // 공유 챌린지 전체 목록 조회
     public List<ChallengeCardResponse> getSharedChallenges(Long userId) {
         List<Challenge> challenges = challengeRepository.findByIsSharedTrue();
 
@@ -102,12 +96,7 @@ public class ChallengeService {
                 .toList();
     }
 
-    /**
-     * 챌린지 상세 정보 조회
-     */
-    /**
-     * 챌린지 상세 정보 조회
-     */
+    // 챌린지 상세 정보 조회
     public ChallengeDetailResponse getChallengeDetail(Long challengeId, Long userId) {
         Challenge challenge = challengeRepository.findById(challengeId)
                 .orElseThrow(() -> new IllegalArgumentException("챌린지를 찾을 수 없습니다."));
@@ -166,43 +155,29 @@ public class ChallengeService {
                 .build();
     }
 
-    /**
-     * MoBTI 기반 추천 챌린지 필터링
-     */
+    // MoBTI 기반 추천 챌린지 필터링
     public List<ChallengeCardResponse> filterMobtiRecommendedChallenges(Long userId, ChallengeFilterRequest request) {
         String mobti = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("유저 없음"))
                 .getMobti();
 
         List<String> mobtiList = Arrays.asList(mobti.split(""));
-
-        // mobti 기반 챌린지 가져오기
         List<Challenge> challenges = challengeRepository
                 .findByIsSystemGeneratedTrueAndMobtiTypeIn(mobtiList);
 
-        String type = request.getType();
-        String category = request.getCategory();
-        Boolean isAccountLinked = request.getIsAccountLinked();
+        String category = normalizeNullable(request.getCategory()); // 기대값: "기타" 또는 "저축"
+
+        if (category == null) {
+            return Collections.emptyList();
+        }
 
         return challenges.stream()
-                .filter(c -> type == null || c.getType().equals(type))
-                .filter(c -> {
-                    if ("저축".equals(type)) {
-                        return "저축".equals(c.getCategory());
-                    } else if ("지출".equals(type)) {
-                        boolean categoryMatch = category == null || c.getCategory().equals(category);
-                        boolean linkedMatch = isAccountLinked == null || isAccountLinked.equals(c.isAccountLinked());
-                        return categoryMatch && linkedMatch;
-                    }
-                    return true;
-                })
+                .filter(c -> Objects.equals(c.getCategory(), category))
                 .map(this::toRecommendedChallengeCardResponse)
                 .collect(Collectors.toList());
     }
 
-    /**
-     * 추천 챌린지 → 카드 응답 변환
-     */
+    // 추천 챌린지 -> 카드 응답 변환
     public ChallengeCardResponse toRecommendedChallengeCardResponse(Challenge c) {
         return ChallengeCardResponse.builder()
                 .challengeId(c.getId())
@@ -219,35 +194,29 @@ public class ChallengeService {
                 .build();
     }
 
-    /**
-     * 공유 챌린지 필터링
-     */
+    private String normalizeNullable(String s) {
+        if (s == null) return null;
+        String t = s.trim();
+        if (t.isEmpty() || "전체".equals(t) || "ALL".equalsIgnoreCase(t)) return null;
+        return t;
+    }
+
+    // 공유 챌린지 필터링
     public List<ChallengeCardResponse> filterSharedChallenges(Long userId, ChallengeFilterRequest request) {
-        List<Challenge> challenges;
+        String category = normalizeNullable(request.getCategory());
 
-        String type = request.getType();
-        String category = request.getCategory();
-
-        if ("저축".equals(type)) {
-            challenges = challengeRepository.findByTypeAndCategoryAndIsSharedTrue(type, "저축");
-        } else if ("지출".equals(type)) {
-            if (category != null) {
-                challenges = challengeRepository.findByTypeAndCategoryAndIsSharedTrue(type, category);
-            } else {
-                challenges = challengeRepository.findByTypeAndIsSharedTrue(type);
-            }
-        } else {
-            challenges = challengeRepository.findByTypeAndIsSharedTrue(type);
+        if (category == null) {
+            return Collections.emptyList();
         }
 
+        List<Challenge> challenges = challengeRepository.findByCategoryAndIsSharedTrue(category);
+
         return challenges.stream()
-                .map(c -> toSharedChallengeResponse(c, userId)) // userId 반영
+                .map(c -> toSharedChallengeResponse(c, userId))
                 .collect(Collectors.toList());
     }
 
-    /**
-     * 공유 챌린지 → 카드 응답 변환
-     */
+    // 공유 챌린지 -> 카드 응답 변환
     private ChallengeCardResponse toSharedChallengeResponse(Challenge challenge, Long userId) {
         int participantCount = userChallengeRepository.countByChallengeId(challenge.getId());
         boolean isJoined = userChallengeRepository.existsByUserIdAndChallengeId(userId, challenge.getId());
@@ -278,9 +247,7 @@ public class ChallengeService {
                 .build();
     }
 
-    /**
-     * 챌린지 기간을 일(day) 단위로 환산
-     */
+    // 챌린지 기간을 일(day) 단위로 환산
     private int parseGoalPeriod(String periodStr) {
         if (periodStr == null || periodStr.isEmpty()) {
             throw new IllegalArgumentException("goalPeriod 값이 없습니다.");

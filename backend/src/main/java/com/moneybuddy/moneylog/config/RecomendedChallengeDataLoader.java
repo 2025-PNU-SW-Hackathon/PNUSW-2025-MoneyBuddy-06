@@ -56,7 +56,7 @@ public class RecomendedChallengeDataLoader implements CommandLineRunner {
                         .goalValue(15000)
                         .mobtiType("I")
                         .type("지출")
-                        .category("카테고리")
+                        .category("기타")
                         .isSystemGenerated(true)
                         .isShared(false)
                         .isAccountLinked(true)
