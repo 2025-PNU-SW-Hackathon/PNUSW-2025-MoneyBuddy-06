@@ -32,11 +32,6 @@ spring:
       mode: always
       encoding: UTF-8
 
-  sql:
-    init:
-      mode: always
-      encoding: UTF-8
-
   jackson:
     time-zone: Asia/Seoul
     serialization:
