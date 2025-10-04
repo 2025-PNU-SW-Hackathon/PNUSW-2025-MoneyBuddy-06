@@ -84,8 +84,6 @@
             android:exported="false" />
         <activity android:name=".mypage.activity.ChangePasswordActivity" />
 
-        <activity android:name=".finance.activity.FinanceInfoActivity"/>
-
         <!--Notification (Activity)-->
         <activity
             android:name=".notification.activity.NotificationActivity"
