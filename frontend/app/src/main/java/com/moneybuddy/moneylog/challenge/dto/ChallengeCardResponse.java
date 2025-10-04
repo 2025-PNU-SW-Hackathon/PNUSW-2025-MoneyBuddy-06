@@ -1,5 +1,7 @@
 package com.moneybuddy.moneylog.challenge.dto;
 
+import com.google.gson.annotations.SerializedName;
+
 import java.io.Serializable;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
@@ -17,12 +19,20 @@ public class ChallengeCardResponse implements Serializable {
     private String goalType;
     private int goalValue;
 
-    private String isSystemGenerated;
+    @SerializedName("systemGenerated")
+    private Boolean isSystemGenerated;
+
+    @SerializedName("accountLinked")
     private Boolean isAccountLinked;
-    private String createdBy;
+
+    private Long createdBy;
+
+    @SerializedName("mine")
     private Boolean isMine;
 
+    @SerializedName("joined")
     private Boolean isJoined;
+
     private String joinedAt;
     private int currentParticipants;
     private Boolean completed;
@@ -82,4 +92,31 @@ public class ChallengeCardResponse implements Serializable {
             return 0;
         }
     }
+
+    public int getGoalPeriodInDays() {
+        if (goalPeriod == null || goalPeriod.trim().isEmpty()) {
+            return 0;
+        }
+
+        int numericValue;
+        try {
+            String numberOnly = goalPeriod.replaceAll("[^0-9]", "");
+            if (numberOnly.isEmpty()) {
+                return 0;
+            }
+            numericValue = Integer.parseInt(numberOnly);
+        } catch (NumberFormatException e) {
+            e.printStackTrace();
+            return 0;
+        }
+
+        if (goalPeriod.contains("달") || goalPeriod.contains("month")) {
+            return numericValue * 30;
+        } else if (goalPeriod.contains("주") || goalPeriod.contains("week")) {
+            return numericValue * 7;
+        } else {
+            return numericValue;
+        }
+    }
 }
+

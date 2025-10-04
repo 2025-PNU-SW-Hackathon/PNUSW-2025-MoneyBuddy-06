@@ -70,7 +70,6 @@ public class MainMenuHomeFragment extends Fragment {
     private CircularProgressIndicator progressBar;
     private ChallengeViewModel challengeViewModel;
 
-
     private BadgeDrawable badge;
     private NotificationRepository notificationRepo;
     private MobtiRepository mobtiRepo;
@@ -87,7 +86,7 @@ public class MainMenuHomeFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        challengeViewModel = new ViewModelProvider(this).get(ChallengeViewModel.class);
+        challengeViewModel = new ViewModelProvider(requireActivity()).get(ChallengeViewModel.class);
 
         initializeViews(view);
         setupNotificationBadge();
@@ -143,8 +142,26 @@ public class MainMenuHomeFragment extends Fragment {
         challengeViewModel.getRepresentativeChallenge().observe(getViewLifecycleOwner(), challenge -> {
             if (challenge != null) {
                 updateChallengeUI(challenge);
+            } else {
+                // ▼▼▼ ViewModel에서 null을 받았을 때 UI를 초기화하도록 추가 ▼▼▼
+                setNoRepresentativeChallengeUI();
             }
         });
+
+        challengeViewModel.getRepresentativeChallengeCleared().observe(getViewLifecycleOwner(), cleared -> {
+            if (cleared != null && cleared) {
+                setNoRepresentativeChallengeUI();
+            }
+        });
+    }
+
+    private void setNoRepresentativeChallengeUI() {
+        if (textView7 == null || progressBar == null) return;
+
+        progressBar.setVisibility(View.GONE);
+        textView7.setText("대표 챌린지를 설정해 보세요!");
+        Log.d("HomeFragment", "대표 챌린지가 설정되지 않았거나 해제되었습니다.");
+
     }
 
     private void loadAndRenderQuiz() {
@@ -220,21 +237,19 @@ public class MainMenuHomeFragment extends Fragment {
     }
 
     private void updateChallengeUI(ChallengeDetailResponse challenge) {
+        if (textView7 == null || progressBar == null) return;
+
+        progressBar.setVisibility(View.VISIBLE);
+
         String title = challenge.getTitle();
         long daysSinceJoined = challenge.getDaysSinceJoined();
-        String goalPeriodStr = challenge.getGoalPeriod();
+        int goalPeriodInt = challenge.getGoalPeriodInDays();
 
-        int goalPeriodInt = 100;
-        try {
-            goalPeriodInt = Integer.parseInt(goalPeriodStr);
-        } catch (NumberFormatException e) {
-            e.printStackTrace();
-        }
-
-        progressBar.setMax(goalPeriodInt);
+        // 목표 기간이 0일 경우 progressBar가 오동작하는 것을 방지
+        progressBar.setMax(goalPeriodInt > 0 ? goalPeriodInt : 1);
         progressBar.setProgress((int) daysSinceJoined);
 
-        String progressText = title + "\n" + daysSinceJoined + "/" + goalPeriodStr;
+        String progressText = title + "\n" + daysSinceJoined + "일 / " + goalPeriodInt + "일";
         textView7.setText(progressText);
     }
 

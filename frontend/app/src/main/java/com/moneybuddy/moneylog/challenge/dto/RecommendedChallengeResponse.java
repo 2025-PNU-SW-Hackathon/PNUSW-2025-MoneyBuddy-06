@@ -1,5 +1,6 @@
 package com.moneybuddy.moneylog.challenge.dto;
 
+import com.google.gson.annotations.SerializedName; // 1. import 추가
 import java.io.Serializable;
 
 public class RecommendedChallengeResponse implements Serializable {
@@ -11,7 +12,10 @@ public class RecommendedChallengeResponse implements Serializable {
     private String goalPeriod;
     private String goalType;
     private Integer goalValue;
+
+    @SerializedName("accountLinked")
     private Boolean isAccountLinked;
+
     private String mobtiType;
 
     public Long getId() { return id; }

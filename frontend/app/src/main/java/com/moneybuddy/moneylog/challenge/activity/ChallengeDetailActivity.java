@@ -72,20 +72,26 @@ public class ChallengeDetailActivity extends AppCompatActivity {
                 case "카페베이커리":
                     ivCategory.setImageResource(R.drawable.category_cafe);
                     break;
+                case "저축": // 저축 챌린지
+                    ivCategory.setImageResource(R.drawable.category_saving);
+                    break;
+                case "습관": // 습관 챌린지
+                    ivCategory.setImageResource(R.drawable.category_habit);
+                    break;
                 default:
                     ivCategory.setImageResource(R.drawable.category_others);
                     break;
             }
         } else {
-            // todo 이미지 변경 category가 null일 때
+            // todo 이미지 변경
             ivCategory.setImageResource(R.drawable.category_others);
         }
 
-        String goalTypeLabel = "금액".equals(challenge.getGoalType()) ? "목표 금액" : "목표 횟수";
+        String goalTypeLabel = "금액".equals(c.getGoalType()) ? "목표 금액" : "목표 횟수";
         String isLinkedText = Boolean.TRUE.equals(c.isAccountLinked()) ? "연동됨" : "연동되지 않음";
 
-        String howtoText = "챌린지 유형: " + challenge.getType() + "\n"
-                + goalTypeLabel + ": " + challenge.getGoalValue() + "\n"
+        String howtoText = "챌린지 유형: " + c.getType() + "\n"
+                + goalTypeLabel + ": " + c.getGoalValue() + "\n"
                 + "가계부 연동 체크 여부: " + isLinkedText;
         tvHowto.setText(howtoText);
 
