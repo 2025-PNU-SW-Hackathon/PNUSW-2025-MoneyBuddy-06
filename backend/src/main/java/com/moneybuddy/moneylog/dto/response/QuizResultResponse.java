@@ -1,16 +1,13 @@
 package com.moneybuddy.moneylog.dto.response;
 
-import lombok.*;
+import lombok.Builder;
+import lombok.Value;
 
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
+@Value
 @Builder
 public class QuizResultResponse {
-
-    private Boolean isCorrect;
-    private String explanation;
-    private Boolean scoreUpdated;
-    private Integer newScore;
+    Boolean isCorrect;
+    String explanation;
+    Boolean scoreUpdated;
+    Integer newScore;
 }

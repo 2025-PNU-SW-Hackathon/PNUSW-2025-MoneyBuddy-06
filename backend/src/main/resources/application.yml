@@ -3,7 +3,7 @@ spring:
     name: moneylog
 
   datasource:
-    url: jdbc:mysql://localhost:3306/moneylog?serverTimezone=UTC&characterEncoding=UTF-8
+    url: jdbc:mysql://localhost:3306/moneylog?serverTimezone=Asia/Seoul
     username: root
     password: 241122
     driver-class-name: com.mysql.cj.jdbc.Driver

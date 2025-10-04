@@ -2,17 +2,18 @@ package com.moneybuddy.moneylog.domain;
 
 import jakarta.persistence.*;
 
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
+
 
 import java.time.LocalDate;
 
 @Entity
 @Getter
 @Setter
+
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+
+@AllArgsConstructor
 
 public class FinancialKnowledge {
 

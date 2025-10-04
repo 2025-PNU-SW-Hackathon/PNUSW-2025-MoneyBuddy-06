@@ -1,15 +1,19 @@
 package com.moneybuddy.moneylog.dto.response;
 
-import lombok.*;
+import com.moneybuddy.moneylog.domain.Quiz;
+import lombok.Builder;
+import lombok.Value;
 
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
+@Value
 @Builder
 public class QuizResponse {
+    Long quizId;
+    String question;
 
-    private Long quizId;
-    private String question;
-    private Boolean alreadyAnswered;
+    public static QuizResponse from(Quiz q) {
+        return QuizResponse.builder()
+                .quizId(q.getId())
+                .question(q.getQuestion())
+                .build();
+    }
 }

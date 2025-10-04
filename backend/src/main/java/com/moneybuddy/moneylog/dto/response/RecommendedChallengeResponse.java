@@ -13,9 +13,9 @@ public class RecommendedChallengeResponse {
     private String category;
     private String goalPeriod;
     private String goalType;
-    private Integer goalValue;
-    private String isShared;
-    private Boolean isSystemGenerated;
-    private Boolean isAccountLinked;
+    private int goalValue;
+    private boolean isShared;
+    private boolean isSystemGenerated;
+    private boolean isAccountLinked;
     private String mobtiType;
 }

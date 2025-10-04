@@ -19,17 +19,20 @@ public class ChallengeCardResponse {
     private String goalType;
     private int goalValue;
 
-    private String isSystemGenerated;
-    private Boolean isAccountLinked;
-    private String createdBy;
-    private Boolean isMine;
+    private boolean isSystemGenerated;
+    private boolean isAccountLinked;
+    private Long createdBy;
 
-    private Boolean isJoined;
+
+    private boolean isJoined;
+    private boolean isShared;
+    private boolean mine;
+
     private LocalDateTime joinedAt;
     private int currentParticipants;
-    private Boolean completed;
-    private Boolean success;
-    private Boolean rewarded;
+    private boolean completed;
+    private boolean success;
+    private boolean rewarded;
 
     private String mobtiType;
 

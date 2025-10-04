@@ -14,20 +14,41 @@ public class Challenge {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String title;
-    private String description;
-    private String type;
-    private String category;
-    private String goalPeriod;
-    private String goalType;
-    private Integer goalValue;
+    @Column(nullable = false)
+    private String title = "";
 
-    private Boolean isSystemGenerated;
-    private Boolean isShared;
-    private Boolean isAccountLinked;
-    private Long createdBy;
+    @Column(nullable = false)
+    private String description = "";
 
-    private String mobtiType;
+    @Column(nullable = false)
+    private String type = "";
 
+    @Column(nullable = false)
+    private String category = "";
 
+    @Column(nullable = false)
+    private String goalPeriod = "";
+
+    @Column(nullable = false)
+    private String goalType = "";
+
+    @Builder.Default
+    @Column(nullable = false)
+    private Integer goalValue = 0;
+
+    @Builder.Default
+    @Column(nullable = false)
+    private boolean isSystemGenerated = false;
+
+    @Builder.Default
+    @Column(nullable = false)
+    private boolean isShared = false;
+
+    @Builder.Default
+    @Column(nullable = false)
+    private boolean isAccountLinked = false;
+
+    private Long createdBy = 0L; 
+
+    private String mobtiType = "";
 }

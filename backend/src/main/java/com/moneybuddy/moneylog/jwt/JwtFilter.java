@@ -1,9 +1,11 @@
 package com.moneybuddy.moneylog.jwt;
 
 import com.moneybuddy.moneylog.repository.RevokedAccessTokenRepository;
+
 import com.moneybuddy.moneylog.repository.UserRepository;
 import com.moneybuddy.moneylog.security.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
+
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
@@ -60,7 +62,7 @@ public class JwtFilter extends OncePerRequestFilter {
                 User user = userRepository.findById(userId)
                         .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
 
-                // request attribute에 user 저장 (컨트롤러 등에서 바로 꺼내 쓸 수 있음)
+                // ✅ request attribute에 user 저장 (컨트롤러 등에서 바로 꺼내 쓸 수 있음)
                 request.setAttribute("user", user);
 
                 // 비밀번호 변경 요청 여부 확인

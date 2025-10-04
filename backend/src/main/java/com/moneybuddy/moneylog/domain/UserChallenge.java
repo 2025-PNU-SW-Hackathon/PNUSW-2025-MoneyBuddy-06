@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 @Entity
 @Getter
 @Setter
-@NoArgsConstructor(access = AccessLevel.PROTECTED) // 기본 생성자 추가
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
 public class UserChallenge {
@@ -18,20 +18,25 @@ public class UserChallenge {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Long userId;
+    @Column(nullable = false)
+    private Long userId = 0L;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "challenge_id", nullable = false)
-    private Challenge challenge;
-
-    private LocalDateTime joinedAt;
+    private Challenge challenge; // 챌린지는 무조건 존재해야 함
 
     @Column(nullable = false)
-    private Boolean completed = false;
+    private LocalDateTime joinedAt = LocalDateTime.now();
 
+    @Builder.Default
     @Column(nullable = false)
-    private Boolean success = false;
+    private boolean completed = false;
 
+    @Builder.Default
     @Column(nullable = false)
-    private Boolean rewarded = false;
+    private boolean success = false;
+
+    @Builder.Default
+    @Column(nullable = false)
+    private boolean rewarded = false;
 }

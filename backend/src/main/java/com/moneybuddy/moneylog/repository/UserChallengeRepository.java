@@ -3,6 +3,7 @@ package com.moneybuddy.moneylog.repository;
 import com.moneybuddy.moneylog.domain.UserChallenge;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 import java.util.Optional;
@@ -21,4 +22,10 @@ public interface UserChallengeRepository extends JpaRepository<UserChallenge, Lo
 
     @Query("SELECT uc FROM UserChallenge uc WHERE uc.completed = false")
     List<UserChallenge> findAllIncomplete();
+
+    @Query("SELECT uc FROM UserChallenge uc JOIN FETCH uc.challenge WHERE uc.userId = :userId AND uc.completed = false")
+    List<UserChallenge> findByUserIdAndCompletedFalseWithChallenge(@Param("userId") Long userId);
+
+    @Query("SELECT uc FROM UserChallenge uc JOIN FETCH uc.challenge WHERE uc.userId = :userId AND uc.completed = true")
+    List<UserChallenge> findByUserIdAndCompletedTrueWithChallenge(@Param("userId") Long userId);
 }

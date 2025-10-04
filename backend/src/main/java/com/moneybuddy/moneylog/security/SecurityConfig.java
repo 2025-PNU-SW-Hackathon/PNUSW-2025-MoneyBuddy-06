@@ -36,7 +36,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/v1/users/signup", "/api/v1/users/login").permitAll()
                         .requestMatchers("/api/v1/users/delete").authenticated()
                         .requestMatchers("/api/v1/knowledge/**").permitAll()
-                        .requestMatchers("/api/v1/youth-policy/**").permitAll()
+                        .requestMatchers("/api/v1/youth-policy/**").permitAll() // ✅ config 버전 반영
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);

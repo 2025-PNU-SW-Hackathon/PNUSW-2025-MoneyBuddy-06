@@ -9,9 +9,7 @@ public interface ChallengeRepository extends JpaRepository<Challenge, Long> {
 
     List<Challenge> findByIsSharedTrue();
     List<Challenge> findByIsSystemGeneratedTrueAndMobtiTypeIn(List<String> mobtiTypes);
-
-    List<Challenge> findByTypeAndCategoryAndIsSharedTrue(String type, String category);
-
-    List<Challenge> findByTypeAndIsSharedTrue(String type);
+    List<Challenge> findByCategoryAndIsSharedTrue(String category);
+    boolean existsByTitle(String title);
 
 }

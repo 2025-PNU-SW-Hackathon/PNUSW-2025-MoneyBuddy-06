@@ -20,7 +20,7 @@ public class User {
     @Column(name = "password", nullable = false)
     private String password;
 
-    @Column(name = "mobti_type", nullable = false)
+    @Column(name = "mobti", nullable = true)
     private String mobti;
 
     @Column(name = "mobti_updated_at")
@@ -39,7 +39,7 @@ public class User {
     public User(String email, String password) {
         this.email = email;
         this.password = password;
-        this.mobti = null;  // 또는 기본 mobti 지정
+        this.mobti = "UNDEFINED";
         this.score = 0;
     }
 
