@@ -1,12 +1,39 @@
 package com.moneybuddy.moneylog.dto.request;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
 import lombok.Getter;
 import lombok.Setter;
+
+import java.util.List;
+import java.util.Objects;
 
 @Getter
 @Setter
 public class ChallengeFilterRequest {
-    private String type;              // "지출" / "저축" / "기타"
-    private String category;          // 선택적: 예) "식비", "저축", "건강"
-    private Boolean isAccountLinked;  // 선택적: 지출일 때만 의미 있음
+    private String type;
+
+    @JsonAlias({"category", "categories"})
+    private Object categoriesRaw;
+
+    private Boolean isAccountLinked;
+
+    public String getCategory() {
+
+        if (categoriesRaw instanceof String s) {
+            s = s.trim();
+            return s.isEmpty() || "전체".equals(s) || "ALL".equalsIgnoreCase(s) ? null : s;
+        }
+
+        if (categoriesRaw instanceof List<?> list) {
+            for (Object o : list) {
+                if (o == null) continue;
+                String s = o.toString().trim();
+                if (!s.isEmpty() && !"전체".equals(s) && !"ALL".equalsIgnoreCase(s)) {
+                    return s;
+                }
+            }
+            return null;
+        }
+        return null;
+    }
 }
