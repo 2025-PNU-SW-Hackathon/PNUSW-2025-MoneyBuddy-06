@@ -77,10 +77,30 @@ public class UserChallengeService {
     }
 
     // 진행 중인 챌린지 조회
+    @Transactional
     public List<ChallengeCardResponse> getOngoingChallenges(Long userId) {
-        return userChallengeRepository.findByUserIdAndCompletedFalseWithChallenge(userId).stream()
+        List<UserChallenge> userChallenges = userChallengeRepository.findByUserIdAndCompletedFalseWithChallenge(userId);
+
+        LocalDate today = LocalDate.now();
+
+        for (UserChallenge uc : userChallenges) {
+            Challenge c = uc.getChallenge();
+
+            LocalDate start = uc.getJoinedAt().toLocalDate();
+            LocalDate end = start.plusDays(parseGoalPeriod(c.getGoalPeriod()));
+
+            // 기한이 끝났다면 completed 처리
+            if (today.isAfter(end.minusDays(1))) {
+                uc.setCompleted(true);
+                userChallengeRepository.save(uc);
+            }
+        }
+
+        // 다시 필터링해서 아직 유효한 챌린지만 반환
+        return userChallenges.stream()
+                .filter(uc -> !uc.isCompleted())
                 .map(uc -> toOngoingChallengeCardResponse(uc, userId))
-                .collect(Collectors.toList());
+                .toList();
     }
 
     // 진행 중 챌린지 응답 변환
