@@ -2,10 +2,10 @@ package com.moneybuddy.moneylog.finance.dto.request;
 
 public class QuizAnswerRequest {
     private Long quizId;
-    private boolean userAnswer;
+    private boolean answer;
 
-    public QuizAnswerRequest(Long quizId, boolean userAnswer) {
+    public QuizAnswerRequest(Long quizId, boolean answer) {
         this.quizId = quizId;
-        this.userAnswer = userAnswer;
+        this.answer = answer;
     }
 }
