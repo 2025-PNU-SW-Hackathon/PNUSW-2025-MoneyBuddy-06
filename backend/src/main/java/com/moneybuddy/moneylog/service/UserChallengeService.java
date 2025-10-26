@@ -11,14 +11,14 @@ import com.moneybuddy.moneylog.repository.ChallengeRepository;
 import com.moneybuddy.moneylog.repository.UserChallengeRepository;
 import com.moneybuddy.moneylog.repository.UserChallengeSuccessRepository;
 import com.moneybuddy.moneylog.repository.UserExpRepository;
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -32,9 +32,7 @@ public class UserChallengeService {
     private final ChallengeLedgerService challengeLedgerService;
     private final UserExpRepository userExpRepository;
 
-    /**
-     *  챌린지 참여 요청 처리
-     */
+    // 챌린지 참여 요청 처리
     public UserChallengeResponse joinChallenge(Long userId, Long challengeId) {
         Challenge challenge = challengeRepository.findById(challengeId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 챌린지를 찾을 수 없습니다."));
@@ -58,9 +56,7 @@ public class UserChallengeService {
         return toJoinChallengeResponse(userChallenge);
     }
 
-    /**
-     *  챌린지 참여 정보 응답
-     */
+    // 챌린지 참여 정보 응답
     public UserChallengeResponse toJoinChallengeResponse(UserChallenge userChallenge) {
         Challenge c = userChallenge.getChallenge();
 
@@ -80,18 +76,14 @@ public class UserChallengeService {
                 .build();
     }
 
-    /**
-     *  진행 중인 챌린지 조회
-     */
+    // 진행 중인 챌린지 조회
     public List<ChallengeCardResponse> getOngoingChallenges(Long userId) {
         return userChallengeRepository.findByUserIdAndCompletedFalseWithChallenge(userId).stream()
                 .map(uc -> toOngoingChallengeCardResponse(uc, userId))
                 .collect(Collectors.toList());
     }
 
-    /**
-     * 진행 중 챌린지 응답 변환
-     */
+    // 진행 중 챌린지 응답 변환
     private ChallengeCardResponse toOngoingChallengeCardResponse(UserChallenge uc, Long userId) {
         Challenge c = uc.getChallenge();
 
@@ -125,18 +117,14 @@ public class UserChallengeService {
                 .build();
     }
 
-    /**
-     *  완료된 챌린지 조회
-     */
+    // 완료된 챌린지 조회
     public List<ChallengeCardResponse> getCompletedChallenges(Long userId) {
         return userChallengeRepository.findByUserIdAndCompletedTrueWithChallenge(userId).stream()
                 .map(uc -> toCompletedChallengeCardResponse(uc, userId))
                 .collect(Collectors.toList());
     }
 
-    /**
-     * 완료된 챌린지 응답 변환
-     */
+    // 완료된 챌린지 응답 변환
     private ChallengeCardResponse toCompletedChallengeCardResponse(UserChallenge uc, Long userId) {
         Challenge c = uc.getChallenge();
 
@@ -171,72 +159,85 @@ public class UserChallengeService {
                 .build();
     }
 
-    /**
-     *  진행 중인 챌린지 필터링
-     */
+    // 진행 중인 챌린지 필터링
+    @Transactional(readOnly = true)
     public List<ChallengeCardResponse> filterOngoingChallenges(Long userId, ChallengeFilterRequest request) {
-        List<UserChallenge> userChallenges = userChallengeRepository.findByUserIdAndCompletedFalse(userId);
-        return filterOngoingChallengesByCondition(userChallenges, request,userId);
-    }
+        Object raw = request.getCategoriesRaw();
 
-    /**
-     *  진행 중인 챌린지 필터링 함수
-     */
-    private List<ChallengeCardResponse> filterOngoingChallengesByCondition(List<UserChallenge> userChallenges, ChallengeFilterRequest req,Long userId) {
+        // 요청이 배열 형태일 수도 있고, 문자열일 수도 있음
+        List<String> categories = new ArrayList<>();
+
+        if (raw instanceof String s) {
+            if (!s.isBlank() && !"전체".equals(s) && !"ALL".equalsIgnoreCase(s)) {
+                categories.add(s.trim());
+            }
+        } else if (raw instanceof List<?> list) {
+            for (Object o : list) {
+                if (o == null) continue;
+                String s = o.toString().trim();
+                if (!s.isEmpty() && !"전체".equals(s) && !"ALL".equalsIgnoreCase(s)) {
+                    categories.add(s);
+                }
+            }
+        }
+
+        // 전체 선택 시 모든 진행중 챌린지 반환
+        List<UserChallenge> userChallenges = userChallengeRepository.findByUserIdAndCompletedFalse(userId);
+        if (categories.isEmpty()) {
+            return userChallenges.stream()
+                    .map(uc -> toOngoingChallengeCardResponse(uc, userId))
+                    .toList();
+        }
+
+        // 카테고리 중 하나라도 포함되면 필터 통과
         return userChallenges.stream()
                 .filter(uc -> {
-                    Challenge c = uc.getChallenge();
-                    if (req.getType() != null && !req.getType().equals(c.getType())) return false;
-
-                    if ("저축".equals(req.getType())) {
-                        return "저축".equals(c.getCategory());
-                    } else if ("지출".equals(req.getType())) {
-                        boolean cat = req.getCategory() == null || req.getCategory().equals(c.getCategory());
-                        boolean acc = req.getIsAccountLinked() == null || req.getIsAccountLinked().equals(c.isAccountLinked());
-                        return cat && acc;
-                    }
-
-                    return true;
+                    String dbCat = uc.getChallenge().getCategory();
+                    return dbCat != null && categories.stream().anyMatch(dbCat::equalsIgnoreCase);
                 })
                 .map(uc -> toOngoingChallengeCardResponse(uc, userId))
-                .collect(Collectors.toList());
+                .toList();
     }
 
-    /**
-     *  완료된 챌린지 필터링
-     */
+
+    // 완료된 챌린지 필터링
+    @Transactional(readOnly = true)
     public List<ChallengeCardResponse> filterCompletedChallenges(Long userId, ChallengeFilterRequest request) {
-        List<UserChallenge> userChallenges = userChallengeRepository.findByUserIdAndCompletedTrue(userId);
-        return filterCompletedChallengesByCondition(userChallenges, request,userId);
-    }
+        Object raw = request.getCategoriesRaw();
+        List<String> categories = new ArrayList<>();
 
-    /**
-     *  완료된 챌린지 필터링 함수
-     */
-    private List<ChallengeCardResponse> filterCompletedChallengesByCondition(List<UserChallenge> userChallenges, ChallengeFilterRequest req,Long userId) {
+        if (raw instanceof String s) {
+            if (!s.isBlank() && !"전체".equals(s) && !"ALL".equalsIgnoreCase(s)) {
+                categories.add(s.trim());
+            }
+        } else if (raw instanceof List<?> list) {
+            for (Object o : list) {
+                if (o == null) continue;
+                String s = o.toString().trim();
+                if (!s.isEmpty() && !"전체".equals(s) && !"ALL".equalsIgnoreCase(s)) {
+                    categories.add(s);
+                }
+            }
+        }
+
+        List<UserChallenge> userChallenges = userChallengeRepository.findByUserIdAndCompletedTrue(userId);
+        if (categories.isEmpty()) {
+            return userChallenges.stream()
+                    .map(uc -> toCompletedChallengeCardResponse(uc, userId))
+                    .toList();
+        }
+
         return userChallenges.stream()
                 .filter(uc -> {
-                    Challenge c = uc.getChallenge();
-                    if (req.getType() != null && !req.getType().equals(c.getType())) return false;
-
-                    if ("저축".equals(req.getType())) {
-                        return "저축".equals(c.getCategory());
-                    } else if ("지출".equals(req.getType())) {
-                        boolean cat = req.getCategory() == null || req.getCategory().equals(c.getCategory());
-                        boolean acc = req.getIsAccountLinked() == null || req.getIsAccountLinked().equals(c.isAccountLinked());
-                        return cat && acc;
-                    }
-
-                    return true;
+                    String dbCat = uc.getChallenge().getCategory();
+                    return dbCat != null && categories.stream().anyMatch(dbCat::equalsIgnoreCase);
                 })
                 .map(uc -> toCompletedChallengeCardResponse(uc, userId))
-                .collect(Collectors.toList());
+                .toList();
     }
 
 
-    /**
-     *  가계부 연동 챌린지를 자동 평가 + 성공 시 완료 처리 + 보상 지급
-     */
+    // 가계부 연동 챌린지를 자동 평가 + 성공 시 완료 처리 + 보상 지급
     @Transactional
     public void evaluateOngoingChallenges(Long userId) {
         List<UserChallenge> ongoing = userChallengeRepository.findByUserIdAndCompletedFalse(userId);
@@ -267,10 +268,7 @@ public class UserChallengeService {
         }
     }
 
-    /**
-     *  가계부 연동 챌린지가 자동으로 성공 처리됐을 때
-     *  사용자에게 경험치 보상 지급 및 레벨업 처리
-     */
+    // 가계부 연동 챌린지가 자동으로 성공 처리됐을 때 사용자에게 경험치 보상 지급 및 레벨업 처리
     private void giveRewardToUser(Long userId) {
         UserExp exp = userExpRepository.findByUserId(userId)
                 .orElseGet(() -> userExpRepository.save(UserExp.builder()
@@ -292,10 +290,7 @@ public class UserChallengeService {
         userExpRepository.save(exp);
     }
 
-    /**
-     *  가계부 기반 챌린지 평가
-     *  챌린지 제목에 따라 조건 분기
-     */
+    // 가계부 기반 챌린지 평가, 챌린지 제목에 따라 조건 분기
     public boolean evaluateChallenge(Challenge challenge, Long userId) {
         if (!challenge.isAccountLinked()) return false;
 
@@ -329,9 +324,7 @@ public class UserChallengeService {
         }
     }
 
-    /**
-     * 챌린지 기간을 일(day) 단위로 환산
-     */
+    // 챌린지 기간을 일(day) 단위로 환산
     private int parseGoalPeriod(String periodStr) {
         if (periodStr.endsWith("일")) {
             return Integer.parseInt(periodStr.replace("일", "").trim());
