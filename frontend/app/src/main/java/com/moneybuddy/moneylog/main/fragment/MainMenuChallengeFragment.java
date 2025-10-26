@@ -18,15 +18,12 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.OptIn;
-import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
-import com.google.android.material.badge.ExperimentalBadgeUtils;
 import com.moneybuddy.moneylog.R;
 import com.moneybuddy.moneylog.challenge.activity.ChallengeCategoryActivity;
 import com.moneybuddy.moneylog.challenge.activity.ChallengeCreateActivity;
@@ -44,8 +41,6 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-import com.google.android.material.badge.BadgeDrawable;
-import com.google.android.material.badge.BadgeUtils;
 
 public class MainMenuChallengeFragment extends Fragment implements ChallengeAdapter.OnRepresentativeChallengeClickListener {
     private ChallengeViewModel viewModel;
@@ -54,8 +49,6 @@ public class MainMenuChallengeFragment extends Fragment implements ChallengeAdap
     private ChallengeApiService apiService;
 
     private ImageButton filterButton;
-    private FrameLayout filterButtonContainer;
-    private BadgeDrawable badge;
 
     private ActivityResultLauncher<Intent> categoryFilterLauncher;
 
@@ -71,11 +64,8 @@ public class MainMenuChallengeFragment extends Fragment implements ChallengeAdap
                     if (result.getResultCode() == Activity.RESULT_OK && result.getData() != null) {
                         Intent data = result.getData();
                         ArrayList<String> cats = data.getStringArrayListExtra(ChallengeCategoryActivity.EXTRA_SELECTED_CATEGORIES);
-                        if (cats != null && !cats.isEmpty()) {
-                            viewModel.applyCategoryFilter(cats);
-                        } else {
-                            viewModel.loadChallenges();
-                        }
+
+                        viewModel.applyCategoryFilter(cats);
                     }
                 }
         );
@@ -90,31 +80,17 @@ public class MainMenuChallengeFragment extends Fragment implements ChallengeAdap
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        viewModel = new ViewModelProvider(this).get(ChallengeViewModel.class);
+        viewModel = new ViewModelProvider(requireActivity()).get(ChallengeViewModel.class);
 
-        initializeBadge(view);
         setupViews(view);
         observeViewModel();
-    }
-
-    @OptIn(markerClass = ExperimentalBadgeUtils.class)
-    private void initializeBadge(View view) {
-        filterButton = view.findViewById(R.id.imageButton2);
-        filterButtonContainer = view.findViewById(R.id.filter_button_container);
-
-        // 뱃지 생성
-        badge = BadgeDrawable.create(requireContext());
-        badge.setVisible(false);
-
-        badge.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.red));
-
-        BadgeUtils.attachBadgeDrawable(badge, filterButton, filterButtonContainer);
     }
 
     private void setupViews(View view) {
         RecyclerView rv = view.findViewById(R.id.recyclerView);
         swipeRefresh = view.findViewById(R.id.swipeRefreshLayout);
         RadioGroup rg = view.findViewById(R.id.radioGroup4);
+        filterButton = view.findViewById(R.id.imageButton2);
 
         adapter = new ChallengeAdapter(getContext(), (challengeId, isChecked) -> {
             updateStatusToServer(challengeId, isChecked);
@@ -141,23 +117,27 @@ public class MainMenuChallengeFragment extends Fragment implements ChallengeAdap
         adapter.setCurrentFilter(ChallengeFilter.ONGOING);
 
         rg.setOnCheckedChangeListener((group, id) -> {
-            ChallengeFilter filter;
+            ChallengeFilter newFilter;
             if (id == R.id.radioButton10) {
-                filter = ChallengeFilter.ALL;
+                newFilter = ChallengeFilter.ALL;
                 adapter.setShowHeader(false);
             } else if (id == R.id.radioButton11) {
-                filter = ChallengeFilter.RECOMMENDED;
+                newFilter = ChallengeFilter.RECOMMENDED;
                 adapter.setShowHeader(false);
             } else if (id == R.id.radioButton12) {
-                filter = ChallengeFilter.ONGOING;
+                newFilter = ChallengeFilter.ONGOING;
                 adapter.setShowHeader(true);
             } else { // R.id.radioButton13
-                filter = ChallengeFilter.COMPLETED;
+                newFilter = ChallengeFilter.COMPLETED;
                 adapter.setShowHeader(false);
             }
-            adapter.setCurrentFilter(filter);
 
-            viewModel.setFilter(filter);
+            // ViewModel에 저장된 '이전' 필터와 '새로운' 필터가 다를 때만,
+            // 즉, 사용자가 직접 탭을 눌러서 바꿨을 때만 setFilter를 호출합니다.
+            if (viewModel.getCurrentFilter() != newFilter) {
+                adapter.setCurrentFilter(newFilter);
+                viewModel.setFilter(newFilter);
+            }
         });
     }
 
@@ -169,10 +149,6 @@ public class MainMenuChallengeFragment extends Fragment implements ChallengeAdap
             if (viewModel.getCurrentFilter() == ChallengeFilter.ONGOING) {
                 adapter.setTodoList(todos);
             }
-        });
-
-        viewModel.isCategoryFilterActive().observe(getViewLifecycleOwner(), isActive -> {
-            badge.setVisible(isActive);
         });
 
         viewModel.getRepresentativeChallengeCleared().observe(getViewLifecycleOwner(), cleared -> {

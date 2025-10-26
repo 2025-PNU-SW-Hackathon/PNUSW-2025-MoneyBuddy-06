@@ -1,6 +1,6 @@
 package com.moneybuddy.moneylog.challenge.dto;
 
-import com.google.gson.annotations.SerializedName; // 1. import 추가
+import com.google.gson.annotations.SerializedName;
 import java.io.Serializable;
 
 public class RecommendedChallengeResponse implements Serializable {

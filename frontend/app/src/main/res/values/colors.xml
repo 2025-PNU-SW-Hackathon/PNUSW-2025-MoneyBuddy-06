@@ -10,12 +10,15 @@
 
     <color name="radio_unchecked_button">#F5F3DF</color>
     <color name="radio_checked_button">#C4C9B3</color>
-
     <color name="my_challenge_color">#C1D194</color>
     <color name="other_challenge_color">#F5F3DF</color>
     <color name="red">#FF0000</color>
+    <color name="my_challenge_progressbar_track">#FCFFEB</color>
+    <color name="my_challenge_progressbar_indicator">#5F5F5F</color>
+    <color name="other_challenge_progressbar_track">#C4C7AF</color>
+    <color name="other_challenge_progressbar_indicator">#B5CC68</color>
 
-    // signup-ui
+<!--    signup-ui-->
     <color name="text_input_box_stroke">#86935A</color>
     <color name="food">#FCA5A5</color>            <!-- Red  → Pastel Red -->
     <color name="cafe_bakery">#FDBA74</color>     <!-- Orange → Pastel Orange -->

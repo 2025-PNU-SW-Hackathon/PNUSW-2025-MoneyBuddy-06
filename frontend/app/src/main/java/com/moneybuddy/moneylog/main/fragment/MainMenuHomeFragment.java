@@ -92,7 +92,7 @@ public class MainMenuHomeFragment extends Fragment {
         setupNotificationBadge();
         setupButtonClickListeners(view);
 
-        loadAndRenderAnalytics();
+//        loadAndRenderAnalytics();
         loadAndRenderMobti();
         loadAndRenderQuiz();
 
@@ -143,7 +143,6 @@ public class MainMenuHomeFragment extends Fragment {
             if (challenge != null) {
                 updateChallengeUI(challenge);
             } else {
-                // ▼▼▼ ViewModel에서 null을 받았을 때 UI를 초기화하도록 추가 ▼▼▼
                 setNoRepresentativeChallengeUI();
             }
         });
