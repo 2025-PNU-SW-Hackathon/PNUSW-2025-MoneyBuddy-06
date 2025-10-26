@@ -61,6 +61,8 @@ public class FinanceInfoActivity extends AppCompatActivity {
     private ApiService apiService;
     private Long currentQuizId;
 
+    // FinanceInfoActivity.java 내부
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -73,21 +75,17 @@ public class FinanceInfoActivity extends AppCompatActivity {
             return insets;
         });
 
+        // 1. apiService를 가장 먼저 초기화하여 NullPointerException을 원천적으로 방지합니다.
+        apiService = RetrofitClient.api(this);
+
+        // 2. UI 요소들을 초기화하고 리스너를 설정합니다.
         initializeViews();
         setupClickListeners();
-
-        // ApiService 초기화
-        apiService = RetrofitClient.api(FinanceInfoActivity.this);
-
-        // 카드뉴스
         setupCardNewsSection();
-        loadCardNewsData();
 
-        // 데이터 로딩 호출
+        // 3. 필요한 데이터를 각각 한 번씩 로딩합니다. (중복 호출 제거)
         loadCardNewsData();
         loadTodayQuiz();
-
-        // 청년 정책 데이터 로딩
         loadYouthPolicies();
     }
 

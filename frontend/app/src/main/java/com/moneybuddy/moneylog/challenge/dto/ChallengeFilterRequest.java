@@ -3,8 +3,8 @@ package com.moneybuddy.moneylog.challenge.dto;
 import java.util.List;
 
 public class ChallengeFilterRequest {
-    private List<String> categories;
+    private List<String> category;
     public ChallengeFilterRequest(List<String> categories) {
-        this.categories = categories;
+        this.category = categories;
     }
 }

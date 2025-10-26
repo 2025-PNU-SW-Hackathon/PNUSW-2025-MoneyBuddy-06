@@ -92,7 +92,7 @@ public class MainMenuHomeFragment extends Fragment {
         setupNotificationBadge();
         setupButtonClickListeners(view);
 
-        loadAndRenderAnalytics();
+//        loadAndRenderAnalytics();
         loadAndRenderMobti();
         loadAndRenderQuiz();
 
