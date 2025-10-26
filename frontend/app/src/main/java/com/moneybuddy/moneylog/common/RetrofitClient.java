@@ -23,10 +23,6 @@ public final class RetrofitClient {
     private static final String BASE_URL_DEBUG   = "http://172.21.170.228:8080/";
     private static final String BASE_URL_RELEASE = "http://172.21.170.228:8080/";
 
-//    //민서
-//    private static final String BASE_URL_DEBUG   = "http://172.21.216.193:8080/";
-//    private static final String BASE_URL_RELEASE = "http://172.21.216.193:8080/";
-
     private RetrofitClient() {}
 
     public static Retrofit get(Context ctx) {
