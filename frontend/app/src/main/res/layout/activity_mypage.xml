@@ -139,15 +139,25 @@
                 app:layout_constraintTop_toTopOf="@+id/tv_my_level_label" />
 
             <View
-                android:id="@+id/view_level_progress"
-                android:layout_width="150dp"
+                android:id="@+id/view_level_track"
+                android:layout_width="0dp"
                 android:layout_height="8dp"
                 android:layout_marginTop="8dp"
-                android:background="#9ca871"
+                android:background="#E0E0E0"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/tv_my_level_label"  />
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tv_my_level_label" />
 
+            <View
+                android:id="@+id/view_level_progress"
+                android:layout_width="0dp"
+                android:layout_height="8dp"
+                android:background="#9ca871"
+                app:layout_constraintStart_toStartOf="@id/view_level_track"
+                app:layout_constraintTop_toTopOf="@id/view_level_track"
+                app:layout_constraintBottom_toBottomOf="@id/view_level_track" />
+ㅡ
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <TextView
