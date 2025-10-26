@@ -15,13 +15,13 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/challenges")
+@RequestMapping(value = "/api/v1/challenges", produces = "application/json")
 public class UserChallengeController {
 
     private final UserChallengeService userChallengeService;
 
     // 챌린지 참여 API
-    @PostMapping("/join")
+    @PostMapping(value = "/join", consumes = "application/json")
     public ResponseEntity<UserChallengeResponse> joinChallenge(
             @AuthenticationPrincipal CustomUserDetails userDetails,
             @RequestBody UserChallengeRequest request
@@ -41,11 +41,13 @@ public class UserChallengeController {
         return userChallengeService.getOngoingChallenges(userDetails.getUserId());
     }
 
-    @PostMapping("/ongoing/filter")
+    // 진행 중 필터 (프론트는 category만 JSON으로 전송)
+    @PostMapping(value = "/ongoing/filter", consumes = "application/json")
     public List<ChallengeCardResponse> filterOngoingChallenges(
-            @RequestParam Long userId,
-            @RequestBody ChallengeFilterRequest request) {
-        return userChallengeService.filterOngoingChallenges(userId, request);
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @RequestBody ChallengeFilterRequest request
+    ) {
+        return userChallengeService.filterOngoingChallenges(userDetails.getUserId(), request);
     }
 
     // 완료된 챌린지 조회
@@ -56,17 +58,21 @@ public class UserChallengeController {
         return userChallengeService.getCompletedChallenges(userDetails.getUserId());
     }
 
-    @PostMapping("/completed/filter")
+    // 완료된 챌린지 필터 (프론트는 category만 JSON으로 전송)
+    @PostMapping(value = "/completed/filter", consumes = "application/json")
     public List<ChallengeCardResponse> filterCompletedChallenges(
-            @RequestParam Long userId,
-            @RequestBody ChallengeFilterRequest request) {
-        return userChallengeService.filterCompletedChallenges(userId, request);
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @RequestBody ChallengeFilterRequest request
+    ) {
+        return userChallengeService.filterCompletedChallenges(userDetails.getUserId(), request);
     }
 
-    // 챌린지 가계부 연동 API
+    // 챌린지 가계부 연동/평가 API
     @PostMapping("/evaluate")
-    public ResponseEntity<Void> evaluateAll(@RequestParam Long userId) {
-        userChallengeService.evaluateOngoingChallenges(userId);
+    public ResponseEntity<Void> evaluateAll(
+            @AuthenticationPrincipal CustomUserDetails userDetails
+    ) {
+        userChallengeService.evaluateOngoingChallenges(userDetails.getUserId());
         return ResponseEntity.ok().build();
     }
 }
