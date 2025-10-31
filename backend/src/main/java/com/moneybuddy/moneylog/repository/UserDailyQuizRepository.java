@@ -23,4 +23,6 @@ public interface UserDailyQuizRepository extends JpaRepository<UserDailyQuiz, Lo
     // 예전에 풀었던 문제는 빼고 배정
     @Query("select udq.quiz.id from UserDailyQuiz udq where udq.user.id = :userId and udq.completed = true")
     List<Long> findCompletedQuizIdsByUserId(@Param("userId") Long userId);
+
+    void deleteByUserId(Long userId);
 }
