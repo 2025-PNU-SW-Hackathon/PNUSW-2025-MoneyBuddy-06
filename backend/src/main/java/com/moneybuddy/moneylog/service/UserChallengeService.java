@@ -290,7 +290,7 @@ public class UserChallengeService {
 
     // 가계부 연동 챌린지가 자동으로 성공 처리됐을 때 사용자에게 경험치 보상 지급 및 레벨업 처리
     private void giveRewardToUser(Long userId) {
-        UserExp exp = userExpRepository.findByUserId(userId)
+        UserExp exp = userExpRepository.findByUser_Id(userId)
                 .orElseGet(() -> userExpRepository.save(UserExp.builder()
                         .userId(userId)
                         .experience(0)
