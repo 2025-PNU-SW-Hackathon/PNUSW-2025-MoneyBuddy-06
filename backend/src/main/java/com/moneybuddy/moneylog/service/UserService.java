@@ -7,21 +7,28 @@ import com.moneybuddy.moneylog.dto.response.UserLoginResponse;
 import com.moneybuddy.moneylog.dto.request.UserDeleteRequest;
 import com.moneybuddy.moneylog.repository.UserExpRepository;
 import com.moneybuddy.moneylog.repository.UserRepository;
+import com.moneybuddy.moneylog.repository.UserDailyQuizRepository;
+import com.moneybuddy.moneylog.repository.UserExpRepository;
 import com.moneybuddy.moneylog.domain.User;
 import com.moneybuddy.moneylog.jwt.JwtUtil;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import org.springframework.transaction.annotation.Transactional;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
+    private final UserExpRepository userExpRepository;
+
+    private final UserDailyQuizRepository userDailyQuizRepository;
     private final UserExpRepository userExpRepository;
 
     // 회원가입
@@ -73,6 +80,10 @@ public class UserService {
         String email = jwtUtil.getEmail(token);
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+
+        Long userId = user.getId();
+        userDailyQuizRepository.deleteByUserId(userId);
+        userExpRepository.deleteByUserId(userId);
 
         if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
             throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
