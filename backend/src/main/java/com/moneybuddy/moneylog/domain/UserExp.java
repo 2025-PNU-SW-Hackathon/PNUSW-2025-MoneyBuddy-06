@@ -21,6 +21,7 @@ public class UserExp {
 
     @OneToOne(fetch = FetchType.LAZY)
     @MapsId
+    @JoinColumn(name = "user_id")
     private User user;
 
     public boolean addExperience(int amount, int expPerLevel) {
