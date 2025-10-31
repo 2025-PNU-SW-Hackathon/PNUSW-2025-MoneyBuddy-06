@@ -372,7 +372,9 @@ public class MypageActivity extends AppCompatActivity {
 
     private String getTokenFromPreferences() {
         SharedPreferences prefs = getSharedPreferences("auth", Context.MODE_PRIVATE);
-        return prefs.getString("token", null);
+        String token = prefs.getString("token", null);
+        Log.d("TOKEN_CHECK", "SharedPreferences token = " + token);
+        return token;
     }
 
     private void clearUserData() {
