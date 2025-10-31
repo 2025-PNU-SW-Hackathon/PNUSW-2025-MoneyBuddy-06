@@ -1,9 +1,11 @@
 package com.moneybuddy.moneylog.service;
 
+import com.moneybuddy.moneylog.domain.UserExp;
 import com.moneybuddy.moneylog.dto.request.UserSignupRequest;
 import com.moneybuddy.moneylog.dto.request.UserLoginRequest;
 import com.moneybuddy.moneylog.dto.response.UserLoginResponse;
 import com.moneybuddy.moneylog.dto.request.UserDeleteRequest;
+import com.moneybuddy.moneylog.repository.UserExpRepository;
 import com.moneybuddy.moneylog.repository.UserRepository;
 import com.moneybuddy.moneylog.repository.UserDailyQuizRepository;
 import com.moneybuddy.moneylog.repository.UserExpRepository;
@@ -24,19 +26,33 @@ public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
+    private final UserExpRepository userExpRepository;
 
     private final UserDailyQuizRepository userDailyQuizRepository;
     private final UserExpRepository userExpRepository;
 
     // 회원가입
     public void signup(UserSignupRequest request) {
+        // 1) 이메일 중복 검사
         if (userRepository.findByEmail(request.getEmail()).isPresent()) {
             throw new IllegalArgumentException("이미 존재하는 이메일입니다.");
         }
 
-        String encodedPassword = passwordEncoder.encode(request.getPassword()); // 암호화
-        User user = new User(request.getEmail(), encodedPassword); // 암호화된 비밀번호 저장
-        userRepository.save(user);
+        // 2) 사용자 저장
+        String encodedPassword = passwordEncoder.encode(request.getPassword());
+        User user = new User(request.getEmail(), encodedPassword);
+        User saved = userRepository.save(user);
+
+        // 3) 경험치 레코드 자동 생성 (@MapsId로 PK 공유)
+        //    중복 생성 방지: PK(user_id) 기준 존재 체크
+        if (!userExpRepository.existsById(saved.getId())) {
+            UserExp userExp = UserExp.builder()
+                    .user(saved)     // @MapsId: saved.getId()를 PK로 공유
+                    .experience(0)
+                    .level(1)
+                    .build();
+            userExpRepository.save(userExp);
+        }
     }
 
     // 로그인
