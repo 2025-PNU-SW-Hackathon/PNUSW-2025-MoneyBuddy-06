@@ -4,7 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 
 public class AuthManager {
-    private static final String PREF = "auth_pref";
+    private static final String PREF = "auth";
     private static final String KEY_ACCESS = "access";
     private static final String KEY_EMAIL = "email";
     private static final String KEY_UID = "uid";
