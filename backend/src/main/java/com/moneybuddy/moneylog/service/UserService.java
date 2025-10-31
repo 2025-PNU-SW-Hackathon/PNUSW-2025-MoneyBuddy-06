@@ -8,7 +8,6 @@ import com.moneybuddy.moneylog.dto.request.UserDeleteRequest;
 import com.moneybuddy.moneylog.repository.UserExpRepository;
 import com.moneybuddy.moneylog.repository.UserRepository;
 import com.moneybuddy.moneylog.repository.UserDailyQuizRepository;
-import com.moneybuddy.moneylog.repository.UserExpRepository;
 import com.moneybuddy.moneylog.domain.User;
 import com.moneybuddy.moneylog.jwt.JwtUtil;
 
@@ -26,7 +25,6 @@ public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
-    private final UserExpRepository userExpRepository;
 
     private final UserDailyQuizRepository userDailyQuizRepository;
     private final UserExpRepository userExpRepository;
