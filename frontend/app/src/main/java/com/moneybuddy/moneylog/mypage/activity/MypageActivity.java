@@ -22,6 +22,7 @@ import com.moneybuddy.moneylog.R;
 
 import com.moneybuddy.moneylog.common.ApiService;
 import com.moneybuddy.moneylog.common.RetrofitClient;
+import com.moneybuddy.moneylog.common.TokenManager;
 import com.moneybuddy.moneylog.login.activity.LoginActivity;
 import com.moneybuddy.moneylog.mypage.dto.MobtiBriefDto;
 import com.moneybuddy.moneylog.mypage.dto.UserExpResponse;
@@ -50,6 +51,7 @@ public class MypageActivity extends AppCompatActivity {
     // 레벨 및 계정 정보
     private TextView tvLevelValue, tvEmail;
     private View viewLevelProgress;
+    private View viewLevelTrack;
     private TextView btnChangePassword, btnLogout, btnWithdrawal;
     private SwitchMaterial switchNotification;
 
@@ -99,6 +101,7 @@ public class MypageActivity extends AppCompatActivity {
 
         apiService = RetrofitClient.api(MypageActivity.this);
         initializeViews();
+        loadUserDataFromPreferences();
         setupClickListeners();
         loadServerData();
     }
@@ -112,6 +115,7 @@ public class MypageActivity extends AppCompatActivity {
 
         tvLevelValue = findViewById(R.id.tv_level_value);
         viewLevelProgress = findViewById(R.id.view_level_progress);
+        viewLevelTrack = findViewById(R.id.view_level_track);
         tvEmail = findViewById(R.id.tv_email);
         switchNotification = findViewById(R.id.switch_notification);
         btnChangePassword = findViewById(R.id.btn_change_password);
@@ -165,15 +169,18 @@ public class MypageActivity extends AppCompatActivity {
         apiService.getMyExp().enqueue(new Callback<UserExpResponse>() {
             @Override public void onResponse(@NonNull Call<UserExpResponse> call, @NonNull Response<UserExpResponse> res) {
                 if (res.isSuccessful() && res.body() != null) {
+                    UserExpResponse data = res.body();
+                    Log.d(TAG, "서버 응답 성공: Level = " + data.getLevel() + ", Experience = " + data.getExperience());
                     updateUiWithLevel(res.body());
                 } else {
                     Log.e(TAG, "레벨 로드 실패: " + res.code());
-                    tvLevelValue.setText("Lv. ?");
+                    updateUiWithDefaultLevel();
                 }
             }
             @Override public void onFailure(@NonNull Call<UserExpResponse> call, @NonNull Throwable t) {
                 Log.e(TAG, "레벨 네트워크 오류", t);
                 Toast.makeText(MypageActivity.this, "레벨 정보를 불러오지 못했습니다.", Toast.LENGTH_SHORT).show();
+                updateUiWithDefaultLevel();
             }
         });
     }
@@ -181,13 +188,31 @@ public class MypageActivity extends AppCompatActivity {
     private void updateUiWithLevel(UserExpResponse d) {
         tvLevelValue.setText("Lv." + d.getLevel());
         float p = d.getExperience() / 100.0f;
-        View parent = (View) viewLevelProgress.getParent();
-        parent.post(() -> {
-            int w = parent.getWidth() - parent.getPaddingLeft() - parent.getPaddingRight();
+        viewLevelTrack.post(() -> {
+            int trackWidth = viewLevelTrack.getWidth();
+
             ViewGroup.LayoutParams lp = viewLevelProgress.getLayoutParams();
-            lp.width = (int) (w * p);
+            lp.width = (int) (trackWidth * p);
             viewLevelProgress.setLayoutParams(lp);
         });
+    }
+
+    private void updateUiWithDefaultLevel() {
+        tvLevelValue.setText("Lv. 1");
+        ViewGroup.LayoutParams lp = viewLevelProgress.getLayoutParams();
+        lp.width = 0;
+        viewLevelProgress.setLayoutParams(lp);
+    }
+
+    // ── 이메일
+    private void loadUserDataFromPreferences() {
+        TokenManager tokenManager = TokenManager.getInstance(getApplicationContext());
+        String userEmail = tokenManager.getEmail();
+        if (userEmail == null) {
+            userEmail = "정보 없음";
+        }
+        Log.d(TAG, "TokenManager에서 읽은 이메일: " + userEmail);
+        tvEmail.setText(userEmail);
     }
 
     // ── 알림 설정
@@ -347,7 +372,9 @@ public class MypageActivity extends AppCompatActivity {
 
     private String getTokenFromPreferences() {
         SharedPreferences prefs = getSharedPreferences("auth", Context.MODE_PRIVATE);
-        return prefs.getString("token", null);
+        String token = prefs.getString("token", null);
+        Log.d("TOKEN_CHECK", "SharedPreferences token = " + token);
+        return token;
     }
 
     private void clearUserData() {

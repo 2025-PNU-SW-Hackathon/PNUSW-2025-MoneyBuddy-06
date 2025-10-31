@@ -6,8 +6,8 @@ import androidx.annotation.Nullable;
 
 public final class TokenManager {
 
-    private static final String PREFS_NAME = "auth_prefs";
-    private static final String KEY_ACCESS_TOKEN = "access_token";
+    private static final String PREFS_NAME = "auth";
+    private static final String KEY_ACCESS_TOKEN = "token";
     // ▼▼▼ AuthManager에서 사용하던 키 추가 ▼▼▼
     private static final String KEY_USER_ID = "user_id";
     private static final String KEY_EMAIL = "user_email";
