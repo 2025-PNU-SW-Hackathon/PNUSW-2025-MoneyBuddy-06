@@ -150,14 +150,6 @@ public class MainMenuChallengeFragment extends Fragment implements ChallengeAdap
                 adapter.setTodoList(todos);
             }
         });
-
-        viewModel.getRepresentativeChallengeCleared().observe(getViewLifecycleOwner(), cleared -> {
-            if (cleared != null && cleared) {
-                Toast.makeText(getContext(), "완료된 챌린지가 대표 챌린지에서 해제되었습니다.", Toast.LENGTH_SHORT).show();
-                adapter.setRepresentativeChallengeId(-1L);
-                adapter.notifyDataSetChanged();
-            }
-        });
     }
 
     @Override

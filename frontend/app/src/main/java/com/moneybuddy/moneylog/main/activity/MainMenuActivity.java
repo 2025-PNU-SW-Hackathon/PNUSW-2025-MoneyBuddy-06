@@ -23,6 +23,7 @@ public class MainMenuActivity extends AppCompatActivity {
     private MainMenuHomeFragment fragmentHome = new MainMenuHomeFragment();
     private MainMenuChallengeFragment fragmentChallenge = new MainMenuChallengeFragment();
     private MainMenuLedgerFragment fragmentLedger = new MainMenuLedgerFragment();
+    private BottomNavigationView bottomNavigationView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,10 +33,17 @@ public class MainMenuActivity extends AppCompatActivity {
         FragmentTransaction transaction = fragmentManager.beginTransaction();
         transaction.replace(R.id.menu_frame_layout, fragmentHome).commitAllowingStateLoss();
 
-        BottomNavigationView bottomNavigationView = findViewById(R.id.menu_bottom_navigation);
+        bottomNavigationView = findViewById(R.id.menu_bottom_navigation);
 
         bottomNavigationView.setSelectedItemId(R.id.menu_home);
         bottomNavigationView.setOnItemSelectedListener(new ItemSelectedListener());
+    }
+
+    public void navigateToTab(int menuId) {
+        // BottomNavigationView의 아이템을 강제로 선택합니다.
+        // 이렇게 하면 ItemSelectedListener가 자동으로 호출되어,
+        // 아이콘 변경과 프래그먼트 교체가 동시에 일어납니다.
+        bottomNavigationView.setSelectedItemId(menuId);
     }
 
     class ItemSelectedListener implements BottomNavigationView.OnItemSelectedListener {
