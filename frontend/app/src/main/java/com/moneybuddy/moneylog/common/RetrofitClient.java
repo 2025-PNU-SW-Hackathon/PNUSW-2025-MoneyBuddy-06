@@ -20,8 +20,8 @@ public final class RetrofitClient {
     private static volatile Retrofit instance;
 
     // 필요 시 교체
-    private static final String BASE_URL_DEBUG   = "http://172.21.170.228:8080/";
-    private static final String BASE_URL_RELEASE = "http://172.21.170.228:8080/";
+    private static final String BASE_URL_DEBUG   = "http://10.0.2.2:8080/";
+    private static final String BASE_URL_RELEASE = "http://10.0.2.2:8080/";
 
     private RetrofitClient() {}
 

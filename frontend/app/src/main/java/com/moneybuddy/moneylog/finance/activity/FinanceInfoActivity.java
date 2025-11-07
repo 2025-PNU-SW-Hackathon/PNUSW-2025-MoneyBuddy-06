@@ -49,6 +49,7 @@ public class FinanceInfoActivity extends AppCompatActivity {
     private TabLayout tabLayout;
     private View sectionHealthScore, sectionCardNews, sectionQuiz;
     private LinearLayout sectionYouthPolicy;
+    private View sectionYouthPolicyTitle;
     private com.google.android.material.button.MaterialButton btnImproveScore;
     private ViewPager2 viewPagerCardNews;
     private CardNewsAdapter cardNewsAdapter;
@@ -97,8 +98,9 @@ public class FinanceInfoActivity extends AppCompatActivity {
 
         sectionHealthScore = findViewById(R.id.section_health_score);
         sectionCardNews = findViewById(R.id.tv_card_news_title);
-        sectionQuiz = findViewById(R.id.section_quiz);
+        sectionQuiz = findViewById(R.id.tv_quiz_title);
         sectionYouthPolicy = (LinearLayout) findViewById(R.id.section_youth_policy);
+        sectionYouthPolicyTitle = findViewById(R.id.tv_youth_title);
         btnImproveScore = findViewById(R.id.btn_improve_score);
 
         viewPagerCardNews = findViewById(R.id.view_pager_card_news);
@@ -212,7 +214,7 @@ public class FinanceInfoActivity extends AppCompatActivity {
                         scrollToView(sectionQuiz);
                         break;
                     case 3:
-                        scrollToView(sectionYouthPolicy);
+                        scrollToView(sectionYouthPolicyTitle);
                         break;
                 }
             }
