@@ -38,9 +38,17 @@ import java.util.List;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+import android.content.SharedPreferences;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 
 public class FinanceInfoActivity extends AppCompatActivity {
     private static final String TAG = "FinanceInfoActivity";
+    public static final String QUIZ_PREFS = "QuizPrefs";
+    public static final String KEY_SOLVED_DATE = "solvedQuizDate";
+    public static final String KEY_SOLVED_QUESTION = "solvedQuizQuestion";
+    public static final String KEY_SOLVED_EXPLANATION = "solvedQuizExplanation";
     private ImageButton btnBack;
     private NestedScrollView nestedScrollView;
     private FloatingActionButton fabScrollToTop;
@@ -59,6 +67,7 @@ public class FinanceInfoActivity extends AppCompatActivity {
     private TextView tvCompletedQuizExplanation;
     private ApiService apiService;
     private Long currentQuizId;
+    private SharedPreferences sharedPreferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,6 +83,9 @@ public class FinanceInfoActivity extends AppCompatActivity {
 
         // apiService 초기화
         apiService = RetrofitClient.api(this);
+
+        // SharedPreferences 초기화
+        sharedPreferences = getSharedPreferences(QUIZ_PREFS, MODE_PRIVATE);
 
         // UI 요소 초기화, 리스너 설정
         initializeViews();
@@ -279,16 +291,37 @@ public class FinanceInfoActivity extends AppCompatActivity {
     }
 
     private void loadTodayQuiz() {
+        String todayDate = getTodayDateString();
+        String savedDate = sharedPreferences.getString(KEY_SOLVED_DATE, "");
+
+        if (todayDate.equals(savedDate)) {
+            String savedQuestion = sharedPreferences.getString(KEY_SOLVED_QUESTION, "");
+            String savedExplanation = sharedPreferences.getString(KEY_SOLVED_EXPLANATION, "");
+
+            tvCompletedQuizQuestion.setText("오늘 푼 문제: " + savedQuestion);
+            tvCompletedQuizExplanation.setText("해설: " + savedExplanation);
+            layoutQuizActive.setVisibility(View.GONE);
+            layoutQuizCompleted.setVisibility(View.VISIBLE);
+
+            return;
+        }
+
         apiService.getTodayQuiz().enqueue(new Callback<QuizResponse>() {
             @Override
             public void onResponse(Call<QuizResponse> call, Response<QuizResponse> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     QuizResponse quiz = response.body();
                     tvQuizQuestion.setText(quiz.getQuestion());
-                    currentQuizId = quiz.getQuizId(); // 퀴즈 ID 저장
+                    currentQuizId = quiz.getQuizId();
+
+                    layoutQuizActive.setVisibility(View.VISIBLE);
+                    layoutQuizCompleted.setVisibility(View.GONE);
                 } else {
                     tvQuizQuestion.setText("오늘의 퀴즈를 불러오지 못했습니다.");
                     Log.e(TAG, "Quiz Response Error: " + response.code());
+
+                    layoutQuizActive.setVisibility(View.VISIBLE);
+                    layoutQuizCompleted.setVisibility(View.GONE);
                 }
             }
 
@@ -296,6 +329,9 @@ public class FinanceInfoActivity extends AppCompatActivity {
             public void onFailure(Call<QuizResponse> call, Throwable t) {
                 tvQuizQuestion.setText("퀴즈 로딩 실패: 네트워크 연결을 확인하세요.");
                 Log.e(TAG, "Quiz API Call Failure", t);
+
+                layoutQuizActive.setVisibility(View.VISIBLE);
+                layoutQuizCompleted.setVisibility(View.GONE);
             }
         });
     }
@@ -318,6 +354,12 @@ public class FinanceInfoActivity extends AppCompatActivity {
 
                     layoutQuizActive.setVisibility(View.GONE);
                     layoutQuizCompleted.setVisibility(View.VISIBLE);
+
+                    SharedPreferences.Editor editor = sharedPreferences.edit();
+                    editor.putString(KEY_SOLVED_DATE, getTodayDateString());
+                    editor.putString(KEY_SOLVED_QUESTION, originalQuestion);
+                    editor.putString(KEY_SOLVED_EXPLANATION, explanation);
+                    editor.apply();
                 } else {
                     Toast.makeText(FinanceInfoActivity.this, "정답 제출에 실패했습니다.", Toast.LENGTH_SHORT).show();
                     Log.e(TAG, "Answer Submit Response Error: " + response.code());
@@ -337,6 +379,11 @@ public class FinanceInfoActivity extends AppCompatActivity {
         builder.setMessage(explanation);
         builder.setPositiveButton("확인", (dialog, which) -> dialog.dismiss());
         builder.show();
+    }
+
+    private String getTodayDateString() {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+        return sdf.format(new Date());
     }
 
     private void scrollToView(View view) {
