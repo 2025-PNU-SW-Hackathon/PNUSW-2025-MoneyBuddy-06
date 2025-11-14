@@ -41,8 +41,6 @@ import retrofit2.Response;
 
 public class FinanceInfoActivity extends AppCompatActivity {
     private static final String TAG = "FinanceInfoActivity";
-
-    // UI 요소
     private ImageButton btnBack;
     private NestedScrollView nestedScrollView;
     private FloatingActionButton fabScrollToTop;
@@ -53,16 +51,14 @@ public class FinanceInfoActivity extends AppCompatActivity {
     private com.google.android.material.button.MaterialButton btnImproveScore;
     private ViewPager2 viewPagerCardNews;
     private CardNewsAdapter cardNewsAdapter;
-
-    // 퀴즈 관련 UI 요소
     private TextView tvQuizQuestion;
     private ImageButton btnQuizO, btnQuizX;
-
-    // 네트워크 및 데이터
+    private LinearLayout layoutQuizActive;
+    private LinearLayout layoutQuizCompleted;
+    private TextView tvCompletedQuizQuestion;
+    private TextView tvCompletedQuizExplanation;
     private ApiService apiService;
     private Long currentQuizId;
-
-    // FinanceInfoActivity.java 내부
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,15 +72,15 @@ public class FinanceInfoActivity extends AppCompatActivity {
             return insets;
         });
 
-        // 1. apiService를 가장 먼저 초기화하여 NullPointerException을 원천적으로 방지합니다.
+        // apiService 초기화
         apiService = RetrofitClient.api(this);
 
-        // 2. UI 요소들을 초기화하고 리스너를 설정합니다.
+        // UI 요소 초기화, 리스너 설정
         initializeViews();
         setupClickListeners();
         setupCardNewsSection();
 
-        // 3. 필요한 데이터를 각각 한 번씩 로딩합니다. (중복 호출 제거)
+        // 데이터를 로딩
         loadCardNewsData();
         loadTodayQuiz();
         loadYouthPolicies();
@@ -108,6 +104,11 @@ public class FinanceInfoActivity extends AppCompatActivity {
         tvQuizQuestion = findViewById(R.id.tv_quiz_question);
         btnQuizO = findViewById(R.id.btn_quiz_o);
         btnQuizX = findViewById(R.id.btn_quiz_x);
+
+        layoutQuizActive = findViewById(R.id.section_quiz);
+        layoutQuizCompleted = findViewById(R.id.section_quiz_completed);
+        tvCompletedQuizQuestion = findViewById(R.id.tv_completed_quiz_question);
+        tvCompletedQuizExplanation = findViewById(R.id.tv_completed_quiz_explanation);
     }
 
     private void loadYouthPolicies() {
@@ -188,7 +189,7 @@ public class FinanceInfoActivity extends AppCompatActivity {
             } else {
                 Toast.makeText(this, "연결된 웹사이트가 없습니다.", Toast.LENGTH_SHORT).show();
             }
-            dialog.dismiss(); // 웹사이트로 이동 후 다이얼로그 닫음
+            dialog.dismiss();
         });
 
         dialog.show();
@@ -308,6 +309,15 @@ public class FinanceInfoActivity extends AppCompatActivity {
                 if (response.isSuccessful() && response.body() != null) {
                     QuizResultResponse result = response.body();
                     showResultDialog(result.isCorrect(), result.getExplanation());
+
+                    String originalQuestion = tvQuizQuestion.getText().toString();
+                    String explanation = result.getExplanation();
+
+                    tvCompletedQuizQuestion.setText("오늘 푼 문제: " + originalQuestion);
+                    tvCompletedQuizExplanation.setText("해설: " + explanation);
+
+                    layoutQuizActive.setVisibility(View.GONE);
+                    layoutQuizCompleted.setVisibility(View.VISIBLE);
                 } else {
                     Toast.makeText(FinanceInfoActivity.this, "정답 제출에 실패했습니다.", Toast.LENGTH_SHORT).show();
                     Log.e(TAG, "Answer Submit Response Error: " + response.code());
