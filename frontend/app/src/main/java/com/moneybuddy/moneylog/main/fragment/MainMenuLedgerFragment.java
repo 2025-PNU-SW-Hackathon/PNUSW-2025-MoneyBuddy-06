@@ -24,6 +24,7 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.moneybuddy.moneylog.R;
+import com.moneybuddy.moneylog.common.ResultCallback;
 import com.moneybuddy.moneylog.common.TokenManager;
 import com.moneybuddy.moneylog.ledger.activity.GraphActivity;
 import com.moneybuddy.moneylog.ledger.activity.LedgerDetailActivity;
@@ -51,6 +52,10 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class MainMenuLedgerFragment extends Fragment {
+
+    // 클래스 멤버(필드)로 추가
+    private int ratioReqSeq = 0;
+
 
     private RecyclerView rvCalendar;
     private TextView tvYearMonth;
@@ -251,22 +256,20 @@ public class MainMenuLedgerFragment extends Fragment {
 
     /** 서버에서 goalAmount/카테고리 받아와 목표/미니막대 반영 (색상은 PieChart와 동일 룰) */
     private void fetchGoalAndApply(String ym) {
-        // 이전 콜이 있으면 취소
-        if (ratioCall != null) { ratioCall.cancel(); ratioCall = null; }
+        // 이전 요청 무효화: 시퀀스 증가(이전 콜백은 mySeq 불일치로 무시됨)
+        final int mySeq = ++ratioReqSeq;
 
-        ratioCall = analyticsRepo.getCategoryRatio(ym);
-        ratioCall.enqueue(new Callback<CategoryRatioResponse>() {
-            @Override public void onResponse(Call<CategoryRatioResponse> call, Response<CategoryRatioResponse> res) {
-                if (!isAdded() || getView() == null) { ratioCall = null; return; }
+        analyticsRepo.getCategoryRatio(ym, new ResultCallback<CategoryRatioResponse>() {
+            @Override
+            public void onSuccess(CategoryRatioResponse body) {
+                // 프래그먼트 분리/뷰 소멸, 혹은 더 최신 요청이 있으면 무시
+                if (!isAdded() || getView() == null || mySeq != ratioReqSeq) return;
 
-                if (!res.isSuccessful() || res.body() == null) {
+                if (body == null) {
                     if (goalBarTrack != null)
                         renderStackedGoalBar(monthGoal, lastMonthSpentCached, previewSegments);
-                    ratioCall = null;
                     return;
                 }
-
-                CategoryRatioResponse body = res.body();
 
                 long spentFromApi = Math.max(0L, body.spent);
                 Long goalFromApi  = body.goalAmount;
@@ -277,16 +280,17 @@ public class MainMenuLedgerFragment extends Fragment {
                 if (tvGoalTarget != null) tvGoalTarget.setText(KoreanMoney.format(monthGoal));
 
                 renderGoalBarWithCategories(monthGoal, spentFromApi, body.items);
-                ratioCall = null;
             }
 
-            @Override public void onFailure(Call<CategoryRatioResponse> call, Throwable t) {
-                if (!isAdded() || getView() == null) { ratioCall = null; return; }
+            @Override
+            public void onError(Throwable t) {
+                if (!isAdded() || getView() == null || mySeq != ratioReqSeq) return;
+                // 실패 시 기존 캐시/프리뷰로 렌더
                 renderStackedGoalBar(monthGoal, lastMonthSpentCached, previewSegments);
-                ratioCall = null;
             }
         });
     }
+
 
     /** 서버 월 내역을 불러 달력 셀(일자별) 합계를 주입 */
     private void fetchAndApplyMonthEntries(String ym) {

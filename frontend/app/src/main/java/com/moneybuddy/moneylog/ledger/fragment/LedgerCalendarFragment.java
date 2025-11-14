@@ -17,6 +17,7 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.moneybuddy.moneylog.R;
+import com.moneybuddy.moneylog.common.ResultCallback;
 import com.moneybuddy.moneylog.common.TokenManager;
 import com.moneybuddy.moneylog.ledger.activity.GraphActivity;
 import com.moneybuddy.moneylog.ledger.adapter.CalendarDayAdapter;
@@ -162,17 +163,18 @@ public class LedgerCalendarFragment extends Fragment {
         });
 
         // 3) 카테고리 비율/월 사용 합계(미니 막대 그리기용)
-        analyticsRepo.getCategoryRatio(ym).enqueue(new Callback<CategoryRatioResponse>() {
-            @Override public void onResponse(Call<CategoryRatioResponse> call, Response<CategoryRatioResponse> ares) {
+        analyticsRepo.getCategoryRatio(ym, new ResultCallback<CategoryRatioResponse>() {
+            @Override public void onSuccess(CategoryRatioResponse dto) {
                 if (!isAdded()) return;
-                renderGoalBar(ares.isSuccessful() ? ares.body() : null);
+                renderGoalBar(dto);
             }
-            @Override public void onFailure(Call<CategoryRatioResponse> call, Throwable t) {
+            @Override public void onError(Throwable t) {
                 if (!isAdded()) return;
                 renderGoalBar(null);
             }
         });
     }
+
 
     private void bindMonthSummary(@NonNull LedgerMonthResponse dto) {
         NumberFormat nf = NumberFormat.getInstance(Locale.KOREA);

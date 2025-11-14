@@ -115,4 +115,23 @@ public class LedgerRepository {
         } catch (Exception ignored) {}
         return code;
     }
+
+    public void getMonthlyLedger(String ym, ResultCallback<LedgerMonthResponse> callback) {
+        if (callback == null) throw new IllegalArgumentException("callback is null");
+        api.getMonth(ym).enqueue(new Callback<LedgerMonthResponse>() {
+            @Override
+            public void onResponse(Call<LedgerMonthResponse> call, Response<LedgerMonthResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    callback.onSuccess(response.body());
+                } else {
+                    callback.onError(new IOException(httpErrorString(response)));
+                }
+            }
+
+            @Override
+            public void onFailure(Call<LedgerMonthResponse> call, Throwable t) {
+                callback.onError(t);
+            }
+        });
+    }
 }

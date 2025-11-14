@@ -1,397 +1,186 @@
 package com.moneybuddy.moneylog.main.fragment;
 
-import android.content.Intent;
-import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
-import android.util.Log;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.content.Context;
-import android.content.SharedPreferences;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProvider;
-import androidx.fragment.app.FragmentTransaction;
 
-import com.google.android.material.badge.BadgeDrawable;
-import com.google.android.material.badge.BadgeUtils;
-import com.google.android.material.badge.ExperimentalBadgeUtils;
-import com.google.android.material.progressindicator.CircularProgressIndicator;
 import com.moneybuddy.moneylog.R;
-import com.moneybuddy.moneylog.challenge.dto.ChallengeDetailResponse;
-import com.moneybuddy.moneylog.common.ApiService; // Import ApiService
-import com.moneybuddy.moneylog.common.RetrofitClient; // Import RetrofitClient
-import com.moneybuddy.moneylog.finance.activity.FinanceInfoActivity;
-import com.moneybuddy.moneylog.finance.dto.response.QuizResponse; // Import QuizResponse
+import com.moneybuddy.moneylog.common.ResultCallback;
+import com.moneybuddy.moneylog.common.TokenManager;
 import com.moneybuddy.moneylog.ledger.dto.response.CategoryRatioResponse;
-import com.moneybuddy.moneylog.ledger.loader.CategoryRatioLoader;
-import com.moneybuddy.moneylog.mobti.activity.MobtiActivity;
-import com.moneybuddy.moneylog.mobti.dto.response.MobtiBriefDto;
-import com.moneybuddy.moneylog.mobti.repository.MobtiRepository;
-import com.moneybuddy.moneylog.mobti.util.MobtiMascot;
-import com.moneybuddy.moneylog.notification.activity.NotificationActivity;
-import com.moneybuddy.moneylog.notification.network.NotificationRepository;
-import com.moneybuddy.moneylog.mypage.activity.MypageActivity;
-import com.moneybuddy.moneylog.challenge.viewmodel.ChallengeViewModel;
+import com.moneybuddy.moneylog.ledger.repository.AnalyticsRepository;
+import com.moneybuddy.moneylog.ledger.ui.CategoryColors;
+import com.moneybuddy.moneylog.util.KoreanMoney;
 
-import java.text.NumberFormat;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.List;
+import java.util.Calendar;   // ✅ LocalDate 대신 Calendar 사용 (minSdk 24 호환)
+import java.util.LinkedHashMap;
 import java.util.Locale;
+import java.util.Map;
 
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-
-@ExperimentalBadgeUtils
+/**
+ * 홈 화면 상단 “이번 달 잔액” 카드에
+ * - 좌측: 이번 달 사용액(spent)
+ * - 우측: 목표 금액(goal)
+ * - 하단: 가계부 화면과 동일한 목표 대비 막대바
+ * 를 바인딩.
+ */
 public class MainMenuHomeFragment extends Fragment {
 
-    private Button bellBtn, mypageBtn, toLedgerBtn, toChallengeBtn, toFinEdBtn, toMobtiBtn;
-    private LinearLayout goalBarTrack;
-    private TextView monthTitle, spentAmountText, goalAmountText;
-    private TextView legendText1, legendText2, legendText3;
-    private ImageView legendIcon1, legendIcon2, legendIcon3;
-    private View legendLayout;
-    private TextView mobtiNicknameText;
-    private TextView mobtiEmojiText;
-    private TextView quizQuestionText;
-    private TextView textView7;
-    private CircularProgressIndicator progressBar;
-    private ChallengeViewModel challengeViewModel;
+    // XML: fragment_main_menu_home.xml 내 카드 레이아웃의 구성요소
+    private TextView tvSpent;          // @id/textView8  (왼쪽: 사용액)
+    private TextView tvGoal;           // @id/textView9  (오른쪽: 목표액)
+    private LinearLayout goalBarTrack; // @id/goal_bar_track (막대 트랙)
 
+    // 리포지토리
+    private AnalyticsRepository analyticsRepo;
 
-    private BadgeDrawable badge;
-    private NotificationRepository notificationRepo;
-    private MobtiRepository mobtiRepo;
-    private ApiService apiService;
-
-    private final int[] CATEGORY_COLORS = new int[]{0xFF376829, 0xFF50953C, 0xFFA0CE56, 0xFF888888};
+    // 동시 요청 무효화용 시퀀스 토큰
+    private int ratioReqSeq = 0;
 
     @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater,
+                             @Nullable ViewGroup container,
+                             @Nullable Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_main_menu_home, container, false);
     }
 
     @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-        challengeViewModel = new ViewModelProvider(this).get(ChallengeViewModel.class);
+    public void onViewCreated(@NonNull View v, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(v, savedInstanceState);
 
-        initializeViews(view);
-        setupNotificationBadge();
-        setupButtonClickListeners(view);
+        tvSpent = v.findViewById(R.id.textView8);
+        tvGoal  = v.findViewById(R.id.textView9);
+        goalBarTrack = v.findViewById(R.id.goal_bar_track);
 
-        loadAndRenderAnalytics();
-        loadAndRenderMobti();
-        loadAndRenderQuiz();
-
-        loadRepresentativeChallenge();
-        observeRepresentativeChallenge();
-    }
-
-
-    private void initializeViews(View view) {
-        bellBtn = view.findViewById(R.id.button2);
-        mypageBtn = view.findViewById(R.id.button3);
-        toLedgerBtn = view.findViewById(R.id.button4);
-        toChallengeBtn = view.findViewById(R.id.button5);
-        toFinEdBtn = view.findViewById(R.id.button6);
-        toMobtiBtn = view.findViewById(R.id.button7);
-        goalBarTrack = view.findViewById(R.id.goal_bar_track);
-        monthTitle = view.findViewById(R.id.textView1);
-        spentAmountText = view.findViewById(R.id.textView8);
-        goalAmountText = view.findViewById(R.id.textView9);
-        legendLayout = view.findViewById(R.id.layoutLabel);
-        legendText1 = view.findViewById(R.id.textView11);
-        legendText2 = view.findViewById(R.id.textView12);
-        legendText3 = view.findViewById(R.id.textView13);
-        legendIcon1 = view.findViewById(R.id.imageView9);
-        legendIcon2 = view.findViewById(R.id.imageView10);
-        legendIcon3 = view.findViewById(R.id.imageView11);
-        mobtiNicknameText = view.findViewById(R.id.textView6);
-        mobtiEmojiText = view.findViewById(R.id.textView5);
-
-        quizQuestionText = view.findViewById(R.id.textView4);
-        textView7 = view.findViewById(R.id.textView7);
-        progressBar = view.findViewById(R.id.progressBar);
-    }
-
-    private void loadRepresentativeChallenge() {
-        SharedPreferences prefs = requireActivity().getSharedPreferences("app_prefs", Context.MODE_PRIVATE);
-        long challengeId = prefs.getLong("representative_challenge_id", -1L);
-
-        if (challengeId != -1L) {
-            challengeViewModel.loadRepresentativeChallenge(challengeId);
-        } else {
-            textView7.setText("대표 챌린지가 설정되지 않았습니다.");
-            Log.d("HomeFragment", "대표 챌린지가 설정되지 않았습니다.");
-        }
-    }
-    private void observeRepresentativeChallenge() {
-        challengeViewModel.getRepresentativeChallenge().observe(getViewLifecycleOwner(), challenge -> {
-            if (challenge != null) {
-                updateChallengeUI(challenge);
-            }
-        });
-    }
-
-    private void loadAndRenderQuiz() {
-        if (apiService == null) {
-            apiService = RetrofitClient.api(requireContext());
+        if (analyticsRepo == null) {
+            String token = "";
+            try {
+                token = TokenManager.getInstance(requireContext()).getToken();
+            } catch (Exception ignore) {}
+            // ✅ 다른 화면(MainMenuLedgerFragment)과 동일한 생성자 사용
+            analyticsRepo = new AnalyticsRepository(requireContext(), token);
         }
 
-        apiService.getTodayQuiz().enqueue(new Callback<QuizResponse>() {
-            @Override
-            public void onResponse(@NonNull Call<QuizResponse> call, @NonNull Response<QuizResponse> response) {
-                if (response.isSuccessful() && response.body() != null && getContext() != null) {
-                    QuizResponse quiz = response.body();
-                    quizQuestionText.setText(quiz.getQuestion());
-                } else {
-                    Log.e("MainMenuHome", "Quiz Response Error: " + response.code());
-                    quizQuestionText.setText("퀴즈를 불러오는 데 실패했어요.");
-                }
-            }
-
-            @Override
-            public void onFailure(@NonNull Call<QuizResponse> call, @NonNull Throwable t) {
-                Log.e("MainMenuHome", "Quiz API Call Failure", t);
-                quizQuestionText.setText("퀴즈를 불러오는 데 실패했어요.");
-            }
-        });
-    }
-
-
-    private void loadAndRenderMobti() {
-        if (mobtiRepo == null) {
-            mobtiRepo = new MobtiRepository(requireContext());
-        }
-        mobtiRepo.mySummary().enqueue(new Callback<MobtiBriefDto>() {
-            @Override
-            public void onResponse(@NonNull Call<MobtiBriefDto> call, @NonNull Response<MobtiBriefDto> response) {
-                if (response.isSuccessful() && response.body() != null && getContext() != null) {
-                    MobtiBriefDto dto = response.body();
-                    mobtiNicknameText.setText(dto.getNickname());
-                    String emoji = MobtiMascot.emoji(dto.getCode());
-                    mobtiEmojiText.setGravity(Gravity.CENTER);
-                    mobtiEmojiText.setText(emoji);
-                }
-            }
-            @Override
-            public void onFailure(@NonNull Call<MobtiBriefDto> call, @NonNull Throwable t) {
-                Log.e("MainMenuHome", "Failed to load MoBTI summary", t);
-            }
-        });
-    }
-
-    private void loadAndRenderAnalytics() {
-        Calendar calendar = Calendar.getInstance();
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMM", Locale.getDefault());
-        String currentYm = sdf.format(calendar.getTime());
-
-        CategoryRatioLoader.load(requireContext(), currentYm, new CategoryRatioLoader.OnLoaded() {
-            @Override
-            public void onLoaded(CategoryRatioResponse res) {
-                if (res != null && res.items != null && getContext() != null) {
-                    updateAnalyticsUI(res);
-                } else if (legendLayout != null) {
-                    legendLayout.setVisibility(View.GONE);
-                }
-            }
-            @Override
-            public void onError(Throwable t) {
-                Log.e("MainMenuHome", "Failed to load category ratio", t);
-                if (legendLayout != null) {
-                    legendLayout.setVisibility(View.GONE);
-                }
-            }
-        });
-    }
-
-    private void updateChallengeUI(ChallengeDetailResponse challenge) {
-        String title = challenge.getTitle();
-        long daysSinceJoined = challenge.getDaysSinceJoined();
-        String goalPeriodStr = challenge.getGoalPeriod();
-
-        int goalPeriodInt = 100;
-        try {
-            goalPeriodInt = Integer.parseInt(goalPeriodStr);
-        } catch (NumberFormatException e) {
-            e.printStackTrace();
-        }
-
-        progressBar.setMax(goalPeriodInt);
-        progressBar.setProgress((int) daysSinceJoined);
-
-        String progressText = title + "\n" + daysSinceJoined + "/" + goalPeriodStr;
-        textView7.setText(progressText);
-    }
-
-    private void updateAnalyticsUI(CategoryRatioResponse data) {
-        try {
-            String monthStr = data.yearMonth.substring(4, 6);
-            monthTitle.setText(String.format(Locale.getDefault(), "%d월 소비", Integer.parseInt(monthStr)));
-        } catch (Exception e) {
-            monthTitle.setText("이번 달 소비");
-        }
-        NumberFormat formatter = NumberFormat.getNumberInstance(Locale.KOREA);
-        spentAmountText.setText(String.format("%s원", formatter.format(data.spent)));
-        if (data.goalAmount != null && data.goalAmount > 0) {
-            goalAmountText.setText(String.format("%s원", formatter.format(data.goalAmount)));
-            goalAmountText.setVisibility(View.VISIBLE);
-        } else {
-            goalAmountText.setVisibility(View.INVISIBLE);
-        }
-
-        Collections.sort(data.items, (o1, o2) -> Long.compare(o2.expense, o1.expense));
-        List<CategoryRatioResponse.Item> displayItems = new ArrayList<>();
-        if (data.items.size() > 3) {
-            displayItems.addAll(data.items.subList(0, 3));
-            long etcExpense = 0;
-            for (int i = 3; i < data.items.size(); i++) {
-                etcExpense += data.items.get(i).expense;
-            }
-            if (etcExpense > 0) {
-                CategoryRatioResponse.Item etcItem = new CategoryRatioResponse.Item();
-                etcItem.category = "기타";
-                etcItem.expense = etcExpense;
-                displayItems.add(etcItem);
-            }
-        } else {
-            displayItems.addAll(data.items);
-        }
-
-        if (displayItems.isEmpty()) {
-            legendLayout.setVisibility(View.GONE);
-            renderStackedGoalBar(data.goalAmount != null ? data.goalAmount : data.spent, data.spent, new int[]{});
-            return;
-        }
-
-        int[] segments = new int[displayItems.size()];
-        for (int i = 0; i < displayItems.size(); i++) {
-            segments[i] = (int) displayItems.get(i).expense;
-        }
-
-        long goal = (data.goalAmount != null && data.goalAmount > 0) ? data.goalAmount : data.spent;
-        renderStackedGoalBar(goal, data.spent, segments);
-
-        legendLayout.setVisibility(View.VISIBLE);
-        TextView[] legendTexts = {legendText1, legendText2, legendText3};
-        ImageView[] legendIcons = {legendIcon1, legendIcon2, legendIcon3};
-        for (int i = 0; i < legendTexts.length; i++) {
-            if (i < data.items.size() && i < 3) {
-                legendTexts[i].setVisibility(View.VISIBLE);
-                legendIcons[i].setVisibility(View.VISIBLE);
-                legendTexts[i].setText(data.items.get(i).category);
-                legendIcons[i].setColorFilter(CATEGORY_COLORS[i]);
-            } else {
-                legendTexts[i].setVisibility(View.GONE);
-                legendIcons[i].setVisibility(View.GONE);
-            }
-        }
-    }
-
-    private void setupButtonClickListeners(View view) {
-        bellBtn.setOnClickListener(v -> startActivity(new Intent(requireContext(), NotificationActivity.class)));
-        mypageBtn.setOnClickListener(v -> startActivity(new Intent(requireContext(), MypageActivity.class)));
-        toLedgerBtn.setOnClickListener(v -> navigateToFragment(new MainMenuLedgerFragment()));
-        toChallengeBtn.setOnClickListener(v -> navigateToFragment(new MainMenuChallengeFragment()));
-        toFinEdBtn.setOnClickListener(v -> startActivity(new Intent(requireContext(), FinanceInfoActivity.class)));
-        toMobtiBtn.setOnClickListener(v -> startActivity(new Intent(requireContext(), MobtiActivity.class)));
-    }
-
-    private void navigateToFragment(Fragment fragment) {
-        if (getActivity() != null) {
-            getActivity().getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.menu_frame_layout, fragment)
-                    .addToBackStack(null)
-                    .commit();
-        }
-    }
-
-    private void setupNotificationBadge() {
-        notificationRepo = new NotificationRepository(requireContext());
-        badge = BadgeDrawable.create(requireContext());
-        badge.setVisible(false);
-        badge.setBadgeGravity(BadgeDrawable.TOP_END);
-        badge.clearNumber();
-        badge.setHorizontalOffset(dp(5));
-        badge.setVerticalOffset(dp(5));
-        BadgeUtils.attachBadgeDrawable(badge, bellBtn);
+        loadHomeCard(currentYearMonth()); // "YYYY-MM"
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        refreshUnreadBadge();
+        // 돌아올 때 최신 값으로 갱신
+        loadHomeCard(currentYearMonth());
     }
 
-    private void refreshUnreadBadge() {
-        notificationRepo.getUnreadCount(new Callback<Integer>() {
+    /** ✅ Calendar 사용: API 24에서도 안전 */
+    private String currentYearMonth() {
+        Calendar cal = Calendar.getInstance();
+        int year  = cal.get(Calendar.YEAR);
+        int month = cal.get(Calendar.MONTH) + 1;
+        return String.format(Locale.KOREAN, "%04d-%02d", year, month);
+    }
+
+    /**
+     * 홈 카드에 이번 달 사용액/목표액/막대바를 바인딩.
+     * GET /analytics/category-ratio?ym=YYYY-MM 응답을 사용.
+     */
+    private void loadHomeCard(String ym) {
+        final int mySeq = ++ratioReqSeq; // 최신 요청 토큰
+
+        analyticsRepo.getCategoryRatio(ym, new ResultCallback<CategoryRatioResponse>() {
             @Override
-            public void onResponse(@NonNull Call<Integer> call, @NonNull Response<Integer> res) {
-                int count = (res.isSuccessful() && res.body() != null) ? res.body() : 0;
-                badge.setVisible(count > 0);
-                BadgeUtils.attachBadgeDrawable(badge, bellBtn);
+            public void onSuccess(CategoryRatioResponse dto) {
+                if (!isAdded() || getView() == null || mySeq != ratioReqSeq || dto == null) return;
+
+                // 1) 금액 텍스트 바인딩
+                long spent = Math.max(0L, dto.spent);
+                long goalAmount = (dto.goalAmount == null) ? 0L : Math.max(0L, dto.goalAmount);
+
+                if (tvSpent != null) tvSpent.setText(KoreanMoney.format(spent));       // 왼쪽: 사용액
+                if (tvGoal  != null) tvGoal.setText(KoreanMoney.format(goalAmount));   // 오른쪽: 목표액
+
+                // 2) 막대바 렌더 (가계부 화면 로직과 동일: baseline = GOAL 또는 SPENT)
+                renderGoalBar(dto);
             }
+
             @Override
-            public void onFailure(@NonNull Call<Integer> call, @NonNull Throwable t) {
-                badge.setVisible(false);
-                BadgeUtils.attachBadgeDrawable(badge, bellBtn);
+            public void onError(Throwable t) {
+                if (!isAdded() || getView() == null || mySeq != ratioReqSeq) return;
+                Toast.makeText(requireContext(), "홈 카드 불러오기 실패: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                if (goalBarTrack != null) goalBarTrack.removeAllViews();
             }
         });
     }
 
-    private void renderStackedGoalBar(long goal, long spent, int[] segments) {
-        if (goalBarTrack == null) return;
+    /**
+     * 카테고리별 지출 비율 막대 (goal 대비 또는 spent 대비)
+     * - baseline: dto.baseline이 "GOAL"이면 목표액, "SPENT"면 실제 사용액을 100%로.
+     * - 각 카테고리 expense / baseline 가중치로 segment 구성
+     * - 남은 영역(목표 미달 시)은 빈 공간으로 둠.
+     */
+    private void renderGoalBar(CategoryRatioResponse dto) {
+        if (goalBarTrack == null || dto == null) return;
+
         goalBarTrack.removeAllViews();
-        LinearLayout spentBar = new LinearLayout(requireContext());
-        spentBar.setOrientation(LinearLayout.HORIZONTAL);
-        spentBar.setLayoutParams(new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.MATCH_PARENT, Math.max(spent, 1)));
-        View remainSpacer = new View(requireContext());
-        remainSpacer.setLayoutParams(new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.MATCH_PARENT, Math.max(goal - spent, 0)));
-        goalBarTrack.addView(spentBar);
-        goalBarTrack.addView(remainSpacer);
-        long totalSegmentValue = 0;
-        for (int v : segments) totalSegmentValue += v;
-        if (totalSegmentValue == 0) return;
-        for (int i = 0; i < segments.length; i++) {
-            int segmentValue = segments[i];
-            if (segmentValue <= 0) continue;
-            View part = new View(requireContext());
-            part.setLayoutParams(new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.MATCH_PARENT, segmentValue));
-            boolean isFirst = (i == 0);
-            boolean isLast = (i == segments.length - 1);
-            part.setBackground(makeRoundedSegment(CATEGORY_COLORS[i % CATEGORY_COLORS.length], isFirst, isLast, spent >= goal));
-            spentBar.addView(part);
+
+        // baseline 계산
+        final long spent = Math.max(0L, dto.spent);
+        final long goal  = (dto.goalAmount == null) ? 0L : Math.max(0L, dto.goalAmount);
+        final double baseline = ("GOAL".equalsIgnoreCase(dto.baseline) && goal > 0)
+                ? goal
+                : Math.max(1.0, spent); // 0 분모 방지
+
+        // 카테고리별 금액 맵
+        Map<String, Long> byCategory = new LinkedHashMap<>();
+        if (dto.items != null) {
+            for (CategoryRatioResponse.Item it : dto.items) {
+                long v = Math.max(0L, it.expense);
+                if (v <= 0) continue;
+                byCategory.put(it.category, v);
+            }
         }
-    }
 
-    private GradientDrawable makeRoundedSegment(int color, boolean isFirst, boolean isLast, boolean isExceeded) {
-        float r = getResources().getDisplayMetrics().density * 8f;
-        float tl = isFirst ? r : 0;
-        float bl = isFirst ? r : 0;
-        float tr = (isLast && !isExceeded) ? r : 0;
-        float br = (isLast && !isExceeded) ? r : 0;
-        GradientDrawable gd = new GradientDrawable();
-        gd.setColor(color);
-        gd.setCornerRadii(new float[]{tl, tl, tr, tr, br, br, bl, bl});
-        return gd;
-    }
+        // 전체 가중치 합
+        double usedWeight = 0.0;
+        for (long v : byCategory.values()) usedWeight += (v / baseline);
+        if (usedWeight > 1.0) usedWeight = 1.0; // 목표 초과 시 100% 캡
 
-    private int dp(int dp) {
-        float d = requireContext().getResources().getDisplayMetrics().density;
-        return Math.round(dp * d);
+        // 카테고리 segment 추가
+        for (Map.Entry<String, Long> e : byCategory.entrySet()) {
+            String cat = e.getKey();
+            long v = e.getValue();
+            double w = v / baseline;
+            if (w <= 0) continue;
+
+            View seg = new View(requireContext());
+            LinearLayout.LayoutParams lp =
+                    new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT, (float) w);
+            seg.setLayoutParams(lp);
+
+            // ✅ 프로젝트에서 실제 쓰는 메서드: bg(Context, category)
+            int color = CategoryColors.bg(requireContext(), cat);
+            seg.setBackgroundColor(color);
+
+            goalBarTrack.addView(seg);
+        }
+
+        // 남은 여백(목표 미달 시)
+        double remain = 1.0 - usedWeight;
+        if (remain > 0.0001) {
+            View filler = new View(requireContext());
+            LinearLayout.LayoutParams lp =
+                    new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT, (float) remain);
+            filler.setLayoutParams(lp);
+            filler.setBackgroundColor(0x00000000); // 투명 (bg_goal_track 위에 비워둠)
+            goalBarTrack.addView(filler);
+        }
     }
 }

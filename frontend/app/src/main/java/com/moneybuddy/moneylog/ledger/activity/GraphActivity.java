@@ -18,6 +18,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.moneybuddy.moneylog.R;
+import com.moneybuddy.moneylog.common.ResultCallback;
 import com.moneybuddy.moneylog.common.RetrofitClient;
 import com.moneybuddy.moneylog.common.TokenManager;
 import com.moneybuddy.moneylog.ledger.dto.response.BudgetGoalDto;
@@ -169,13 +170,13 @@ public class GraphActivity extends AppCompatActivity {
     }
 
     private void loadMonth(String ym) {
-        analyticsRepo.getCategoryRatio(ym).enqueue(new Callback<CategoryRatioResponse>() {
-            @Override public void onResponse(Call<CategoryRatioResponse> call, Response<CategoryRatioResponse> res) {
-                if (!res.isSuccessful() || res.body() == null) {
-                    Toast.makeText(GraphActivity.this, "그래프 데이터 실패(" + res.code() + ")", Toast.LENGTH_SHORT).show();
+        analyticsRepo.getCategoryRatio(ym, new ResultCallback<CategoryRatioResponse>() {
+            @Override
+            public void onSuccess(CategoryRatioResponse dto) {
+                if (dto == null) {
+                    Toast.makeText(GraphActivity.this, "그래프 데이터 실패(null)", Toast.LENGTH_SHORT).show();
                     return;
                 }
-                CategoryRatioResponse dto = res.body();
 
                 long spent = Math.max(0L, dto.spent);
                 Long goal = (dto.goalAmount == null) ? null : Math.max(0L, dto.goalAmount);
@@ -194,7 +195,7 @@ public class GraphActivity extends AppCompatActivity {
 
                 if (pie != null && dto.items != null) {
                     List<CategoryRatioResponse.Item> items = new ArrayList<>(dto.items);
-                    items.sort((a, b) -> Long.compare(b.expense, a.expense)); // 보기 좋게
+                    items.sort((a, b) -> Long.compare(b.expense, a.expense)); // 보기 좋게 정렬
                     Map<String, Double> ratios = new LinkedHashMap<>();
                     for (CategoryRatioResponse.Item it : items) {
                         ratios.put(it.category, it.ratioPercent);
@@ -204,11 +205,14 @@ public class GraphActivity extends AppCompatActivity {
 
                 if (legend != null) renderLegend(dto.items);
             }
-            @Override public void onFailure(Call<CategoryRatioResponse> call, Throwable t) {
+
+            @Override
+            public void onError(Throwable t) {
                 Toast.makeText(GraphActivity.this, "그래프 데이터 실패: " + t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
     }
+
 
     // --- Goal ---
     private void showSetGoalDialog() {
