@@ -205,7 +205,7 @@ public class ChallengeViewModel extends AndroidViewModel {
         }
     }
 
-    private void loadTodoList() {
+    public void loadTodoList() {
         repository.getTodoList(new Callback<List<ChallengeCardResponse>>() {
             @Override
             public void onResponse(Call<List<ChallengeCardResponse>> call, Response<List<ChallengeCardResponse>> response) {

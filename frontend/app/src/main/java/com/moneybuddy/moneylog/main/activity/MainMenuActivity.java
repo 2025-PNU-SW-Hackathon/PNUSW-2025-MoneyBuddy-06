@@ -40,9 +40,6 @@ public class MainMenuActivity extends AppCompatActivity {
     }
 
     public void navigateToTab(int menuId) {
-        // BottomNavigationView의 아이템을 강제로 선택합니다.
-        // 이렇게 하면 ItemSelectedListener가 자동으로 호출되어,
-        // 아이콘 변경과 프래그먼트 교체가 동시에 일어납니다.
         bottomNavigationView.setSelectedItemId(menuId);
     }
 

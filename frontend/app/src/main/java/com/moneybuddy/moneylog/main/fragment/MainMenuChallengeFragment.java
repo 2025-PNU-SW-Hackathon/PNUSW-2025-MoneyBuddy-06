@@ -148,6 +148,7 @@ public class MainMenuChallengeFragment extends Fragment implements ChallengeAdap
         viewModel.getTodoList().observe(getViewLifecycleOwner(), todos -> {
             if (viewModel.getCurrentFilter() == ChallengeFilter.ONGOING) {
                 adapter.setTodoList(todos);
+                adapter.notifyItemChanged(0);
             }
         });
     }
@@ -178,9 +179,11 @@ public class MainMenuChallengeFragment extends Fragment implements ChallengeAdap
                 if (response.isSuccessful() && response.body() != null) {
                     Log.d("API_SUCCESS", "상태 업데이트 성공: " + response.body().getMessage());
                     Toast.makeText(getContext(), response.body().getMessage(), Toast.LENGTH_SHORT).show();
+                    viewModel.loadTodoList();
                 } else {
                     Log.e("API_ERROR", "응답 실패: " + response.code());
                     Toast.makeText(getContext(), "상태 업데이트에 실패했습니다.", Toast.LENGTH_SHORT).show();
+                    adapter.notifyDataSetChanged();
                 }
             }
 
@@ -188,6 +191,7 @@ public class MainMenuChallengeFragment extends Fragment implements ChallengeAdap
             public void onFailure(Call<ChallengeStatusResponse> call, Throwable t) {
                 Log.e("API_FAILURE", "통신 실패: " + t.getMessage());
                 Toast.makeText(getContext(), "네트워크 오류가 발생했습니다.", Toast.LENGTH_SHORT).show();
+                adapter.notifyDataSetChanged();
             }
         });
     }

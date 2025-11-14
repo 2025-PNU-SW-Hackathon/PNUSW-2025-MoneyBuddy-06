@@ -36,10 +36,12 @@ public class ChallengeCardResponse implements Serializable {
     private String joinedAt;
     private int currentParticipants;
     private Boolean completed;
+    @SerializedName("success")
     private Boolean success;
     private Boolean rewarded;
 
     private String mobtiType;
+    private Boolean todayCompleted;
 
     public ChallengeCardResponse(RecommendedChallengeResponse recommended) {
         this.challengeId = recommended.getId();
@@ -62,6 +64,7 @@ public class ChallengeCardResponse implements Serializable {
         this.rewarded = false;
         this.createdBy = null;
         this.isSystemGenerated = null;
+        this.todayCompleted = null;
     }
 
     public Long getChallengeId() { return challengeId; }
@@ -118,5 +121,7 @@ public class ChallengeCardResponse implements Serializable {
             return numericValue;
         }
     }
+
+    public Boolean isTodayCompleted() { return this.todayCompleted; }
 }
 
