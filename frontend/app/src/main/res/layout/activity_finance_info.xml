@@ -12,7 +12,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@android:color/transparent"
-        app:elevation="0dp">
+        app:elevation="0dp"
+        app:liftOnScroll="false"
+        android:stateListAnimator="@null">
 
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
@@ -59,7 +61,8 @@
             app:tabMode="fixed"
             app:tabGravity="fill"
             app:tabTextColor="#888888"
-            app:tabSelectedTextColor="#333333">
+            app:tabSelectedTextColor="#333333"
+            app:tabRippleColor="#33A8B9A0">
 
             <com.google.android.material.tabs.TabItem
                 android:id="@+id/tab_health_score"
