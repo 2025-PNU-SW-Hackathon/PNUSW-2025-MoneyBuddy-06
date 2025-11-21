@@ -63,8 +63,16 @@ public class MainMenuChallengeFragment extends Fragment implements ChallengeAdap
                 result -> {
                     if (result.getResultCode() == Activity.RESULT_OK && result.getData() != null) {
                         Intent data = result.getData();
-                        ArrayList<String> cats = data.getStringArrayListExtra(ChallengeCategoryActivity.EXTRA_SELECTED_CATEGORIES);
 
+                        // 1) 카테고리
+                        ArrayList<String> cats =
+                                data.getStringArrayListExtra(ChallengeCategoryActivity.EXTRA_SELECTED_CATEGORIES);
+
+                        // 2) 타입 (지출 / 저축 / 습관)
+                        String selectedType = data.getStringExtra("selected_type");
+
+                        // 3) ViewModel로 전달
+                        viewModel.setCurrentChallengeType(selectedType);
                         viewModel.applyCategoryFilter(cats);
                     }
                 }

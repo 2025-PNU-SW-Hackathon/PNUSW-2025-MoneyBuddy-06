@@ -41,11 +41,14 @@ public class ChallengeViewModel extends AndroidViewModel {
     private ChallengeFilter currentFilter = ChallengeFilter.ONGOING;
 
     private List<String> currentAppliedCategories = null;
-
+    private String currentChallengeType = null;
     private final MutableLiveData<Boolean> _representativeChallengeCleared = new MutableLiveData<>(false);
     public LiveData<Boolean> getRepresentativeChallengeCleared() { return _representativeChallengeCleared; }
 
-
+    public void setCurrentChallengeType(String type) {
+        this.currentChallengeType = type;
+        loadChallenges();
+    }
     public ChallengeViewModel(@NonNull Application application) {
         super(application);
         ChallengeApiService apiService = RetrofitClient.getService(application, ChallengeApiService.class);
@@ -106,73 +109,89 @@ public class ChallengeViewModel extends AndroidViewModel {
     public void loadChallenges() {
         isLoading.setValue(true);
 
-        // 저장된 카테고리 필터가 있는지 확인
-        if (currentAppliedCategories != null && !currentAppliedCategories.isEmpty()) {
-            repository.filterChallenges(currentFilter, currentAppliedCategories).enqueue(new Callback<>() {
-                @Override
-                public void onResponse(Call<List<ChallengeCardResponse>> call, Response<List<ChallengeCardResponse>> response) {
-                    isLoading.postValue(false);
-                    if (response.isSuccessful()) {
-                        challengeList.postValue(new ArrayList<>(response.body()));
-                    } else {
-                        errorMessage.postValue("필터링 새로고침 실패: " + response.code());
-                    }
-                }
+        // 1. 현재 선택된 타입(지출 / 저축 / 습관)과 카테고리 상태 읽기
+        String selectedType = currentChallengeType;  // 예: "지출", "저축", "습관" (없으면 null)
+        boolean hasTypeFilter = selectedType != null && !selectedType.isBlank();
+        boolean hasCategoryFilter = currentAppliedCategories != null && !currentAppliedCategories.isEmpty();
 
-                @Override
-                public void onFailure(Call<List<ChallengeCardResponse>> call, Throwable t) {
-                    isLoading.postValue(false);
-                    errorMessage.postValue("네트워크 오류: " + t.getMessage());
-                }
-            });
+        // ✅ 2. 타입이나 카테고리 둘 중 하나라도 선택되어 있으면 → 필터 API 사용
+        if (hasTypeFilter || hasCategoryFilter) {
+            repository
+                    .filterChallenges(currentFilter, selectedType, currentAppliedCategories)
+                    .enqueue(new Callback<List<ChallengeCardResponse>>() {
+                        @Override
+                        public void onResponse(Call<List<ChallengeCardResponse>> call,
+                                               Response<List<ChallengeCardResponse>> response) {
+                            isLoading.postValue(false);
+                            if (response.isSuccessful() && response.body() != null) {
+                                challengeList.postValue(new ArrayList<>(response.body()));
+                            } else {
+                                errorMessage.postValue("필터링 새로고침 실패: " + response.code());
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(Call<List<ChallengeCardResponse>> call, Throwable t) {
+                            isLoading.postValue(false);
+                            errorMessage.postValue("네트워크 오류: " + t.getMessage());
+                        }
+                    });
 
         } else {
+            // ❗ 필터(타입/카테고리) 아무것도 없을 때만 원래 전체 조회 로직 사용
 
             if (currentFilter == ChallengeFilter.RECOMMENDED) {
-                // '추천' 탭 로직
-                ((Call<List<RecommendedChallengeResponse>>) repository.getChallenges(currentFilter)).enqueue(new Callback<List<RecommendedChallengeResponse>>() {
-                    @Override
-                    public void onResponse(Call<List<RecommendedChallengeResponse>> call, Response<List<RecommendedChallengeResponse>> response) {
-                        isLoading.postValue(false);
-                        if (response.isSuccessful() && response.body() != null) {
-                            List<RecommendedChallengeResponse> recommendedList = response.body();
-                            List<ChallengeCardResponse> convertedList = new ArrayList<>();
-                            for (RecommendedChallengeResponse rec : recommendedList) {
-                                convertedList.add(new ChallengeCardResponse(rec));
+                // '추천' 탭 기본 로직 (RecommendedChallengeResponse → ChallengeCardResponse 변환)
+                ((Call<List<RecommendedChallengeResponse>>) repository.getChallenges(currentFilter))
+                        .enqueue(new Callback<List<RecommendedChallengeResponse>>() {
+                            @Override
+                            public void onResponse(Call<List<RecommendedChallengeResponse>> call,
+                                                   Response<List<RecommendedChallengeResponse>> response) {
+                                isLoading.postValue(false);
+                                if (response.isSuccessful() && response.body() != null) {
+                                    List<RecommendedChallengeResponse> recommendedList = response.body();
+                                    List<ChallengeCardResponse> convertedList = new ArrayList<>();
+                                    for (RecommendedChallengeResponse rec : recommendedList) {
+                                        convertedList.add(new ChallengeCardResponse(rec));
+                                    }
+                                    challengeList.postValue(convertedList);
+                                } else {
+                                    errorMessage.postValue("데이터 로드 실패: " + response.code());
+                                }
                             }
-                            challengeList.postValue(convertedList);
-                        } else {
-                            errorMessage.postValue("데이터 로드 실패: " + response.code());
-                        }
-                    }
-                    @Override
-                    public void onFailure(Call<List<RecommendedChallengeResponse>> call, Throwable t) {
-                        isLoading.postValue(false);
-                        errorMessage.postValue("네트워크 오류: " + t.getMessage());
-                    }
-                });
+
+                            @Override
+                            public void onFailure(Call<List<RecommendedChallengeResponse>> call, Throwable t) {
+                                isLoading.postValue(false);
+                                errorMessage.postValue("네트워크 오류: " + t.getMessage());
+                            }
+                        });
+
             } else {
-                // '전체', '진행 중', '진행 완료' 탭 로직
-                ((Call<List<ChallengeCardResponse>>) repository.getChallenges(currentFilter)).enqueue(new Callback<List<ChallengeCardResponse>>() {
-                    @Override
-                    public void onResponse(Call<List<ChallengeCardResponse>> call, Response<List<ChallengeCardResponse>> response) {
-                        isLoading.postValue(false);
-                        if (response.isSuccessful() && response.body() != null) {
-                            List<ChallengeCardResponse> challenges = response.body();
-                            challengeList.postValue(challenges);
-                            if (currentFilter == ChallengeFilter.ONGOING) {
-                                checkAndClearRepresentativeChallenge(challenges);
+                // '전체', '진행 중', '진행 완료' 탭 기본 로직
+                ((Call<List<ChallengeCardResponse>>) repository.getChallenges(currentFilter))
+                        .enqueue(new Callback<List<ChallengeCardResponse>>() {
+                            @Override
+                            public void onResponse(Call<List<ChallengeCardResponse>> call,
+                                                   Response<List<ChallengeCardResponse>> response) {
+                                isLoading.postValue(false);
+                                if (response.isSuccessful() && response.body() != null) {
+                                    List<ChallengeCardResponse> challenges = response.body();
+                                    challengeList.postValue(challenges);
+                                    if (currentFilter == ChallengeFilter.ONGOING) {
+                                        checkAndClearRepresentativeChallenge(challenges);
+                                    }
+                                } else {
+                                    errorMessage.postValue("데이터 로드 실패: " + response.code());
+                                }
                             }
-                        } else {
-                            errorMessage.postValue("데이터 로드 실패: " + response.code());
-                        }
-                    }
-                    @Override
-                    public void onFailure(Call<List<ChallengeCardResponse>> call, Throwable t) {
-                        isLoading.postValue(false);
-                        errorMessage.postValue("네트워크 오류: " + t.getMessage());
-                    }
-                });
+
+                            @Override
+                            public void onFailure(Call<List<ChallengeCardResponse>> call, Throwable t) {
+                                isLoading.postValue(false);
+                                errorMessage.postValue("네트워크 오류: " + t.getMessage());
+                            }
+                        });
             }
         }
     }
