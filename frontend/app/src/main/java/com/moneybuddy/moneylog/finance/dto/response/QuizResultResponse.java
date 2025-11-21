@@ -3,7 +3,7 @@ package com.moneybuddy.moneylog.finance.dto.response;
 import com.google.gson.annotations.SerializedName;
 
 public class QuizResultResponse {
-    @SerializedName("correct")
+    @SerializedName("isCorrect")
     private boolean isCorrect;
 
     @SerializedName("explanation")

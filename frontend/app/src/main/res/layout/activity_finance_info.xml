@@ -12,7 +12,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@android:color/transparent"
-        app:elevation="0dp">
+        app:elevation="0dp"
+        app:liftOnScroll="false"
+        android:stateListAnimator="@null">
 
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
@@ -59,7 +61,8 @@
             app:tabMode="fixed"
             app:tabGravity="fill"
             app:tabTextColor="#888888"
-            app:tabSelectedTextColor="#333333">
+            app:tabSelectedTextColor="#333333"
+            app:tabRippleColor="#33A8B9A0">
 
             <com.google.android.material.tabs.TabItem
                 android:id="@+id/tab_health_score"
@@ -216,7 +219,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:padding="16dp">
+                    android:padding="16dp"
+                    android:visibility="visible">
 
                     <TextView
                         android:layout_width="match_parent"
@@ -280,8 +284,58 @@
                             </LinearLayout>
                         </LinearLayout>
                     </com.google.android.material.card.MaterialCardView>
+                    </LinearLayout>
+                <LinearLayout
+                    android:id="@+id/section_quiz_completed"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp"
+                    android:visibility="gone">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="오늘은 퀴즈를 풀었습니다!"
+                        android:textColor="@android:color/black"
+                        android:textSize="18sp"
+                        android:textStyle="bold"
+                        android:gravity="center_horizontal"
+                        android:layout_marginBottom="8dp"/> <com.google.android.material.card.MaterialCardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:cardCornerRadius="16dp"
+                    app:cardElevation="0dp"
+                    android:backgroundTint="@android:color/white">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:paddingVertical="24dp"
+                        android:paddingHorizontal="16dp">
+
+                        <TextView
+                            android:id="@+id/tv_completed_quiz_question"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="오늘 푼 문제: ..."
+                            android:textColor="@android:color/black"
+                            android:textSize="16sp"
+                            android:layout_marginBottom="8dp"/>
+
+                        <TextView
+                            android:id="@+id/tv_completed_quiz_explanation"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="해설: ..."
+                            android:textColor="#333333"
+                            android:textSize="16sp"
+                            android:lineSpacingExtra="4dp"/>
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
                 </LinearLayout>
-            </com.google.android.material.card.MaterialCardView>
+                </com.google.android.material.card.MaterialCardView>
 
             <TextView
                 android:id="@+id/tv_youth_title"
