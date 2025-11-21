@@ -8,12 +8,14 @@ import com.moneybuddy.moneylog.dto.response.ChallengeCardResponse;
 import com.moneybuddy.moneylog.security.CustomUserDetails;
 import com.moneybuddy.moneylog.service.ChallengeService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(value = "/api/v1/challenges", produces = "application/json")
@@ -45,6 +47,11 @@ public class ChallengeController {
             @AuthenticationPrincipal CustomUserDetails userDetails,
             @RequestBody ChallengeFilterRequest filterRequest
     ) {
+        log.info(">> [MobtiFilter] userId={}, request={}",
+                userDetails.getUserId(),
+                filterRequest
+        );
+
         return challengeService.filterMobtiRecommendedChallenges(userDetails.getUserId(), filterRequest);
     }
 
