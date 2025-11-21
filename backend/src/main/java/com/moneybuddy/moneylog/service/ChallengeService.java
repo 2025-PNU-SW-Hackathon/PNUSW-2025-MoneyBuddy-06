@@ -185,14 +185,25 @@ public class ChallengeService {
         List<Challenge> challenges = challengeRepository
                 .findByIsSystemGeneratedTrueAndMobtiTypeIn(mobtiList);
 
-        String category = normalizeNullable(request.getCategory()); // 기대값: "기타" 또는 "저축"
+        String type = request.getType();
+        String category = request.getCategory(); // DTO가 알아서 "전체" → null 처리
 
-        if (category == null) {
-            return Collections.emptyList();
+        // type 필터
+        if (type != null && !type.isBlank()) {
+            challenges = challenges.stream()
+                    .filter(c -> type.equals(c.getType()))
+                    .collect(Collectors.toList());
+        }
+
+        // category 필터
+        if (category != null) {
+            String finalCategory = category;
+            challenges = challenges.stream()
+                    .filter(c -> finalCategory.equals(c.getCategory()))
+                    .collect(Collectors.toList());
         }
 
         return challenges.stream()
-                .filter(c -> Objects.equals(c.getCategory(), category))
                 .map(c -> toRecommendedChallengeCardResponse(c, userId))
                 .collect(Collectors.toList());
     }
@@ -244,13 +255,23 @@ public class ChallengeService {
      * 공유 챌린지 필터링
      */
     public List<ChallengeCardResponse> filterSharedChallenges(Long userId, ChallengeFilterRequest request) {
-        String category = normalizeNullable(request.getCategory());
+        String type = request.getType();
+        String category = request.getCategory();
 
-        if (category == null) {
-            return Collections.emptyList();
+        List<Challenge> challenges = challengeRepository.findByIsSharedTrue();
+
+        if (type != null && !type.isBlank()) {
+            challenges = challenges.stream()
+                    .filter(c -> type.equals(c.getType()))
+                    .collect(Collectors.toList());
         }
 
-        List<Challenge> challenges = challengeRepository.findByCategoryAndIsSharedTrue(category);
+        if (category != null) {
+            String finalCategory = category;
+            challenges = challenges.stream()
+                    .filter(c -> finalCategory.equals(c.getCategory()))
+                    .collect(Collectors.toList());
+        }
 
         return challenges.stream()
                 .map(c -> toSharedChallengeResponse(c, userId))

@@ -12,6 +12,7 @@ import com.moneybuddy.moneylog.repository.UserChallengeRepository;
 import com.moneybuddy.moneylog.repository.UserChallengeSuccessRepository;
 import com.moneybuddy.moneylog.repository.UserExpRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,6 +23,7 @@ import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class UserChallengeService {
@@ -207,41 +209,48 @@ public class UserChallengeService {
      */
     @Transactional(readOnly = true)
     public List<ChallengeCardResponse> filterOngoingChallenges(Long userId, ChallengeFilterRequest request) {
-        Object raw = request.getCategoriesRaw();
 
-        // 요청이 배열일 수도 있고 문자열일 수도 있으므로 유연하게 파싱
-        List<String> categories = new ArrayList<>();
-
-        if (raw instanceof String s) {
-            if (!s.isBlank() && !"전체".equals(s) && !"ALL".equalsIgnoreCase(s)) {
-                categories.add(s.trim());
-            }
-        } else if (raw instanceof List<?> list) {
-            for (Object o : list) {
-                if (o == null) continue;
-                String s = o.toString().trim();
-                if (!s.isEmpty() && !"전체".equals(s) && !"ALL".equalsIgnoreCase(s)) {
-                    categories.add(s);
-                }
-            }
+        // 1) type 정규화
+        String type = request.getType();
+        if (type != null) {
+            type = type.trim();
+            if (type.isBlank() || "전체".equals(type)) type = null;
         }
 
-        // completed=false 인 챌린지 전체 조회
-        List<UserChallenge> userChallenges = userChallengeRepository.findByUserIdAndCompletedFalse(userId);
+        // 2) category 정규화
+        String category = request.getCategory();
+        if (category != null) {
+            category = category.trim();
+            if (category.isBlank() || "전체".equals(category)) category = null;
+        }
 
-        // 카테고리 미선택(또는 전체)인 경우 그대로 반환
-        if (categories.isEmpty()) {
-            return userChallenges.stream()
-                    .map(uc -> toOngoingChallengeCardResponse(uc, userId))
+        // 🔥 3) 저축/습관 → category 강제 무시
+        if ("저축".equals(type) || "습관".equals(type)) {
+            category = null;
+        }
+
+        // 4) 전체 ongoing 불러오기
+        List<UserChallenge> userChallenges =
+                userChallengeRepository.findByUserIdAndCompletedFalseWithChallenge(userId);
+
+        // 5) 타입 필터 적용
+        if (type != null) {
+            String finalType = type;
+            userChallenges = userChallenges.stream()
+                    .filter(uc -> finalType.equals(uc.getChallenge().getType()))
                     .toList();
         }
 
-        // 카테고리 조건으로 필터 적용
+        // 6) 카테고리 필터 적용
+        if (category != null) {
+            String finalCategory = category;
+            userChallenges = userChallenges.stream()
+                    .filter(uc -> finalCategory.equals(uc.getChallenge().getCategory()))
+                    .toList();
+        }
+
+        // 7) DTO 변환
         return userChallenges.stream()
-                .filter(uc -> {
-                    String dbCat = uc.getChallenge().getCategory();
-                    return dbCat != null && categories.stream().anyMatch(dbCat::equalsIgnoreCase);
-                })
                 .map(uc -> toOngoingChallengeCardResponse(uc, userId))
                 .toList();
     }
@@ -251,12 +260,22 @@ public class UserChallengeService {
      */
     @Transactional(readOnly = true)
     public List<ChallengeCardResponse> filterCompletedChallenges(Long userId, ChallengeFilterRequest request) {
+
+        // 1) type 정규화
+        String type = request.getType();
+        if (type != null) {
+            type = type.trim();
+            if (type.isBlank() || "전체".equals(type)) type = null;
+        }
+
+        // 2) categoriesRaw → List<String> 파싱
         Object raw = request.getCategoriesRaw();
         List<String> categories = new ArrayList<>();
 
         if (raw instanceof String s) {
+            s = s.trim();
             if (!s.isBlank() && !"전체".equals(s) && !"ALL".equalsIgnoreCase(s)) {
-                categories.add(s.trim());
+                categories.add(s);
             }
         } else if (raw instanceof List<?> list) {
             for (Object o : list) {
@@ -268,19 +287,35 @@ public class UserChallengeService {
             }
         }
 
-        List<UserChallenge> userChallenges = userChallengeRepository.findByUserIdAndCompletedTrue(userId);
+        // 🔥 3) 저축 / 습관이면 category 필터는 무조건 무시
+        if ("저축".equals(type) || "습관".equals(type)) {
+            categories.clear();
+        }
 
-        if (categories.isEmpty()) {
-            return userChallenges.stream()
-                    .map(uc -> toCompletedChallengeCardResponse(uc, userId))
+        // 4) completed=true 인 챌린지 전체 조회
+        List<UserChallenge> userChallenges =
+                userChallengeRepository.findByUserIdAndCompletedTrue(userId);
+
+        // 5) 타입 필터 적용
+        if (type != null) {
+            String finalType = type;
+            userChallenges = userChallenges.stream()
+                    .filter(uc -> finalType.equals(uc.getChallenge().getType()))
                     .toList();
         }
 
+        // 6) 카테고리 필터 적용
+        if (!categories.isEmpty()) {
+            userChallenges = userChallenges.stream()
+                    .filter(uc -> {
+                        String dbCat = uc.getChallenge().getCategory();
+                        return dbCat != null && categories.stream().anyMatch(dbCat::equalsIgnoreCase);
+                    })
+                    .toList();
+        }
+
+        // 7) DTO 변환
         return userChallenges.stream()
-                .filter(uc -> {
-                    String dbCat = uc.getChallenge().getCategory();
-                    return dbCat != null && categories.stream().anyMatch(dbCat::equalsIgnoreCase);
-                })
                 .map(uc -> toCompletedChallengeCardResponse(uc, userId))
                 .toList();
     }
