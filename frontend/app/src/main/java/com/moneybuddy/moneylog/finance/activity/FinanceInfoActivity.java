@@ -26,6 +26,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.tabs.TabLayout;
 import com.moneybuddy.moneylog.R;
 import com.moneybuddy.moneylog.common.RetrofitClient;
+import com.moneybuddy.moneylog.common.TokenManager;
 import com.moneybuddy.moneylog.finance.adapter.CardNewsAdapter;
 import com.moneybuddy.moneylog.finance.dto.request.QuizAnswerRequest;
 import com.moneybuddy.moneylog.finance.dto.response.KnowledgeResponse;
@@ -291,21 +292,36 @@ public class FinanceInfoActivity extends AppCompatActivity {
     }
 
     private void loadTodayQuiz() {
-        String todayDate = getTodayDateString();
-        String savedDate = sharedPreferences.getString(KEY_SOLVED_DATE, "");
+        long currentUserId = getCurrentUserId();
 
-        if (todayDate.equals(savedDate)) {
-            String savedQuestion = sharedPreferences.getString(KEY_SOLVED_QUESTION, "");
-            String savedExplanation = sharedPreferences.getString(KEY_SOLVED_EXPLANATION, "");
-
-            tvCompletedQuizQuestion.setText("오늘 푼 문제: " + savedQuestion);
-            tvCompletedQuizExplanation.setText("해설: " + savedExplanation);
-            layoutQuizActive.setVisibility(View.GONE);
-            layoutQuizCompleted.setVisibility(View.VISIBLE);
-
+        if (currentUserId == -1L) {
+            callLoadQuizApi();
             return;
         }
 
+        String dateKey = KEY_SOLVED_DATE + "_" + currentUserId;
+        String questionKey = KEY_SOLVED_QUESTION + "_" + currentUserId;
+        String explanationKey = KEY_SOLVED_EXPLANATION + "_" + currentUserId;
+
+        String todayDate = getTodayDateString();
+        String savedDate = sharedPreferences.getString(dateKey, "");
+
+        if (todayDate.equals(savedDate)) {
+            String savedQuestion = sharedPreferences.getString(questionKey, "");
+            String savedExplanation = sharedPreferences.getString(explanationKey, "");
+
+            tvCompletedQuizQuestion.setText("오늘 푼 문제: " + savedQuestion);
+            tvCompletedQuizExplanation.setText("해설: " + savedExplanation);
+
+            layoutQuizActive.setVisibility(View.GONE);
+            layoutQuizCompleted.setVisibility(View.VISIBLE);
+            return;
+        }
+
+        callLoadQuizApi();
+    }
+
+    private void callLoadQuizApi() {
         apiService.getTodayQuiz().enqueue(new Callback<QuizResponse>() {
             @Override
             public void onResponse(Call<QuizResponse> call, Response<QuizResponse> response) {
@@ -318,8 +334,6 @@ public class FinanceInfoActivity extends AppCompatActivity {
                     layoutQuizCompleted.setVisibility(View.GONE);
                 } else {
                     tvQuizQuestion.setText("오늘의 퀴즈를 불러오지 못했습니다.");
-                    Log.e(TAG, "Quiz Response Error: " + response.code());
-
                     layoutQuizActive.setVisibility(View.VISIBLE);
                     layoutQuizCompleted.setVisibility(View.GONE);
                 }
@@ -327,9 +341,6 @@ public class FinanceInfoActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<QuizResponse> call, Throwable t) {
-                tvQuizQuestion.setText("퀴즈 로딩 실패: 네트워크 연결을 확인하세요.");
-                Log.e(TAG, "Quiz API Call Failure", t);
-
                 layoutQuizActive.setVisibility(View.VISIBLE);
                 layoutQuizCompleted.setVisibility(View.GONE);
             }
@@ -355,20 +366,25 @@ public class FinanceInfoActivity extends AppCompatActivity {
                     layoutQuizActive.setVisibility(View.GONE);
                     layoutQuizCompleted.setVisibility(View.VISIBLE);
 
-                    SharedPreferences.Editor editor = sharedPreferences.edit();
-                    editor.putString(KEY_SOLVED_DATE, getTodayDateString());
-                    editor.putString(KEY_SOLVED_QUESTION, originalQuestion);
-                    editor.putString(KEY_SOLVED_EXPLANATION, explanation);
-                    editor.apply();
+                    long currentUserId = getCurrentUserId();
+                    if (currentUserId != -1L) {
+                        SharedPreferences.Editor editor = sharedPreferences.edit();
+
+                        editor.putString(KEY_SOLVED_DATE + "_" + currentUserId, getTodayDateString());
+                        editor.putString(KEY_SOLVED_QUESTION + "_" + currentUserId, originalQuestion);
+                        editor.putString(KEY_SOLVED_EXPLANATION + "_" + currentUserId, explanation);
+
+                        editor.apply();
+                    }
+
                 } else {
-                    Toast.makeText(FinanceInfoActivity.this, "정답 제출에 실패했습니다.", Toast.LENGTH_SHORT).show();
-                    Log.e(TAG, "Answer Submit Response Error: " + response.code());
+                    Toast.makeText(FinanceInfoActivity.this, "정답 제출 실패", Toast.LENGTH_SHORT).show();
                 }
             }
+
             @Override
             public void onFailure(Call<QuizResultResponse> call, Throwable t) {
-                Toast.makeText(FinanceInfoActivity.this, "네트워크 오류가 발생했습니다.", Toast.LENGTH_SHORT).show();
-                Log.e(TAG, "Answer Submit API Call Failure", t);
+                Toast.makeText(FinanceInfoActivity.this, "네트워크 오류", Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -379,6 +395,16 @@ public class FinanceInfoActivity extends AppCompatActivity {
         builder.setMessage(explanation);
         builder.setPositiveButton("확인", (dialog, which) -> dialog.dismiss());
         builder.show();
+    }
+
+    private long getCurrentUserId() {
+        Long userId = TokenManager.getInstance(this).getUserId();
+
+        if (userId == null) {
+            return -1L;
+        }
+
+        return userId;
     }
 
     private String getTodayDateString() {
