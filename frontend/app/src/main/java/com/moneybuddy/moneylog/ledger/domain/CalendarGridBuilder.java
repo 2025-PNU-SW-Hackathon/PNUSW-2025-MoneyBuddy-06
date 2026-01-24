@@ -6,80 +6,43 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 
-/**
- * 달력 셀 생성 유틸.
- * - 더미/랜덤 값 생성 금지!
- * - 실제 금액은 generateCalendar(year, month, dailyMap) 오버로드를 사용해 주입합니다.
- */
-public class CalendarGridBuilder {
-
-    /** 날짜 키: yyyy-MM-dd */
-    public static String dateKey(int year, int month, int day) {
-        return String.format(Locale.KOREAN, "%04d-%02d-%02d", year, month, day);
-    }
+/** API 24 안전: 6주(42칸) 캘린더 셀 생성 */
+public final class CalendarGridBuilder {
+    private CalendarGridBuilder() {}
 
     /**
-     * (구버전 호환) 금액 0으로만 채운 스켈레톤 생성.
-     * 기존 호출부를 당장 유지해야 할 때 사용. 실제 금액 반영은 아답터/액티비티에서 따로 주입하세요.
+     * @param year  예) 2025
+     * @param month 예) 8 (1~12)
      */
-    public static List<LedgerDayData> generateCalendar(int year, int month) {
-        return generateCalendar(year, month, null);
-    }
+    public static List<LedgerDayData> buildMonthCells(int year, int month) {
+        final List<LedgerDayData> out = new ArrayList<>(42);
 
-    /**
-     * 실제 집계 맵을 받아 달력 셀을 생성.
-     * @param dailyMap key: yyyy-MM-dd, value: DaySum(수입/지출 합)
-     */
-    public static List<LedgerDayData> generateCalendar(
-            int year,
-            int month,
-            Map<String, DaySum> dailyMap
-    ) {
-        List<LedgerDayData> calendarCells = new ArrayList<>();
+        // first day of month
+        Calendar first = Calendar.getInstance(Locale.KOREAN);
+        first.clear();
+        first.set(Calendar.YEAR, year);
+        first.set(Calendar.MONTH, month - 1); // 0-based
+        first.set(Calendar.DAY_OF_MONTH, 1);
 
-        Calendar cal = Calendar.getInstance();
-        cal.set(year, month - 1, 1); // Calendar는 month 0-based
+        // Sunday-start grid: SUNDAY=1 ... SATURDAY=7  → back = dow-1
+        int dow = first.get(Calendar.DAY_OF_WEEK);
+        int back = dow - Calendar.SUNDAY; // 0..6
+        Calendar start = (Calendar) first.clone();
+        start.add(Calendar.DAY_OF_MONTH, -back);
 
-        int firstDayOfWeek = cal.get(Calendar.DAY_OF_WEEK); // 1(일)~7(토)
-        int daysInMonth = cal.getActualMaximum(Calendar.DAY_OF_MONTH);
+        for (int i = 0; i < 42; i++) {
+            Calendar cur = (Calendar) start.clone();
+            cur.add(Calendar.DAY_OF_MONTH, i);
 
-        // 앞쪽 빈칸
-        int leadingEmpty = firstDayOfWeek - 1; // 일요일 시작 가정
-        for (int i = 0; i < leadingEmpty; i++) {
-            calendarCells.add(new LedgerDayData(null, 0, 0));
+            boolean inThisMonth = (cur.get(Calendar.MONTH) == (month - 1));
+            int y  = cur.get(Calendar.YEAR);
+            int m  = cur.get(Calendar.MONTH) + 1;
+            int d  = cur.get(Calendar.DAY_OF_MONTH);
+            String ymd = String.format(Locale.KOREAN, "%04d-%02d-%02d", y, m, d);
+
+            out.add(new LedgerDayData(ymd, d, inThisMonth));
         }
-
-        // 1 ~ 말일까지 실제 합계 주입 (가짜값 금지)
-        for (int day = 1; day <= daysInMonth; day++) {
-            int income = 0;
-            int expense = 0;
-
-            if (dailyMap != null) {
-                DaySum sum = dailyMap.get(dateKey(year, month, day));
-                if (sum != null) {
-                    // LedgerDayData가 int 금액을 받는다면 범위를 안전하게 캐스팅
-                    income = (int) Math.min(Integer.MAX_VALUE, Math.max(0L, sum.income));
-                    expense = (int) Math.min(Integer.MAX_VALUE, Math.max(0L, sum.expense));
-                }
-            }
-            calendarCells.add(new LedgerDayData(day, income, expense));
-        }
-
-        // 뒤쪽 빈칸(총 42칸 유지)
-        while (calendarCells.size() < 42) {
-            calendarCells.add(new LedgerDayData(null, 0, 0));
-        }
-
-        return calendarCells;
-    }
-
-    /** 날짜별 합계를 담는 간단 POJO */
-    public static class DaySum {
-        public long income;
-        public long expense;
-        public DaySum() {}
-        public DaySum(long income, long expense) { this.income = income; this.expense = expense; }
+        return out;
     }
 }

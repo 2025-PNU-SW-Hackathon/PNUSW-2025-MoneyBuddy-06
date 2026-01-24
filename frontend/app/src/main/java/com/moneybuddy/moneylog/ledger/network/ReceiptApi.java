@@ -10,6 +10,6 @@ import retrofit2.http.Part;
 
 public interface ReceiptApi {
     @Multipart
-    @POST("/api/receipt/ocr")
+    @POST("api/receipt/ocr")
     Call<LedgerEntryDto> uploadReceipt(@Part MultipartBody.Part file);
 }

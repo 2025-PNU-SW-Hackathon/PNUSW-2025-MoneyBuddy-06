@@ -7,110 +7,89 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.moneybuddy.moneylog.R;
+import com.moneybuddy.moneylog.ledger.model.DayCell;
+import com.moneybuddy.moneylog.util.KoreanMoney;
 
-import java.text.NumberFormat;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.Locale;
-import java.util.Map;
 
-/**
- * 캘린더 날짜 셀 어댑터 (막대 제거 버전)
- * - item_calendar_day.xml 은 tv_day, tv_total 두 개의 TextView만 사용
- * - 일별 합계(total)는 submitTotals(...) 로 전달(없으면 0 표시)
- * - 색상 규칙: 0=#333333, 양수=holo_blue_dark, 음수=holo_red_dark
- */
 public class CalendarDayAdapter extends RecyclerView.Adapter<CalendarDayAdapter.VH> {
 
-    public static class DayCell {
-        public final Integer day; // null 이면 빈칸 셀
-        public DayCell(Integer d) { day = d; }
+    public interface OnDayClickListener { void onDayClick(DayCell item); }
+
+    private final List<DayCell> items = new ArrayList<>();
+    @Nullable private OnDayClickListener listener;
+    @Nullable private Context appCtx; // 필요 시 사용
+
+    // ===== 생성자 오버로드 (호출부 호환) =====
+    public CalendarDayAdapter() { }
+    public CalendarDayAdapter(@Nullable Context ctx) { this.appCtx = ctx != null ? ctx.getApplicationContext() : null; }
+    public CalendarDayAdapter(@Nullable List<DayCell> initial, @Nullable OnDayClickListener l) {
+        if (initial != null) items.addAll(initial);
+        this.listener = l;
+    }
+    public CalendarDayAdapter(@Nullable Context ctx, @Nullable List<DayCell> initial, @Nullable OnDayClickListener l) {
+        this(ctx);
+        if (initial != null) items.addAll(initial);
+        this.listener = l;
     }
 
-    private final LayoutInflater inflater;
-    private final Context ctx;
-    private final List<DayCell> days = new ArrayList<>();
-
-    // 일자 -> 합계 (원 단위, 지출 음수/수입 양수)
-    private Map<Integer, Integer> dayTotals = Collections.emptyMap();
-
-    private final NumberFormat nf = NumberFormat.getInstance(Locale.KOREA);
-
-    public CalendarDayAdapter(Context ctx) {
-        this.ctx = ctx;
-        this.inflater = LayoutInflater.from(ctx);
-    }
-
-    /** 6x7(42칸) 셀 목록 주입 */
-    public void submitDays(List<DayCell> items) {
-        days.clear();
-        if (items != null) days.addAll(items);
+    // 호출부에서 쓰던 이름을 그대로 지원
+    public void submitDays(@Nullable List<DayCell> list) {
+        items.clear();
+        if (list != null) items.addAll(list);
         notifyDataSetChanged();
     }
+    public void submit(@Nullable List<DayCell> list) { submitDays(list); }
 
-    /** 일자별 합계(원)를 주입. 없으면 0으로 표기됨 */
-    public void submitTotals(Map<Integer, Integer> totals) {
-        this.dayTotals = (totals == null ? Collections.emptyMap() : totals);
-        notifyDataSetChanged();
-    }
+    public void setOnDayClickListener(@Nullable OnDayClickListener l) { this.listener = l; }
 
-    @NonNull
-    @Override
+    @NonNull @Override
     public VH onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        return new VH(inflater.inflate(R.layout.item_calendar_day, parent, false));
+        View v = LayoutInflater.from(parent.getContext())
+                .inflate(R.layout.item_calendar_day, parent, false);
+        return new VH(v);
     }
 
     @Override
     public void onBindViewHolder(@NonNull VH h, int position) {
-        DayCell cell = days.get(position);
+        DayCell d = items.get(position);
+        h.tvDayNumber.setText(String.valueOf(d.getDayOfMonth()));
+        h.itemView.setAlpha(d.isInThisMonth() ? 1f : 0.45f);
 
-        if (cell.day == null) {
-            // 빈칸
-            h.tvDay.setText("");
-            h.tvTotal.setText("");
-            h.tvTotal.setTextColor(0xFF888888); // 기본
-            return;
-        }
+        long inc = d.getIncome();
+        long exp = d.getExpense();
 
-        // 날짜
-        h.tvDay.setText(String.valueOf(cell.day));
-
-        // 합계
-        int total = 0;
-        if (dayTotals != null && dayTotals.containsKey(cell.day)) {
-            Integer v = dayTotals.get(cell.day);
-            total = (v == null ? 0 : v);
-        }
-
-        // 텍스트
-        if (total > 0) {
-            h.tvTotal.setText("+" + nf.format(total));
-            h.tvTotal.setTextColor(ctx.getColor(android.R.color.holo_blue_dark));
-        } else if (total < 0) {
-            h.tvTotal.setText(nf.format(total)); // 음수 그대로
-            h.tvTotal.setTextColor(ctx.getColor(android.R.color.holo_red_dark));
+        if (inc > 0) {
+            h.tvIncomeSmall.setVisibility(View.VISIBLE);
+            h.tvIncomeSmall.setText("+" + KoreanMoney.format(inc));
         } else {
-            h.tvTotal.setText("0");
-            h.tvTotal.setTextColor(0xFF333333);
+            h.tvIncomeSmall.setVisibility(View.GONE);
         }
+
+        if (exp > 0) {
+            h.tvExpenseSmall.setVisibility(View.VISIBLE);
+            h.tvExpenseSmall.setText("-" + KoreanMoney.format(exp));
+        } else {
+            h.tvExpenseSmall.setVisibility(View.GONE);
+        }
+
+        h.itemView.setOnClickListener(v -> { if (listener != null) listener.onDayClick(d); });
     }
 
-    @Override
-    public int getItemCount() {
-        return days.size();
-    }
+    @Override public int getItemCount() { return items.size(); }
 
     static class VH extends RecyclerView.ViewHolder {
-        final TextView tvDay;
-        final TextView tvTotal;
+        final TextView tvDayNumber, tvIncomeSmall, tvExpenseSmall;
         VH(@NonNull View v) {
             super(v);
-            tvDay   = v.findViewById(R.id.tv_day);
-            tvTotal = v.findViewById(R.id.tv_total);
+            tvDayNumber    = v.findViewById(R.id.tvDayNumber);
+            tvIncomeSmall  = v.findViewById(R.id.tvIncomeSmall);
+            tvExpenseSmall = v.findViewById(R.id.tvExpenseSmall);
         }
     }
 }

@@ -1,5 +1,6 @@
 package com.moneybuddy.moneylog.mobti.api;
 
+import com.google.gson.JsonObject;
 import com.moneybuddy.moneylog.mobti.dto.request.MobtiSubmitRequest;
 import com.moneybuddy.moneylog.mobti.dto.response.MobtiBriefDto;
 import com.moneybuddy.moneylog.mobti.dto.response.MobtiFullDto;
@@ -20,4 +21,7 @@ public interface MobtiApi {
 
     @GET("api/v1/mobti/me/details")
     Call<MobtiFullDto> myDetails();
+
+    @GET("api/mobti/me")
+    Call<JsonObject> getMobti();
 }
