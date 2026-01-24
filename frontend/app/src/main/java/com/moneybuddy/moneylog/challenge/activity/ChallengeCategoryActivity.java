@@ -19,6 +19,8 @@ import java.util.ArrayList;
 
 public class ChallengeCategoryActivity extends AppCompatActivity {
     public static final String EXTRA_SELECTED_CATEGORIES = "selected_categories";
+    public static final String EXTRA_SELECTED_TYPE = "selected_type"; // 추가: 타입 전달용 키
+
     private ImageButton challengeBack;
     private RadioGroup radioGroupChallengeType;
     private RadioGroup radioGroupCategory1;
@@ -27,7 +29,6 @@ public class ChallengeCategoryActivity extends AppCompatActivity {
     private Button buttonSubmit;
     private TextView textViewInitialize;
 
-    // in category 라디오 그룹
     private boolean isClearing = false;
 
     @Override
@@ -54,9 +55,7 @@ public class ChallengeCategoryActivity extends AppCompatActivity {
     private void setupListeners() {
         // 뒤로가기 버튼
         if (challengeBack != null) {
-            challengeBack.setOnClickListener(v -> {
-                finish();
-            });
+            challengeBack.setOnClickListener(v -> finish());
         }
 
         // challenge type 라디오 그룹
@@ -87,9 +86,11 @@ public class ChallengeCategoryActivity extends AppCompatActivity {
             isClearing = false;
         });
 
+        // 적용 버튼
         buttonSubmit.setOnClickListener(v -> {
             ArrayList<String> selectedCategories = new ArrayList<>();
             String selectedCategory = getSelectedCategory();
+            String selectedType = getSelectedType(); // 추가: 타입 가져오기
 
             if (selectedCategory != null) {
                 selectedCategories.add(selectedCategory);
@@ -97,6 +98,7 @@ public class ChallengeCategoryActivity extends AppCompatActivity {
 
             Intent resultIntent = new Intent();
             resultIntent.putStringArrayListExtra(EXTRA_SELECTED_CATEGORIES, selectedCategories);
+            resultIntent.putExtra(EXTRA_SELECTED_TYPE, selectedType); // 타입도 함께 전달
             setResult(Activity.RESULT_OK, resultIntent);
             finish();
         });
@@ -105,6 +107,7 @@ public class ChallengeCategoryActivity extends AppCompatActivity {
         textViewInitialize.setOnClickListener(v -> {
             Intent resultIntent = new Intent();
             resultIntent.putStringArrayListExtra(EXTRA_SELECTED_CATEGORIES, new ArrayList<>());
+            resultIntent.putExtra(EXTRA_SELECTED_TYPE, (String) null); // 타입 필터도 초기화
             setResult(Activity.RESULT_OK, resultIntent);
             finish();
         });
@@ -123,6 +126,23 @@ public class ChallengeCategoryActivity extends AppCompatActivity {
             RadioButton selectedRadioButton = findViewById(checkedId2);
             return selectedRadioButton.getText().toString();
         }
+
+        return null;
+    }
+
+    // 추가: 타입 문자열로 변환
+    private String getSelectedType() {
+        int checkedId = radioGroupChallengeType.getCheckedRadioButtonId();
+
+        if (checkedId == R.id.radiobutton_spending) {
+            return "지출";
+        } else if (checkedId == R.id.radiobutton_savings) {
+            return "저축";
+        }
+        // 습관용 라디오버튼이 따로 있으면 여기에 else if 추가
+        // else if (checkedId == R.id.radiobutton_habit) {
+        //     return "습관";
+        // }
 
         return null;
     }

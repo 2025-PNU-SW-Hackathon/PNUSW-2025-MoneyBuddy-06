@@ -23,6 +23,7 @@ public class MainMenuActivity extends AppCompatActivity {
     private MainMenuHomeFragment fragmentHome = new MainMenuHomeFragment();
     private MainMenuChallengeFragment fragmentChallenge = new MainMenuChallengeFragment();
     private MainMenuLedgerFragment fragmentLedger = new MainMenuLedgerFragment();
+    private BottomNavigationView bottomNavigationView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,10 +33,14 @@ public class MainMenuActivity extends AppCompatActivity {
         FragmentTransaction transaction = fragmentManager.beginTransaction();
         transaction.replace(R.id.menu_frame_layout, fragmentHome).commitAllowingStateLoss();
 
-        BottomNavigationView bottomNavigationView = findViewById(R.id.menu_bottom_navigation);
+        bottomNavigationView = findViewById(R.id.menu_bottom_navigation);
 
         bottomNavigationView.setSelectedItemId(R.id.menu_home);
         bottomNavigationView.setOnItemSelectedListener(new ItemSelectedListener());
+    }
+
+    public void navigateToTab(int menuId) {
+        bottomNavigationView.setSelectedItemId(menuId);
     }
 
     class ItemSelectedListener implements BottomNavigationView.OnItemSelectedListener {

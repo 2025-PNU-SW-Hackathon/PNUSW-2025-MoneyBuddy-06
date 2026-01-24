@@ -33,6 +33,7 @@ import com.moneybuddy.moneylog.finance.activity.FinanceInfoActivity;
 import com.moneybuddy.moneylog.finance.dto.response.QuizResponse; // Import QuizResponse
 import com.moneybuddy.moneylog.ledger.dto.response.CategoryRatioResponse;
 import com.moneybuddy.moneylog.ledger.loader.CategoryRatioLoader;
+import com.moneybuddy.moneylog.main.activity.MainMenuActivity;
 import com.moneybuddy.moneylog.mobti.activity.MobtiActivity;
 import com.moneybuddy.moneylog.mobti.dto.response.MobtiBriefDto;
 import com.moneybuddy.moneylog.mobti.repository.MobtiRepository;
@@ -319,19 +320,19 @@ public class MainMenuHomeFragment extends Fragment {
     private void setupButtonClickListeners(View view) {
         bellBtn.setOnClickListener(v -> startActivity(new Intent(requireContext(), NotificationActivity.class)));
         mypageBtn.setOnClickListener(v -> startActivity(new Intent(requireContext(), MypageActivity.class)));
-        toLedgerBtn.setOnClickListener(v -> navigateToFragment(new MainMenuLedgerFragment()));
-        toChallengeBtn.setOnClickListener(v -> navigateToFragment(new MainMenuChallengeFragment()));
+        toLedgerBtn.setOnClickListener(v -> {
+            if (getActivity() instanceof MainMenuActivity) {
+                ((MainMenuActivity) getActivity()).navigateToTab(R.id.menu_ledger);
+            }
+        });
+
+        toChallengeBtn.setOnClickListener(v -> {
+            if (getActivity() instanceof MainMenuActivity) {
+                ((MainMenuActivity) getActivity()).navigateToTab(R.id.menu_challenge);
+            }
+        });
         toFinEdBtn.setOnClickListener(v -> startActivity(new Intent(requireContext(), FinanceInfoActivity.class)));
         toMobtiBtn.setOnClickListener(v -> startActivity(new Intent(requireContext(), MobtiActivity.class)));
-    }
-
-    private void navigateToFragment(Fragment fragment) {
-        if (getActivity() != null) {
-            getActivity().getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.menu_frame_layout, fragment)
-                    .addToBackStack(null)
-                    .commit();
-        }
     }
 
     private void setupNotificationBadge() {

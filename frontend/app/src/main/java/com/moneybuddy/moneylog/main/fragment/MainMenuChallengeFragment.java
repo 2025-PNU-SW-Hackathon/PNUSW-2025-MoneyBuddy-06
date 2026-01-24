@@ -63,8 +63,16 @@ public class MainMenuChallengeFragment extends Fragment implements ChallengeAdap
                 result -> {
                     if (result.getResultCode() == Activity.RESULT_OK && result.getData() != null) {
                         Intent data = result.getData();
-                        ArrayList<String> cats = data.getStringArrayListExtra(ChallengeCategoryActivity.EXTRA_SELECTED_CATEGORIES);
 
+                        // 1) 카테고리
+                        ArrayList<String> cats =
+                                data.getStringArrayListExtra(ChallengeCategoryActivity.EXTRA_SELECTED_CATEGORIES);
+
+                        // 2) 타입 (지출 / 저축 / 습관)
+                        String selectedType = data.getStringExtra("selected_type");
+
+                        // 3) ViewModel로 전달
+                        viewModel.setCurrentChallengeType(selectedType);
                         viewModel.applyCategoryFilter(cats);
                     }
                 }
@@ -148,14 +156,7 @@ public class MainMenuChallengeFragment extends Fragment implements ChallengeAdap
         viewModel.getTodoList().observe(getViewLifecycleOwner(), todos -> {
             if (viewModel.getCurrentFilter() == ChallengeFilter.ONGOING) {
                 adapter.setTodoList(todos);
-            }
-        });
-
-        viewModel.getRepresentativeChallengeCleared().observe(getViewLifecycleOwner(), cleared -> {
-            if (cleared != null && cleared) {
-                Toast.makeText(getContext(), "완료된 챌린지가 대표 챌린지에서 해제되었습니다.", Toast.LENGTH_SHORT).show();
-                adapter.setRepresentativeChallengeId(-1L);
-                adapter.notifyDataSetChanged();
+                adapter.notifyItemChanged(0);
             }
         });
     }
@@ -186,9 +187,11 @@ public class MainMenuChallengeFragment extends Fragment implements ChallengeAdap
                 if (response.isSuccessful() && response.body() != null) {
                     Log.d("API_SUCCESS", "상태 업데이트 성공: " + response.body().getMessage());
                     Toast.makeText(getContext(), response.body().getMessage(), Toast.LENGTH_SHORT).show();
+                    viewModel.loadTodoList();
                 } else {
                     Log.e("API_ERROR", "응답 실패: " + response.code());
                     Toast.makeText(getContext(), "상태 업데이트에 실패했습니다.", Toast.LENGTH_SHORT).show();
+                    adapter.notifyDataSetChanged();
                 }
             }
 
@@ -196,6 +199,7 @@ public class MainMenuChallengeFragment extends Fragment implements ChallengeAdap
             public void onFailure(Call<ChallengeStatusResponse> call, Throwable t) {
                 Log.e("API_FAILURE", "통신 실패: " + t.getMessage());
                 Toast.makeText(getContext(), "네트워크 오류가 발생했습니다.", Toast.LENGTH_SHORT).show();
+                adapter.notifyDataSetChanged();
             }
         });
     }

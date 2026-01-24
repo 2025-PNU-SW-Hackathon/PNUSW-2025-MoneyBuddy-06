@@ -31,13 +31,22 @@ public class ChallengeRepository {
         }
     }
 
-    public Call<List<ChallengeCardResponse>> filterChallenges(ChallengeFilter filter, List<String> categories) {
-        ChallengeFilterRequest request = new ChallengeFilterRequest(categories);
+    public Call<List<ChallengeCardResponse>> filterChallenges(
+            ChallengeFilter filter,
+            String type,                 // 지출 / 저축 / 습관
+            List<String> categories
+    ) {
+        ChallengeFilterRequest request = new ChallengeFilterRequest(type, categories);
+
         switch (filter) {
-            case ONGOING: return apiService.filterOngoingChallenges(request);
-            case COMPLETED: return apiService.filterCompletedChallenges(request);
-            case RECOMMENDED: return apiService.filterRecommendedChallenges(request);
-            default: return apiService.filterSharedChallenges(request);
+            case ONGOING:
+                return apiService.filterOngoingChallenges(request);
+            case COMPLETED:
+                return apiService.filterCompletedChallenges(request);
+            case RECOMMENDED:
+                return apiService.filterRecommendedChallenges(request);
+            default:
+                return apiService.filterSharedChallenges(request);
         }
     }
 

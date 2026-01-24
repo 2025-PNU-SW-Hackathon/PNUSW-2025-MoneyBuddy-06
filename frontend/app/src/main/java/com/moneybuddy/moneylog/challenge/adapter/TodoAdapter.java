@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.gson.annotations.SerializedName;
 import com.moneybuddy.moneylog.R;
 import com.moneybuddy.moneylog.challenge.dto.ChallengeCardResponse;
 
@@ -26,7 +27,9 @@ public class TodoAdapter extends ListAdapter<ChallengeCardResponse, TodoAdapter.
             }
             @Override
             public boolean areContentsTheSame(@NonNull ChallengeCardResponse oldItem, @NonNull ChallengeCardResponse newItem) {
-                return oldItem.getTitle().equals(newItem.getTitle());
+                // 'title'과 'success' 상태가 모두 같아야 같다고 판단
+                return oldItem.getTitle().equals(newItem.getTitle())
+                        && oldItem.isTodayCompleted().equals(newItem.isTodayCompleted());
             }
         });
         this.onTodoChecked = onTodoChecked;
@@ -55,7 +58,7 @@ public class TodoAdapter extends ListAdapter<ChallengeCardResponse, TodoAdapter.
         void bind(ChallengeCardResponse todo) {
             checkBox.setText(todo.getTitle());
             checkBox.setOnCheckedChangeListener(null);
-             checkBox.setChecked(todo.getSuccess());
+             checkBox.setChecked(todo.isTodayCompleted());
             checkBox.setOnCheckedChangeListener((buttonView, isChecked) -> {
                 onTodoChecked.accept(todo.getChallengeId(), isChecked);
             });
