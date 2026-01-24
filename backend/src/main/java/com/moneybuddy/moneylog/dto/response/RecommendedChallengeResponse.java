@@ -18,4 +18,10 @@ public class RecommendedChallengeResponse {
     private boolean isSystemGenerated;
     private boolean isAccountLinked;
     private String mobtiType;
+
+    private Boolean joined;
+
+    public boolean isJoined() {
+        return joined != null && joined;
+    }
 }

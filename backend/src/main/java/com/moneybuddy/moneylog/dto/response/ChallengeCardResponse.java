@@ -1,5 +1,6 @@
 package com.moneybuddy.moneylog.dto.response;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -35,5 +36,8 @@ public class ChallengeCardResponse {
     private boolean rewarded;
 
     private String mobtiType;
+
+    @JsonProperty("todayCompleted")
+    private boolean todaySuccess;
 
 }

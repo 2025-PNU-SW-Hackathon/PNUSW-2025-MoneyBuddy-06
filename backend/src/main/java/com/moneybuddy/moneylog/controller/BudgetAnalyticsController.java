@@ -14,7 +14,8 @@ import java.time.YearMonth;
 @RestController
 @RequestMapping("/analytics")
 @RequiredArgsConstructor
-public class BudgetAnalyticsController {
+public class
+BudgetAnalyticsController {
 
     private final BudgetAnalyticsService budgetAnalyticsService;
 

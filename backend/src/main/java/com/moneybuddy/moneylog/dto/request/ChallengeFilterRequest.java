@@ -3,10 +3,12 @@ package com.moneybuddy.moneylog.dto.request;
 import com.fasterxml.jackson.annotation.JsonAlias;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 import java.util.List;
 import java.util.Objects;
 
+@ToString
 @Getter
 @Setter
 public class ChallengeFilterRequest {
