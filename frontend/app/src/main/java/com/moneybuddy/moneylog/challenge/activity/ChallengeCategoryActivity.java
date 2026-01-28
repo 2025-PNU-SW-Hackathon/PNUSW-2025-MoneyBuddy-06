@@ -129,7 +129,7 @@ public class ChallengeCategoryActivity extends AppCompatActivity {
             return selectedRadioButton.getText().toString();
         }
 
-        return null;
+        return "식비";
     }
 
     // 추가: 타입 문자열로 변환
