@@ -50,8 +50,6 @@ public class MypageActivity extends AppCompatActivity {
 
     // 레벨 및 계정 정보
     private TextView tvLevelValue, tvEmail;
-    private View viewLevelProgress;
-    private View viewLevelTrack;
     private TextView btnChangePassword, btnLogout, btnWithdrawal;
     private SwitchMaterial switchNotification;
 
@@ -114,8 +112,6 @@ public class MypageActivity extends AppCompatActivity {
         tvProfileMobtiDesc = findViewById(R.id.tv_profile_mobti_desc);
 
         tvLevelValue = findViewById(R.id.tv_level_value);
-        viewLevelProgress = findViewById(R.id.view_level_progress);
-        //viewLevelTrack = findViewById(R.id.view_level_track);
         tvEmail = findViewById(R.id.tv_email);
         switchNotification = findViewById(R.id.switch_notification);
         btnChangePassword = findViewById(R.id.btn_change_password);
@@ -187,21 +183,10 @@ public class MypageActivity extends AppCompatActivity {
 
     private void updateUiWithLevel(UserExpResponse d) {
         tvLevelValue.setText("Lv." + d.getLevel());
-        float p = d.getExperience() / 100.0f;
-//        viewLevelTrack.post(() -> {
-//            int trackWidth = viewLevelTrack.getWidth();
-//
-//            ViewGroup.LayoutParams lp = viewLevelProgress.getLayoutParams();
-//            lp.width = (int) (trackWidth * p);
-//            viewLevelProgress.setLayoutParams(lp);
-//        });
     }
 
     private void updateUiWithDefaultLevel() {
         tvLevelValue.setText("Lv. 1");
-        ViewGroup.LayoutParams lp = viewLevelProgress.getLayoutParams();
-        lp.width = 0;
-        viewLevelProgress.setLayoutParams(lp);
     }
 
     // ── 이메일
