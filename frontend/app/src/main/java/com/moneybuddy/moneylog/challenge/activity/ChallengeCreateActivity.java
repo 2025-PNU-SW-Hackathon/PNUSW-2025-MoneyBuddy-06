@@ -77,7 +77,7 @@ public class ChallengeCreateActivity extends AppCompatActivity {
     }
 
     private void setupDropdowns() {
-        List<String> challengeTypes = Arrays.asList("지출 챌린지", "저축 챌린지", "습관 챌린지"); // 습관 챌린지 = 백엔드에서는 기타 챌린지
+        List<String> challengeTypes = Arrays.asList("지출", "저축", "습관"); // 습관 챌린지 = 백엔드에서는 기타 챌린지
         ArrayAdapter<String> challengeTypeAdapter = new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line, challengeTypes);
         dropdownChallengeType.setAdapter(challengeTypeAdapter);
 
@@ -145,10 +145,10 @@ public class ChallengeCreateActivity extends AppCompatActivity {
         String goalType = dropdownGoalType.getText().toString();
         String category = "";
 
-        if (type.equals("지출 챌린지")) {
+        if (type.equals("지출")) {
             category = dropdownChallengeCategory.getText().toString();
         } else {
-            category = type.replace(" 챌린지", "");
+            category = type;
         }
 
         ChallengeCreateRequest request = new ChallengeCreateRequest(
@@ -159,7 +159,7 @@ public class ChallengeCreateActivity extends AppCompatActivity {
     }
 
     private boolean validateInput() {
-        if (Objects.equals(dropdownChallengeType.getText().toString(), "지출 챌린지")) {
+        if (Objects.equals(dropdownChallengeType.getText().toString(), "지출")) {
             if (TextUtils.isEmpty(dropdownChallengeCategory.getText())) {
                 Toast.makeText(this, "챌린지 카테고리를 선택해주세요.", Toast.LENGTH_SHORT).show();
                 return false;

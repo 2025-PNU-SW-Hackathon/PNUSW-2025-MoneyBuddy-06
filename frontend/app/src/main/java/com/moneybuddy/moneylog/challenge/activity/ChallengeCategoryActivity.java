@@ -89,10 +89,12 @@ public class ChallengeCategoryActivity extends AppCompatActivity {
         // 적용 버튼
         buttonSubmit.setOnClickListener(v -> {
             ArrayList<String> selectedCategories = new ArrayList<>();
-            String selectedCategory = getSelectedCategory();
             String selectedType = getSelectedType(); // 추가: 타입 가져오기
-
-            if (selectedCategory != null) {
+            if (selectedType.equals("저축")) {
+                String selectedCategory = "저축";
+                selectedCategories.add(selectedCategory);
+            } else {
+                String selectedCategory = getSelectedCategory();
                 selectedCategories.add(selectedCategory);
             }
 
