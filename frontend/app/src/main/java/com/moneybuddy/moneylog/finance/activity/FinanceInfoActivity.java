@@ -50,6 +50,8 @@ public class FinanceInfoActivity extends AppCompatActivity {
     public static final String KEY_SOLVED_DATE = "solvedQuizDate";
     public static final String KEY_SOLVED_QUESTION = "solvedQuizQuestion";
     public static final String KEY_SOLVED_EXPLANATION = "solvedQuizExplanation";
+    private static final String PREFS_SCORE = "MoneyLogScorePrefs";
+    private static final String KEY_USER_SCORE = "userScore";
     private ImageButton btnBack;
     private NestedScrollView nestedScrollView;
     private FloatingActionButton fabScrollToTop;
@@ -69,6 +71,9 @@ public class FinanceInfoActivity extends AppCompatActivity {
     private ApiService apiService;
     private Long currentQuizId;
     private SharedPreferences sharedPreferences;
+    private int currentHealthScore = 0;
+    private TextView tvHealthScoreValue;
+    private android.widget.ProgressBar progressBarHealth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -93,10 +98,11 @@ public class FinanceInfoActivity extends AppCompatActivity {
         setupClickListeners();
         setupCardNewsSection();
 
-        // 데이터를 로딩
+        // 데이터 로딩
         loadCardNewsData();
         loadTodayQuiz();
         loadYouthPolicies();
+        loadUserScore();
     }
 
     private void initializeViews() {
@@ -111,6 +117,8 @@ public class FinanceInfoActivity extends AppCompatActivity {
         sectionYouthPolicy = (LinearLayout) findViewById(R.id.section_youth_policy);
         sectionYouthPolicyTitle = findViewById(R.id.tv_youth_title);
         btnImproveScore = findViewById(R.id.btn_improve_score);
+        tvHealthScoreValue = findViewById(R.id.tv_health_score_value);
+        progressBarHealth = findViewById(R.id.progress_bar_health);
 
         viewPagerCardNews = findViewById(R.id.view_pager_card_news);
 
@@ -357,6 +365,11 @@ public class FinanceInfoActivity extends AppCompatActivity {
                     QuizResultResponse result = response.body();
                     showResultDialog(result.isCorrect(), result.getExplanation());
 
+                    if (result.isCorrect()) {
+                        addScore(10);
+                        Toast.makeText(FinanceInfoActivity.this, "건강 점수가 10점 올랐어요!", Toast.LENGTH_SHORT).show();
+                    }
+
                     String originalQuestion = tvQuizQuestion.getText().toString();
                     String explanation = result.getExplanation();
 
@@ -419,5 +432,46 @@ public class FinanceInfoActivity extends AppCompatActivity {
             int scrollTo = Math.max(y - offset, 0);
             nestedScrollView.smoothScrollTo(0, scrollTo);
         });
+    }
+
+    private void loadUserScore() {
+        long userId = getCurrentUserId();
+        if (userId == -1L) return;
+
+        SharedPreferences scorePrefs = getSharedPreferences(PREFS_SCORE, MODE_PRIVATE);
+        currentHealthScore = scorePrefs.getInt(KEY_USER_SCORE + "_" + userId, 0);
+
+        updateScoreUI();
+    }
+
+    private void saveUserScore(int score) {
+        long userId = getCurrentUserId();
+        if (userId == -1L) return;
+
+        SharedPreferences scorePrefs = getSharedPreferences(PREFS_SCORE, MODE_PRIVATE);
+        SharedPreferences.Editor editor = scorePrefs.edit();
+
+        editor.putInt(KEY_USER_SCORE + "_" + userId, score);
+        editor.apply();
+    }
+
+    private void addScore(int points) {
+        if (currentHealthScore + points <= 100) {
+            currentHealthScore += points;
+        } else {
+            currentHealthScore = 100;
+        }
+
+        saveUserScore(currentHealthScore);
+        updateScoreUI();
+    }
+
+    private void updateScoreUI() {
+        if (tvHealthScoreValue != null && progressBarHealth != null) {
+            tvHealthScoreValue.setText(currentHealthScore + "점");
+            android.animation.ObjectAnimator.ofInt(progressBarHealth, "progress", progressBarHealth.getProgress(), currentHealthScore)
+                    .setDuration(1000)
+                    .start();
+        }
     }
 }

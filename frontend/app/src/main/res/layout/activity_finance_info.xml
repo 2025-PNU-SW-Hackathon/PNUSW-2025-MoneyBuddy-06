@@ -150,7 +150,7 @@
                         android:id="@+id/tv_health_score_value"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="39점"
+                        android:text="0점"
                         android:textColor="@android:color/black"
                         android:textSize="28sp"
                         android:textStyle="bold"
