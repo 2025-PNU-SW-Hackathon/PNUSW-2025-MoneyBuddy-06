@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <!-- 행 -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:gravity="center_vertical"
+        android:paddingHorizontal="12dp">
+
+        <!-- 좌측 퍼센트 배지 (배경은 코드에서 카테고리 색으로 그라데이션 세팅) -->
+        <FrameLayout
+            android:id="@+id/percent_bg"
+            android:layout_width="36dp"
+            android:layout_height="22dp"
+            android:layout_marginEnd="12dp"
+            android:foreground="?android:attr/selectableItemBackground"
+            android:clipToPadding="false">
+
+            <TextView
+                android:id="@+id/tv_percent"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:text="25%"
+                android:textStyle="bold"
+                android:textSize="12sp"
+                android:textColor="@android:color/white"/>
+        </FrameLayout>
+
+        <!-- 카테고리명 -->
+        <TextView
+            android:id="@+id/tv_label"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="먹거리 · 배달"
+            android:textColor="#222222"
+            android:textSize="14sp"/>
+
+        <!-- 금액 (오른쪽 정렬) -->
+        <TextView
+            android:id="@+id/tv_amount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="125,000원"
+            android:textColor="#444444"
+            android:textSize="14sp"
+            android:gravity="end"/>
+    </LinearLayout>
+
+    <!-- 구분선: 왼쪽 텍스트 시작선에 맞춰 들여쓰기 -->
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginStart="60dp"
+        android:background="#E8EBE2"/>
+</LinearLayout>

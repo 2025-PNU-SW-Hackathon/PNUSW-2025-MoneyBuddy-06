@@ -1,0 +1,4 @@
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:state_checked="true" android:color="#F8D6D6"/>  <!-- 선택: 빨강 톤 배경 -->
+    <item android:color="#C6D77E"/>                               <!-- 기본: 연두(조금 진함) -->
+</selector>

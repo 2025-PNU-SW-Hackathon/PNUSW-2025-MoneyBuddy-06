@@ -1,0 +1,36 @@
+package com.moneybuddy.moneylog.dto.response;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+
+import java.time.LocalDateTime;
+
+@Getter
+@Builder
+@AllArgsConstructor
+public class ChallengeDetailResponse {
+    private Long challengeId;
+    private String title;
+    private String description;
+    private String type;
+    private String category;
+    private String goalPeriod;
+    private String goalType;
+    private int goalValue;
+
+    private boolean isSystemGenerated;
+    private boolean isAccountLinked;
+    private Long createdBy;
+
+    private boolean isJoined;
+    private LocalDateTime joinedAt;
+    private int currentParticipants;
+    private boolean completed;
+    private boolean success;
+    private boolean rewarded;
+    private boolean mine;
+
+    private String mobtiType;
+
+}
