@@ -115,7 +115,7 @@ public class MypageActivity extends AppCompatActivity {
 
         tvLevelValue = findViewById(R.id.tv_level_value);
         viewLevelProgress = findViewById(R.id.view_level_progress);
-        viewLevelTrack = findViewById(R.id.view_level_track);
+        //viewLevelTrack = findViewById(R.id.view_level_track);
         tvEmail = findViewById(R.id.tv_email);
         switchNotification = findViewById(R.id.switch_notification);
         btnChangePassword = findViewById(R.id.btn_change_password);
@@ -188,13 +188,13 @@ public class MypageActivity extends AppCompatActivity {
     private void updateUiWithLevel(UserExpResponse d) {
         tvLevelValue.setText("Lv." + d.getLevel());
         float p = d.getExperience() / 100.0f;
-        viewLevelTrack.post(() -> {
-            int trackWidth = viewLevelTrack.getWidth();
-
-            ViewGroup.LayoutParams lp = viewLevelProgress.getLayoutParams();
-            lp.width = (int) (trackWidth * p);
-            viewLevelProgress.setLayoutParams(lp);
-        });
+//        viewLevelTrack.post(() -> {
+//            int trackWidth = viewLevelTrack.getWidth();
+//
+//            ViewGroup.LayoutParams lp = viewLevelProgress.getLayoutParams();
+//            lp.width = (int) (trackWidth * p);
+//            viewLevelProgress.setLayoutParams(lp);
+//        });
     }
 
     private void updateUiWithDefaultLevel() {
