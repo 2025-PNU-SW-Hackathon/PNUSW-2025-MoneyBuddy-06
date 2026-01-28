@@ -1,0 +1,8 @@
+<!-- item_todo_list_item.xml -->
+<!-- '오늘의 할 일' 카드뷰 내부의 개별 체크박스 아이템 레이아웃 -->
+<CheckBox xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/cb_todo_item"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:text="챌린지 제목"
+    android:textSize="16sp" />

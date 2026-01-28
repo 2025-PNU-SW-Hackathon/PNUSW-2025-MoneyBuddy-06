@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- 배경 (progress track) -->
+    <item android:id="@android:id/background">
+        <shape android:shape="rectangle">
+            <corners android:radius="8dp" /> <!-- 끝 둥글게 -->
+            <solid android:color="#EEEEEE" /> <!-- 전체 흰색(혹은 원하는 색) -->
+        </shape>
+    </item>
+    <!-- 진행 색 (왼쪽, 연두색) -->
+    <item android:id="@android:id/progress">
+        <clip>
+            <shape android:shape="rectangle">
+                <corners android:radius="8dp" /> <!-- 끝 둥글게 -->
+                <solid android:color="#B7C692" /> <!-- 연두색(이미지와 유사) -->
+            </shape>
+        </clip>
+    </item>
+</layer-list>
